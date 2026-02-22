@@ -1,0 +1,153 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { products, categories } from "@/lib/products";
+import { useCart } from "@/lib/cart-context";
+import { Suspense } from "react";
+
+function ShopContent() {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category") || "All";
+
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [search, setSearch] = useState("");
+  const { addItem } = useCart();
+
+  const filtered = useMemo(() => {
+    let result = products;
+    if (activeCategory !== "All") {
+      result = result.filter((p) => p.category === activeCategory);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.artisan.toLowerCase().includes(q) ||
+          p.country.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [activeCategory, search]);
+
+  return (
+    <>
+      <Navbar />
+      <main className="pt-20 pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal tracking-tight">
+              Shop Handmade
+            </h1>
+            <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
+              Every purchase supports Roma artisans across the Western Balkans.
+            </p>
+          </div>
+
+          {/* Search */}
+          <div className="max-w-md mx-auto mb-8">
+            <div className="relative">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-charcoal/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search products, artisans, countries..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-full border border-charcoal/10 bg-white py-3 pl-12 pr-5 text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Category filters */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  activeCategory === cat
+                    ? "bg-green text-white shadow-sm"
+                    : "bg-white text-charcoal/60 border border-charcoal/10 hover:border-green/30 hover:text-green"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Product grid */}
+          {filtered.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-charcoal/50 text-lg">No products found matching your search.</p>
+              <button
+                onClick={() => { setSearch(""); setActiveCategory("All"); }}
+                className="mt-4 text-green font-medium hover:text-green-dark transition-colors"
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filtered.map((product) => (
+                <div key={product.id} className="group rounded-2xl bg-white border border-charcoal/5 overflow-hidden hover:shadow-lg hover:border-green/20 transition-all">
+                  <Link href={`/shop/${product.id}`} className="block">
+                    <div className="relative aspect-square overflow-hidden bg-light">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                    </div>
+                  </Link>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <Link href={`/shop/${product.id}`}>
+                          <h3 className="font-semibold text-charcoal truncate group-hover:text-green transition-colors">
+                            {product.name}
+                          </h3>
+                        </Link>
+                        <p className="text-xs text-charcoal/50 mt-0.5">
+                          by {product.artisan} &middot; {product.country}
+                        </p>
+                      </div>
+                      <p className="text-lg font-bold text-green whitespace-nowrap">
+                        &euro;{product.price.toFixed(2)}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm text-charcoal/60 line-clamp-2">{product.description}</p>
+                    <button
+                      onClick={() => addItem(product)}
+                      className="mt-3 w-full rounded-full bg-green/10 py-2 text-sm font-semibold text-green hover:bg-green hover:text-white transition-colors"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense>
+      <ShopContent />
+    </Suspense>
+  );
+}

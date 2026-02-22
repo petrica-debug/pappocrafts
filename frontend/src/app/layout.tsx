@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { CartProvider } from "@/lib/cart-context";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,21 +18,12 @@ export const metadata: Metadata = {
   description:
     "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans. Pottery, textiles, jewelry, woodwork, and more — each piece tells a story.",
   keywords: [
-    "handmade",
-    "Roma artisans",
-    "Balkans",
-    "marketplace",
-    "pottery",
-    "textiles",
-    "jewelry",
-    "woodwork",
-    "Western Balkans",
-    "craftsmanship",
+    "handmade", "Roma artisans", "Balkans", "marketplace", "pottery",
+    "textiles", "jewelry", "woodwork", "Western Balkans", "craftsmanship",
   ],
   openGraph: {
     title: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
-    description:
-      "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans.",
+    description: "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans.",
     type: "website",
     locale: "en_US",
     siteName: "PappoCrafts",
@@ -39,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
-    description:
-      "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans.",
+    description: "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans.",
   },
 };
 
@@ -52,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} antialiased`}>
-        {children}
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );

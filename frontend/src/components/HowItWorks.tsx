@@ -39,13 +39,13 @@ export default function HowItWorks() {
     <section id="how-it-works" className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto">
-          <p className="text-sm font-semibold text-terracotta uppercase tracking-wide">
+          <p className="text-sm font-semibold text-green uppercase tracking-wide">
             Simple & Transparent
           </p>
-          <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-bold text-walnut tracking-tight">
+          <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
             How PappoCrafts Works
           </h2>
-          <p className="mt-4 text-lg text-walnut/60 leading-relaxed">
+          <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
             From artisan workshop to your home — a marketplace built on trust,
             quality, and community.
           </p>
@@ -55,20 +55,18 @@ export default function HowItWorks() {
           {steps.map((step) => (
             <div
               key={step.number}
-              className="group relative rounded-2xl bg-white p-8 shadow-sm border border-walnut/5 hover:shadow-md hover:border-terracotta/20 transition-all"
+              className="group relative rounded-2xl bg-white p-8 shadow-sm border border-charcoal/5 hover:shadow-md hover:border-green/20 transition-all"
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-terracotta/10 text-terracotta group-hover:bg-terracotta group-hover:text-white transition-colors">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green/10 text-green group-hover:bg-green group-hover:text-white transition-colors">
                   {step.icon}
                 </div>
-                <span className="font-serif text-4xl font-bold text-walnut/10">
+                <span className="font-serif text-4xl font-bold text-charcoal/10">
                   {step.number}
                 </span>
               </div>
-              <h3 className="text-xl font-semibold text-walnut">{step.title}</h3>
-              <p className="mt-3 text-walnut/60 leading-relaxed">
-                {step.description}
-              </p>
+              <h3 className="text-xl font-semibold text-charcoal">{step.title}</h3>
+              <p className="mt-3 text-charcoal/60 leading-relaxed">{step.description}</p>
             </div>
           ))}
         </div>
