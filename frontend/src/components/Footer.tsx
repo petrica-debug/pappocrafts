@@ -27,11 +27,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white/80 uppercase tracking-wide">Company</h3>
+            <h3 className="text-sm font-semibold text-white/80 uppercase tracking-wide">Services</h3>
             <div className="mt-3 flex flex-col gap-2">
-              <Link href="/#how-it-works" className="text-sm text-white/50 hover:text-green transition-colors">How It Works</Link>
-              <Link href="/#mission" className="text-sm text-white/50 hover:text-green transition-colors">Our Mission</Link>
-              <Link href="/#categories" className="text-sm text-white/50 hover:text-green transition-colors">Categories</Link>
+              <Link href="/services" className="text-sm text-white/50 hover:text-blue-light transition-colors">All Services</Link>
+              <Link href="/services?category=Home+Repair" className="text-sm text-white/50 hover:text-blue-light transition-colors">Home Repair</Link>
+              <Link href="/services?category=Pet+Care" className="text-sm text-white/50 hover:text-blue-light transition-colors">Pet Care</Link>
+              <Link href="/services?category=Cleaning" className="text-sm text-white/50 hover:text-blue-light transition-colors">Cleaning</Link>
             </div>
           </div>
 

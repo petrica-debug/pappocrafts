@@ -1,0 +1,266 @@
+"use client";
+
+import { use, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { getServiceProvider, serviceProviders } from "@/lib/services";
+
+export default function ServiceProviderPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const provider = getServiceProvider(id);
+  const [showBooking, setShowBooking] = useState(false);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+  const [bookingMessage, setBookingMessage] = useState("");
+  const [bookingStatus, setBookingStatus] = useState<"idle" | "sent">("idle");
+
+  if (!provider) notFound();
+
+  const related = serviceProviders
+    .filter((p) => p.category === provider.category && p.id !== provider.id)
+    .slice(0, 3);
+
+  function handleBookingSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBookingStatus("sent");
+  }
+
+  return (
+    <>
+      <Navbar />
+      <main className="pt-20 pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <nav className="mb-8 flex items-center gap-2 text-sm text-charcoal/50">
+            <Link href="/services" className="hover:text-green transition-colors">Services</Link>
+            <span>/</span>
+            <Link href={`/services?category=${encodeURIComponent(provider.category)}`} className="hover:text-green transition-colors">
+              {provider.category}
+            </Link>
+            <span>/</span>
+            <span className="text-charcoal">{provider.name}</span>
+          </nav>
+
+          <div className="grid gap-12 lg:grid-cols-3">
+            {/* Provider info */}
+            <div className="lg:col-span-2">
+              <div className="flex items-start gap-5 mb-6">
+                <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full bg-light">
+                  <Image src={provider.image} alt={provider.name} fill className="object-cover" sizes="80px" priority />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="font-serif text-3xl font-bold text-charcoal">{provider.name}</h1>
+                    {provider.badges.map((badge) => (
+                      <span
+                        key={badge}
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          badge === "Top Rated" ? "bg-green/10 text-green" :
+                          badge === "Certified" ? "bg-blue/10 text-blue" :
+                          "bg-charcoal/5 text-charcoal/60"
+                        }`}
+                      >
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-lg text-charcoal/60 mt-1">{provider.title}</p>
+                  <div className="mt-2 flex items-center gap-4 text-sm text-charcoal/50">
+                    <span className="flex items-center gap-1">
+                      <svg className="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clipRule="evenodd" />
+                      </svg>
+                      {provider.rating} ({provider.reviewCount} reviews)
+                    </span>
+                    <span>{provider.location}, {provider.country}</span>
+                    <span>{provider.completedJobs} jobs completed</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="prose prose-charcoal max-w-none">
+                <h2 className="font-serif text-xl font-bold text-charcoal mt-8 mb-3">About</h2>
+                <p className="text-charcoal/70 leading-relaxed">{provider.longDescription}</p>
+              </div>
+
+              {/* Stats */}
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="rounded-xl bg-green/5 border border-green/10 p-4 text-center">
+                  <p className="text-2xl font-bold text-green">{provider.completedJobs}</p>
+                  <p className="text-xs text-charcoal/50 mt-1">Jobs Done</p>
+                </div>
+                <div className="rounded-xl bg-blue/5 border border-blue/10 p-4 text-center">
+                  <p className="text-2xl font-bold text-blue">{provider.rating}</p>
+                  <p className="text-xs text-charcoal/50 mt-1">Rating</p>
+                </div>
+                <div className="rounded-xl bg-green/5 border border-green/10 p-4 text-center">
+                  <p className="text-2xl font-bold text-green">{provider.responseTime}</p>
+                  <p className="text-xs text-charcoal/50 mt-1">Response</p>
+                </div>
+                <div className="rounded-xl bg-blue/5 border border-blue/10 p-4 text-center">
+                  <p className="text-2xl font-bold text-blue">{provider.reviewCount}</p>
+                  <p className="text-xs text-charcoal/50 mt-1">Reviews</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Booking sidebar */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 rounded-2xl bg-white border border-charcoal/5 p-6 shadow-sm">
+                <div className="text-center mb-6">
+                  <div className="text-sm text-charcoal/50 mb-1">Starting from</div>
+                  <div className="flex items-baseline justify-center gap-2">
+                    {provider.hourlyRate > 0 && (
+                      <span className="text-3xl font-bold text-green">&euro;{provider.hourlyRate}<span className="text-base font-normal text-charcoal/50">/hr</span></span>
+                    )}
+                  </div>
+                  {provider.fixedRateFrom && (
+                    <p className="text-sm text-charcoal/50 mt-1">or fixed rate from &euro;{provider.fixedRateFrom}</p>
+                  )}
+                </div>
+
+                {!showBooking ? (
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setShowBooking(true)}
+                      className="w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
+                    >
+                      Request a Booking
+                    </button>
+                    <button className="w-full rounded-full border-2 border-charcoal/10 py-3 text-center text-sm font-semibold text-charcoal hover:border-green hover:text-green transition-colors">
+                      Send a Message
+                    </button>
+                  </div>
+                ) : bookingStatus === "sent" ? (
+                  <div className="text-center py-4">
+                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green/10">
+                      <svg className="h-6 w-6 text-green" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                      </svg>
+                    </div>
+                    <p className="font-semibold text-charcoal">Booking Request Sent!</p>
+                    <p className="text-sm text-charcoal/50 mt-1">{provider.name} typically responds {provider.responseTime.toLowerCase()}.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleBookingSubmit} className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal/60 mb-1">Preferred Date</label>
+                      <input
+                        type="date"
+                        required
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal/60 mb-1">Preferred Time</label>
+                      <select
+                        required
+                        value={bookingTime}
+                        onChange={(e) => setBookingTime(e.target.value)}
+                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                      >
+                        <option value="">Select a time</option>
+                        <option value="morning">Morning (8:00 - 12:00)</option>
+                        <option value="afternoon">Afternoon (12:00 - 17:00)</option>
+                        <option value="evening">Evening (17:00 - 20:00)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal/60 mb-1">Describe what you need</label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={bookingMessage}
+                        onChange={(e) => setBookingMessage(e.target.value)}
+                        placeholder="Tell the provider what you need help with..."
+                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm placeholder:text-charcoal/30 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent resize-none"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
+                    >
+                      Send Booking Request
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowBooking(false)}
+                      className="w-full py-2 text-center text-xs text-charcoal/40 hover:text-charcoal transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                )}
+
+                <div className="mt-6 pt-4 border-t border-charcoal/10 space-y-2">
+                  <div className="flex items-center gap-2 text-xs text-charcoal/50">
+                    <svg className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                    </svg>
+                    Identity verified
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-charcoal/50">
+                    <svg className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                    </svg>
+                    Responds {provider.responseTime.toLowerCase()}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-charcoal/50">
+                    <svg className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                    </svg>
+                    {provider.rating} from {provider.reviewCount} reviews
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Related providers */}
+          {related.length > 0 && (
+            <div className="mt-24">
+              <h2 className="font-serif text-2xl font-bold text-charcoal mb-8">Other {provider.category} Providers</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {related.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/services/${p.id}`}
+                    className="group rounded-2xl bg-white border border-charcoal/5 p-5 hover:shadow-lg hover:border-green/20 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-light">
+                        <Image src={p.image} alt={p.name} fill className="object-cover" sizes="48px" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-charcoal group-hover:text-green transition-colors">{p.name}</h3>
+                        <p className="text-sm text-charcoal/50">{p.title}</p>
+                      </div>
+                    </div>
+                    <p className="mt-2 text-sm text-charcoal/60 line-clamp-2">{p.description}</p>
+                    <div className="mt-3 flex items-center justify-between text-sm">
+                      <span className="font-bold text-green">
+                        {p.hourlyRate > 0 ? `€${p.hourlyRate}/hr` : `from €${p.fixedRateFrom}`}
+                      </span>
+                      <span className="flex items-center gap-1 text-xs text-charcoal/40">
+                        <svg className="h-3.5 w-3.5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clipRule="evenodd" />
+                        </svg>
+                        {p.rating} ({p.reviewCount})
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}

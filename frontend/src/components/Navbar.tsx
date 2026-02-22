@@ -26,11 +26,11 @@ export default function Navbar() {
               <Link href="/shop" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
                 Shop
               </Link>
+              <Link href="/services" className="text-sm font-medium text-charcoal/70 hover:text-blue transition-colors">
+                Services
+              </Link>
               <Link href="/#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
                 How It Works
-              </Link>
-              <Link href="/#mission" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
-                Our Mission
               </Link>
               <button
                 onClick={() => setIsCartOpen(true)}
@@ -95,11 +95,11 @@ export default function Navbar() {
               <Link href="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
                 Shop
               </Link>
+              <Link href="/services" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-blue transition-colors">
+                Services
+              </Link>
               <Link href="/#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
                 How It Works
-              </Link>
-              <Link href="/#mission" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
-                Our Mission
               </Link>
               <Link href="/shop" onClick={() => setMobileOpen(false)} className="mt-2 inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors">
                 Browse Products
