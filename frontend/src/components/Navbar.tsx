@@ -1,14 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
+import { useLocale, locales } from "@/lib/locale-context";
 import CartSidebar from "./CartSidebar";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { t, locale, setLocale, localeConfig } = useLocale();
+  const langRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -19,19 +33,53 @@ export default function Navbar() {
               <Image src="/pappocrafts-logo.png" alt="PappoCrafts" width={160} height={48} className="h-10 w-auto" priority />
             </Link>
 
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-5">
               <Link href="/" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
-                Home
+                {t("nav.home")}
               </Link>
               <Link href="/shop" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
-                Shop
+                {t("nav.shop")}
               </Link>
               <Link href="/services" className="text-sm font-medium text-charcoal/70 hover:text-blue transition-colors">
-                Services
+                {t("nav.services")}
               </Link>
               <Link href="/#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
-                How It Works
+                {t("nav.howItWorks")}
               </Link>
+
+              {/* Language / Currency selector */}
+              <div ref={langRef} className="relative">
+                <button
+                  onClick={() => setLangOpen(!langOpen)}
+                  className="flex items-center gap-1.5 rounded-full border border-charcoal/10 px-3 py-1.5 text-xs font-medium text-charcoal/70 hover:border-green/30 hover:text-charcoal transition-all"
+                >
+                  <span className="text-base leading-none">{localeConfig.flag}</span>
+                  <span>{localeConfig.currency}</span>
+                  <svg className={`h-3 w-3 transition-transform ${langOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+                {langOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
+                    {locales.map((l) => (
+                      <button
+                        key={l.code}
+                        onClick={() => { setLocale(l.code); setLangOpen(false); }}
+                        className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                          locale === l.code
+                            ? "bg-green/5 text-green font-medium"
+                            : "text-charcoal/70 hover:bg-light-dark"
+                        }`}
+                      >
+                        <span className="text-lg">{l.flag}</span>
+                        <span className="flex-1 text-left">{l.name}</span>
+                        <span className="text-xs text-charcoal/40">{l.currency}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-charcoal/70 hover:text-green transition-colors"
@@ -50,11 +98,39 @@ export default function Navbar() {
                 href="/shop"
                 className="inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-dark transition-colors"
               >
-                Browse Products
+                {t("nav.browseProducts")}
               </Link>
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
+              {/* Mobile language selector */}
+              <div ref={langRef} className="relative">
+                <button
+                  onClick={() => setLangOpen(!langOpen)}
+                  className="flex items-center gap-1 p-2 text-charcoal"
+                >
+                  <span className="text-lg">{localeConfig.flag}</span>
+                </button>
+                {langOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
+                    {locales.map((l) => (
+                      <button
+                        key={l.code}
+                        onClick={() => { setLocale(l.code); setLangOpen(false); }}
+                        className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                          locale === l.code
+                            ? "bg-green/5 text-green font-medium"
+                            : "text-charcoal/70 hover:bg-light-dark"
+                        }`}
+                      >
+                        <span className="text-lg">{l.flag}</span>
+                        <span className="flex-1 text-left">{l.name}</span>
+                        <span className="text-xs text-charcoal/40">{l.currency}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-charcoal"
@@ -90,19 +166,19 @@ export default function Navbar() {
           <div className="md:hidden border-t border-charcoal/10 bg-white">
             <div className="flex flex-col gap-1 px-4 py-3">
               <Link href="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
-                Home
+                {t("nav.home")}
               </Link>
               <Link href="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
-                Shop
+                {t("nav.shop")}
               </Link>
               <Link href="/services" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-blue transition-colors">
-                Services
+                {t("nav.services")}
               </Link>
               <Link href="/#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
-                How It Works
+                {t("nav.howItWorks")}
               </Link>
               <Link href="/shop" onClick={() => setMobileOpen(false)} className="mt-2 inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors">
-                Browse Products
+                {t("nav.browseProducts")}
               </Link>
             </div>
           </div>

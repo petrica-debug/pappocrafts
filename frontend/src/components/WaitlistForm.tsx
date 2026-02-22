@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/lib/locale-context";
 
 export default function WaitlistForm() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"buyer" | "seller">("buyer");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const { t } = useLocale();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,14 +42,13 @@ export default function WaitlistForm() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold text-green-light uppercase tracking-wide">
-            Stay Connected
+            {t("waitlist.badge")}
           </p>
           <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Join the PappoCrafts Community
+            {t("waitlist.title")}
           </h2>
           <p className="mt-4 text-lg text-white/60 leading-relaxed">
-            Whether you want to discover unique handmade products or sell your own
-            creations, sign up to get updates and exclusive offers.
+            {t("waitlist.desc")}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-10 max-w-md mx-auto">
@@ -61,7 +62,7 @@ export default function WaitlistForm() {
                     : "bg-charcoal-light text-white/60 hover:text-white"
                 }`}
               >
-                I want to buy
+                {t("waitlist.buyer")}
               </button>
               <button
                 type="button"
@@ -72,7 +73,7 @@ export default function WaitlistForm() {
                     : "bg-charcoal-light text-white/60 hover:text-white"
                 }`}
               >
-                I want to sell
+                {t("waitlist.seller")}
               </button>
             </div>
 
@@ -80,7 +81,7 @@ export default function WaitlistForm() {
               <input
                 type="email"
                 required
-                placeholder="Enter your email"
+                placeholder={t("waitlist.placeholder")}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -93,7 +94,7 @@ export default function WaitlistForm() {
                 disabled={status === "loading"}
                 className="rounded-full bg-green px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark disabled:opacity-50 transition-all"
               >
-                {status === "loading" ? "..." : "Join"}
+                {status === "loading" ? "..." : t("waitlist.join")}
               </button>
             </div>
 
@@ -106,7 +107,7 @@ export default function WaitlistForm() {
           </form>
 
           <p className="mt-6 text-xs text-white/40">
-            No spam, ever. We&apos;ll only email you about PappoCrafts updates.
+            {t("waitlist.noSpam")}
           </p>
         </div>
       </div>

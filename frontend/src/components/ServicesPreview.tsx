@@ -1,22 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { serviceCategories } from "@/lib/services";
+import { useLocale } from "@/lib/locale-context";
 
 export default function ServicesPreview() {
   const featured = serviceCategories.filter((c) => c.name !== "All");
+  const { t } = useLocale();
 
   return (
     <section id="services" className="py-24 sm:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto">
           <p className="text-sm font-semibold text-blue uppercase tracking-wide">
-            New: Local Services
+            {t("svc.badge")}
           </p>
           <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
-            Need Help? Find Local Pros
+            {t("svc.title")}
           </h2>
           <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
-            Beyond handmade products — connect with trusted service providers across
-            the Western Balkans for home repairs, pet care, tutoring, and more.
+            {t("svc.desc")}
           </p>
         </div>
 
@@ -41,7 +44,7 @@ export default function ServicesPreview() {
             href="/services"
             className="inline-flex items-center justify-center rounded-full bg-blue px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue/25 hover:bg-blue-dark transition-all"
           >
-            Browse All Services
+            {t("svc.browseAll")}
           </Link>
         </div>
       </div>

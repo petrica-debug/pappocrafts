@@ -5,9 +5,11 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/lib/cart-context";
+import { useLocale } from "@/lib/locale-context";
 
 export default function CheckoutSuccess() {
   const { clearCart } = useCart();
+  const { t } = useLocale();
 
   useEffect(() => {
     clearCart();
@@ -25,14 +27,13 @@ export default function CheckoutSuccess() {
           </div>
 
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
-            Thank You!
+            {t("success.title")}
           </h1>
           <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
-            Your order has been placed successfully. You&apos;ll receive a confirmation email
-            shortly with your order details and tracking information.
+            {t("success.desc")}
           </p>
           <p className="mt-4 text-charcoal/60">
-            Your purchase directly supports Roma artisans in the Western Balkans.
+            {t("success.supports")}
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -40,13 +41,13 @@ export default function CheckoutSuccess() {
               href="/shop"
               className="inline-flex items-center justify-center rounded-full bg-green px-8 py-3 text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
             >
-              Continue Shopping
+              {t("success.continueShopping")}
             </Link>
             <Link
               href="/"
               className="inline-flex items-center justify-center rounded-full border-2 border-charcoal/20 px-8 py-3 text-base font-semibold text-charcoal hover:border-green hover:text-green transition-colors"
             >
-              Back to Home
+              {t("success.backHome")}
             </Link>
           </div>
         </div>

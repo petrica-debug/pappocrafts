@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useLocale } from "@/lib/locale-context";
 
 export default function Hero() {
+  const { t } = useLocale();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       <div className="absolute inset-0 opacity-[0.03]">
@@ -17,19 +22,17 @@ export default function Hero() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
         <div className="mx-auto max-w-3xl">
           <p className="mb-4 inline-block rounded-full bg-green/10 px-4 py-1.5 text-sm font-semibold text-green tracking-wide uppercase">
-            Now Open
+            {t("hero.badge")}
           </p>
 
           <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-charcoal leading-[1.1] tracking-tight">
-            Handcrafted with
+            {t("hero.title1")}
             <br />
-            <span className="text-green">Heart & Heritage</span>
+            <span className="text-green">{t("hero.title2")}</span>
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-charcoal/70 max-w-2xl mx-auto leading-relaxed">
-            Discover unique handmade products crafted by Roma entrepreneurs
-            across the Western Balkans. Every piece carries a story of tradition,
-            skill, and cultural pride.
+            {t("hero.desc")}
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -37,28 +40,28 @@ export default function Hero() {
               href="/shop"
               className="inline-flex items-center justify-center rounded-full bg-green px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark hover:shadow-green/40 transition-all"
             >
-              Shop Now
+              {t("hero.shopNow")}
             </Link>
             <Link
               href="/#mission"
               className="inline-flex items-center justify-center rounded-full border-2 border-charcoal/20 px-8 py-3.5 text-base font-semibold text-charcoal hover:border-green hover:text-green transition-colors"
             >
-              Learn Our Story
+              {t("hero.learnStory")}
             </Link>
           </div>
 
           <div className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto">
             <div>
               <p className="font-serif text-3xl font-bold text-green">6+</p>
-              <p className="mt-1 text-sm text-charcoal/60">Balkans Countries</p>
+              <p className="mt-1 text-sm text-charcoal/60">{t("hero.stat1")}</p>
             </div>
             <div>
               <p className="font-serif text-3xl font-bold text-green">100+</p>
-              <p className="mt-1 text-sm text-charcoal/60">Artisan Sellers</p>
+              <p className="mt-1 text-sm text-charcoal/60">{t("hero.stat2")}</p>
             </div>
             <div>
               <p className="font-serif text-3xl font-bold text-green">1000+</p>
-              <p className="mt-1 text-sm text-charcoal/60">Unique Products</p>
+              <p className="mt-1 text-sm text-charcoal/60">{t("hero.stat3")}</p>
             </div>
           </div>
         </div>

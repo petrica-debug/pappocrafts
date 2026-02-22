@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { products, categories } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
+import { useLocale } from "@/lib/locale-context";
 import { Suspense } from "react";
 
 function ShopContent() {
@@ -17,6 +18,7 @@ function ShopContent() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
   const { addItem } = useCart();
+  const { t, formatPrice } = useLocale();
 
   const filtered = useMemo(() => {
     let result = products;
@@ -43,14 +45,13 @@ function ShopContent() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal tracking-tight">
-              Shop Handmade
+              {t("shop.title")}
             </h1>
             <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
-              Every purchase supports Roma artisans across the Western Balkans.
+              {t("shop.desc")}
             </p>
           </div>
 
-          {/* Search */}
           <div className="max-w-md mx-auto mb-8">
             <div className="relative">
               <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-charcoal/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -58,7 +59,7 @@ function ShopContent() {
               </svg>
               <input
                 type="text"
-                placeholder="Search products, artisans, countries..."
+                placeholder={t("shop.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-full border border-charcoal/10 bg-white py-3 pl-12 pr-5 text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
@@ -66,7 +67,6 @@ function ShopContent() {
             </div>
           </div>
 
-          {/* Category filters */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
             {categories.map((cat) => (
               <button
@@ -78,20 +78,19 @@ function ShopContent() {
                     : "bg-white text-charcoal/60 border border-charcoal/10 hover:border-green/30 hover:text-green"
                 }`}
               >
-                {cat}
+                {cat === "All" ? t("shop.all") : cat}
               </button>
             ))}
           </div>
 
-          {/* Product grid */}
           {filtered.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-charcoal/50 text-lg">No products found matching your search.</p>
+              <p className="text-charcoal/50 text-lg">{t("shop.noProducts")}</p>
               <button
                 onClick={() => { setSearch(""); setActiveCategory("All"); }}
                 className="mt-4 text-green font-medium hover:text-green-dark transition-colors"
               >
-                Clear filters
+                {t("shop.clearFilters")}
               </button>
             </div>
           ) : (
@@ -118,11 +117,11 @@ function ShopContent() {
                           </h3>
                         </Link>
                         <p className="text-xs text-charcoal/50 mt-0.5">
-                          by {product.artisan} &middot; {product.country}
+                          {t("shop.by")} {product.artisan} &middot; {product.country}
                         </p>
                       </div>
                       <p className="text-lg font-bold text-green whitespace-nowrap">
-                        &euro;{product.price.toFixed(2)}
+                        {formatPrice(product.price)}
                       </p>
                     </div>
                     <p className="mt-2 text-sm text-charcoal/60 line-clamp-2">{product.description}</p>
@@ -130,7 +129,7 @@ function ShopContent() {
                       onClick={() => addItem(product)}
                       className="mt-3 w-full rounded-full bg-green/10 py-2 text-sm font-semibold text-green hover:bg-green hover:text-white transition-colors"
                     >
-                      Add to Cart
+                      {t("shop.addToCart")}
                     </button>
                   </div>
                 </div>

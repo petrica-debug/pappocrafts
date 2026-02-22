@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { serviceProviders, serviceCategories, serviceCategoryNames } from "@/lib/services";
+import { serviceProviders, serviceCategories } from "@/lib/services";
+import { useLocale } from "@/lib/locale-context";
 import { Suspense } from "react";
 
 function ServicesContent() {
@@ -14,6 +15,7 @@ function ServicesContent() {
   const initialCategory = searchParams.get("category") || "All";
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
+  const { t, formatPrice } = useLocale();
 
   const filtered = useMemo(() => {
     let result = serviceProviders;
@@ -41,14 +43,13 @@ function ServicesContent() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal tracking-tight">
-              Local Services
+              {t("services.title")}
             </h1>
             <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
-              Find trusted service providers across the Western Balkans — from home repairs to pet care.
+              {t("services.desc")}
             </p>
           </div>
 
-          {/* Search */}
           <div className="max-w-md mx-auto mb-8">
             <div className="relative">
               <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-charcoal/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -56,7 +57,7 @@ function ServicesContent() {
               </svg>
               <input
                 type="text"
-                placeholder="Search services, providers, cities..."
+                placeholder={t("services.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-full border border-charcoal/10 bg-white py-3 pl-12 pr-5 text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
@@ -64,7 +65,6 @@ function ServicesContent() {
             </div>
           </div>
 
-          {/* Category cards */}
           <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-3 mb-12">
             {serviceCategories.map((cat) => (
               <button
@@ -82,15 +82,14 @@ function ServicesContent() {
             ))}
           </div>
 
-          {/* Provider grid */}
           {filtered.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-charcoal/50 text-lg">No service providers found matching your search.</p>
+              <p className="text-charcoal/50 text-lg">{t("services.noProviders")}</p>
               <button
                 onClick={() => { setSearch(""); setActiveCategory("All"); }}
                 className="mt-4 text-green font-medium hover:text-green-dark transition-colors"
               >
-                Clear filters
+                {t("services.clearFilters")}
               </button>
             </div>
           ) : (
@@ -131,11 +130,11 @@ function ServicesContent() {
                     <div className="mt-4 flex items-center justify-between">
                       <div className="text-sm">
                         {provider.hourlyRate > 0 && (
-                          <span className="font-bold text-green">&euro;{provider.hourlyRate}/hr</span>
+                          <span className="font-bold text-green">{formatPrice(provider.hourlyRate)}{t("services.perHour")}</span>
                         )}
                         {provider.fixedRateFrom && (
                           <span className={`text-charcoal/50 ${provider.hourlyRate > 0 ? "ml-2" : ""}`}>
-                            {provider.hourlyRate > 0 ? "or " : ""}from &euro;{provider.fixedRateFrom}
+                            {provider.hourlyRate > 0 ? `${t("services.from")} ` : ""}{t("services.from")} {formatPrice(provider.fixedRateFrom)}
                           </span>
                         )}
                       </div>
