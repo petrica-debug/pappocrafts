@@ -7,22 +7,70 @@ import { useCart } from "@/lib/cart-context";
 import { useLocale, locales } from "@/lib/locale-context";
 import CartSidebar from "./CartSidebar";
 
-export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
-  const { totalItems, setIsCartOpen } = useCart();
-  const { t, locale, setLocale, localeConfig } = useLocale();
-  const langRef = useRef<HTMLDivElement>(null);
+function LanguageSelector({ variant }: { variant: "desktop" | "mobile" }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { locale, setLocale, localeConfig } = useLocale();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setLangOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={
+          variant === "desktop"
+            ? "flex items-center gap-1.5 rounded-full border border-charcoal/10 px-3 py-1.5 text-xs font-medium text-charcoal/70 hover:border-green/30 hover:text-charcoal transition-all"
+            : "flex items-center gap-1 p-2 text-charcoal"
+        }
+      >
+        <span className={variant === "desktop" ? "text-base leading-none" : "text-lg"}>
+          {localeConfig.flag}
+        </span>
+        {variant === "desktop" && (
+          <>
+            <span>{localeConfig.currency}</span>
+            <svg className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </>
+        )}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
+          {locales.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => { setLocale(l.code); setOpen(false); }}
+              className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                locale === l.code
+                  ? "bg-green/5 text-green font-medium"
+                  : "text-charcoal/70 hover:bg-light-dark"
+              }`}
+            >
+              <span className="text-lg">{l.flag}</span>
+              <span className="flex-1 text-left">{l.name}</span>
+              <span className="text-xs text-charcoal/40">{l.currency}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { totalItems, setIsCartOpen } = useCart();
+  const { t } = useLocale();
 
   return (
     <>
@@ -47,38 +95,7 @@ export default function Navbar() {
                 {t("nav.howItWorks")}
               </Link>
 
-              {/* Language / Currency selector */}
-              <div ref={langRef} className="relative">
-                <button
-                  onClick={() => setLangOpen(!langOpen)}
-                  className="flex items-center gap-1.5 rounded-full border border-charcoal/10 px-3 py-1.5 text-xs font-medium text-charcoal/70 hover:border-green/30 hover:text-charcoal transition-all"
-                >
-                  <span className="text-base leading-none">{localeConfig.flag}</span>
-                  <span>{localeConfig.currency}</span>
-                  <svg className={`h-3 w-3 transition-transform ${langOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                  </svg>
-                </button>
-                {langOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
-                    {locales.map((l) => (
-                      <button
-                        key={l.code}
-                        onClick={() => { setLocale(l.code); setLangOpen(false); }}
-                        className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
-                          locale === l.code
-                            ? "bg-green/5 text-green font-medium"
-                            : "text-charcoal/70 hover:bg-light-dark"
-                        }`}
-                      >
-                        <span className="text-lg">{l.flag}</span>
-                        <span className="flex-1 text-left">{l.name}</span>
-                        <span className="text-xs text-charcoal/40">{l.currency}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <LanguageSelector variant="desktop" />
 
               <button
                 onClick={() => setIsCartOpen(true)}
@@ -103,34 +120,7 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              {/* Mobile language selector */}
-              <div ref={langRef} className="relative">
-                <button
-                  onClick={() => setLangOpen(!langOpen)}
-                  className="flex items-center gap-1 p-2 text-charcoal"
-                >
-                  <span className="text-lg">{localeConfig.flag}</span>
-                </button>
-                {langOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
-                    {locales.map((l) => (
-                      <button
-                        key={l.code}
-                        onClick={() => { setLocale(l.code); setLangOpen(false); }}
-                        className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
-                          locale === l.code
-                            ? "bg-green/5 text-green font-medium"
-                            : "text-charcoal/70 hover:bg-light-dark"
-                        }`}
-                      >
-                        <span className="text-lg">{l.flag}</span>
-                        <span className="flex-1 text-left">{l.name}</span>
-                        <span className="text-xs text-charcoal/40">{l.currency}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <LanguageSelector variant="mobile" />
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-charcoal"
