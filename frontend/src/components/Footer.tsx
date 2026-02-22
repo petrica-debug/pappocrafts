@@ -9,12 +9,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2">
-              <Image src="/redi-logo.png" alt="REDI" width={32} height={32} className="h-8 w-auto" />
-              <span className="text-xl font-serif font-bold text-white tracking-tight">
-                Pappo<span className="text-green">Crafts</span>
-              </span>
-            </div>
+            <Image src="/pappocrafts-logo.png" alt="PappoCrafts" width={140} height={42} className="h-10 w-auto brightness-0 invert" />
             <p className="mt-3 text-sm text-white/50 leading-relaxed max-w-xs">
               Connecting Roma artisans in the Western Balkans with a global
               audience. Handmade, authentic, meaningful.

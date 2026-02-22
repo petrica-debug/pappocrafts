@@ -45,9 +45,9 @@ export default function Mission() {
             </p>
 
             <div className="mt-8 flex items-center gap-4">
-              <Image src="/redi-logo.png" alt="REDI - Roma Entrepreneurship Development Initiative" width={60} height={60} className="h-14 w-auto" />
+              <Image src="/redi-logo.png" alt="REDI" width={60} height={60} className="h-14 w-auto" />
               <p className="text-sm text-charcoal/60">
-                A <strong className="text-charcoal">REDI</strong> initiative — Roma Entrepreneurship Development Initiative
+                Supported by <strong className="text-charcoal">REDI</strong> — Roma Entrepreneurship Development Initiative
               </p>
             </div>
           </div>
