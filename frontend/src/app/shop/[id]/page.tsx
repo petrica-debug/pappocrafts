@@ -14,7 +14,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const { id } = use(params);
   const product = getProduct(id);
   const { addItem } = useCart();
-  const { t, formatPrice } = useLocale();
+  const { t, formatRegionalPrice } = useLocale();
 
   if (!product) notFound();
 
@@ -67,7 +67,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 {t("product.handcraftedBy")} <strong className="text-charcoal">{product.artisan}</strong>
               </p>
 
-              <p className="mt-6 text-3xl font-bold text-green">{formatPrice(product.price)}</p>
+              <p className="mt-6 text-3xl font-bold text-green">{formatRegionalPrice(product.price)}</p>
 
               <p className="mt-6 text-charcoal/70 leading-relaxed">{product.longDescription}</p>
 
@@ -134,7 +134,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <div className="p-4">
                       <h3 className="font-semibold text-charcoal group-hover:text-green transition-colors">{p.name}</h3>
                       <p className="text-xs text-charcoal/50 mt-0.5">{t("shop.by")} {p.artisan} &middot; {p.country}</p>
-                      <p className="mt-2 text-lg font-bold text-green">{formatPrice(p.price)}</p>
+                      <p className="mt-2 text-lg font-bold text-green">{formatRegionalPrice(p.price)}</p>
                     </div>
                   </Link>
                 ))}

@@ -18,7 +18,7 @@ function ShopContent() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
   const { addItem } = useCart();
-  const { t, formatPrice } = useLocale();
+  const { t, formatRegionalPrice } = useLocale();
 
   const filtered = useMemo(() => {
     let result = products;
@@ -121,7 +121,7 @@ function ShopContent() {
                         </p>
                       </div>
                       <p className="text-lg font-bold text-green whitespace-nowrap">
-                        {formatPrice(product.price)}
+                        {formatRegionalPrice(product.price)}
                       </p>
                     </div>
                     <p className="mt-2 text-sm text-charcoal/60 line-clamp-2">{product.description}</p>

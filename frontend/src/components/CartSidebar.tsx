@@ -7,7 +7,7 @@ import { useLocale } from "@/lib/locale-context";
 
 export default function CartSidebar() {
   const { items, removeItem, updateQuantity, totalPrice, isCartOpen, setIsCartOpen } = useCart();
-  const { t, formatPrice } = useLocale();
+  const { t, formatRegionalPrice, getRegionalEurPrice } = useLocale();
 
   if (!isCartOpen) return null;
 
@@ -58,7 +58,7 @@ export default function CartSidebar() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-charcoal truncate">{item.product.name}</h3>
-                      <p className="text-sm text-green font-semibold mt-0.5">{formatPrice(item.product.price)}</p>
+                      <p className="text-sm text-green font-semibold mt-0.5">{formatRegionalPrice(item.product.price)}</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
@@ -92,7 +92,7 @@ export default function CartSidebar() {
             <div className="border-t border-charcoal/10 px-6 py-4">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm text-charcoal/60">{t("cart.subtotal")}</span>
-                <span className="text-lg font-semibold text-charcoal">{formatPrice(totalPrice)}</span>
+                <span className="text-lg font-semibold text-charcoal">{formatRegionalPrice(totalPrice)}</span>
               </div>
               <Link
                 href="/checkout"

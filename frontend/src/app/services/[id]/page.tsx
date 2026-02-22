@@ -17,7 +17,7 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
   const [bookingTime, setBookingTime] = useState("");
   const [bookingMessage, setBookingMessage] = useState("");
   const [bookingStatus, setBookingStatus] = useState<"idle" | "sent">("idle");
-  const { t, formatPrice } = useLocale();
+  const { t, formatRegionalPrice } = useLocale();
 
   if (!provider) notFound();
 
@@ -112,11 +112,11 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                   <div className="text-sm text-charcoal/50 mb-1">{t("service.startingFrom")}</div>
                   <div className="flex items-baseline justify-center gap-2">
                     {provider.hourlyRate > 0 && (
-                      <span className="text-3xl font-bold text-green">{formatPrice(provider.hourlyRate)}<span className="text-base font-normal text-charcoal/50">{t("services.perHour")}</span></span>
+                      <span className="text-3xl font-bold text-green">{formatRegionalPrice(provider.hourlyRate)}<span className="text-base font-normal text-charcoal/50">{t("services.perHour")}</span></span>
                     )}
                   </div>
                   {provider.fixedRateFrom && (
-                    <p className="text-sm text-charcoal/50 mt-1">{t("service.fixedFrom")} {formatPrice(provider.fixedRateFrom)}</p>
+                    <p className="text-sm text-charcoal/50 mt-1">{t("service.fixedFrom")} {formatRegionalPrice(provider.fixedRateFrom)}</p>
                   )}
                 </div>
 
@@ -241,7 +241,7 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                     <p className="mt-2 text-sm text-charcoal/60 line-clamp-2">{p.description}</p>
                     <div className="mt-3 flex items-center justify-between text-sm">
                       <span className="font-bold text-green">
-                        {p.hourlyRate > 0 ? `${formatPrice(p.hourlyRate)}${t("services.perHour")}` : `${t("services.from")} ${formatPrice(p.fixedRateFrom!)}`}
+                        {p.hourlyRate > 0 ? `${formatRegionalPrice(p.hourlyRate)}${t("services.perHour")}` : `${t("services.from")} ${formatRegionalPrice(p.fixedRateFrom!)}`}
                       </span>
                       <span className="flex items-center gap-1 text-xs text-charcoal/40">
                         <svg className="h-3.5 w-3.5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">

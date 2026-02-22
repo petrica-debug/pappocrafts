@@ -10,9 +10,16 @@ import { useLocale } from "@/lib/locale-context";
 
 export default function CheckoutPage() {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
-  const { t, formatPrice } = useLocale();
+  const { t, formatPrice, formatRegionalPrice, getRegionalEurPrice, getShippingCost, shippingEstimate, regionLabel } = useLocale();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const regionalTotal = items.reduce(
+    (sum, item) => sum + getRegionalEurPrice(item.product.price) * item.quantity,
+    0
+  );
+  const shipping = getShippingCost(regionalTotal);
+  const grandTotal = regionalTotal + shipping.cost;
 
   async function handleCheckout() {
     setLoading(true);
@@ -26,7 +33,7 @@ export default function CheckoutPage() {
           items: items.map((item) => ({
             id: item.product.id,
             name: item.product.name,
-            price: item.product.price,
+            price: getRegionalEurPrice(item.product.price),
             quantity: item.quantity,
             image: item.product.image,
           })),
@@ -46,8 +53,6 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   }
-
-  const shippingCost = totalPrice >= 75 ? 0 : 5;
 
   return (
     <>
@@ -104,7 +109,7 @@ export default function CheckoutPage() {
                             {t("checkout.remove")}
                           </button>
                         </div>
-                        <p className="text-lg font-bold text-green">{formatPrice(item.product.price * item.quantity)}</p>
+                        <p className="text-lg font-bold text-green">{formatRegionalPrice(item.product.price * item.quantity)}</p>
                       </div>
                     </div>
                   </div>
@@ -112,21 +117,38 @@ export default function CheckoutPage() {
               </div>
 
               <div className="bg-white rounded-2xl border border-charcoal/5 p-6 h-fit sticky top-24">
-                <h2 className="font-semibold text-charcoal mb-4">{t("checkout.title")}</h2>
+                <h2 className="font-semibold text-charcoal mb-1">{t("checkout.title")}</h2>
+                <p className="text-xs text-charcoal/40 mb-4">
+                  Shipping to: {regionLabel}
+                </p>
+
                 <div className="space-y-3 border-b border-charcoal/10 pb-4 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal/60">{t("checkout.subtotal")}</span>
-                    <span className="text-charcoal">{formatPrice(totalPrice)}</span>
+                    <span className="text-charcoal">{formatPrice(regionalTotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-charcoal/60">{t("checkout.shipping")}</span>
-                    <span className="text-green font-medium">{shippingCost === 0 ? t("checkout.shippingFree") : formatPrice(5)}</span>
+                    <span className="text-green font-medium">
+                      {shipping.isFree ? t("checkout.shippingFree") : formatPrice(shipping.cost)}
+                    </span>
+                  </div>
+                  {!shipping.isFree && shipping.freeAbove !== null && (
+                    <p className="text-xs text-charcoal/40">
+                      Free shipping on orders over {formatPrice(shipping.freeAbove)}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-1.5 text-xs text-charcoal/40">
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25m-2.25 0h-2.25m0 0v6.75m0-6.75H5.625" />
+                    </svg>
+                    Est. {shippingEstimate}
                   </div>
                 </div>
                 <div className="flex justify-between items-center mb-6">
                   <span className="font-semibold text-charcoal">{t("checkout.total")}</span>
                   <span className="text-2xl font-bold text-charcoal">
-                    {formatPrice(totalPrice + shippingCost)}
+                    {formatPrice(grandTotal)}
                   </span>
                 </div>
 

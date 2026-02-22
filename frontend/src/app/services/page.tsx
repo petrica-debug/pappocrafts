@@ -15,7 +15,7 @@ function ServicesContent() {
   const initialCategory = searchParams.get("category") || "All";
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
-  const { t, formatPrice } = useLocale();
+  const { t, formatRegionalPrice } = useLocale();
 
   const filtered = useMemo(() => {
     let result = serviceProviders;
@@ -130,11 +130,11 @@ function ServicesContent() {
                     <div className="mt-4 flex items-center justify-between">
                       <div className="text-sm">
                         {provider.hourlyRate > 0 && (
-                          <span className="font-bold text-green">{formatPrice(provider.hourlyRate)}{t("services.perHour")}</span>
+                          <span className="font-bold text-green">{formatRegionalPrice(provider.hourlyRate)}{t("services.perHour")}</span>
                         )}
                         {provider.fixedRateFrom && (
                           <span className={`text-charcoal/50 ${provider.hourlyRate > 0 ? "ml-2" : ""}`}>
-                            {provider.hourlyRate > 0 ? `${t("services.from")} ` : ""}{t("services.from")} {formatPrice(provider.fixedRateFrom)}
+                            {provider.hourlyRate > 0 ? `${t("services.from")} ` : ""}{t("services.from")} {formatRegionalPrice(provider.fixedRateFrom)}
                           </span>
                         )}
                       </div>
