@@ -62,7 +62,7 @@ export const products: Product[] = [
     category: "Jewelry & Metalwork",
     artisan: "Elena V.",
     country: "North Macedonia",
-    image: "https://images.unsplash.com/photo-1515562141589-67f0d569b6f5?w=600&h=600&fit=crop",
+    image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=600&h=600&fit=crop",
     tags: ["silver", "filigree", "jewelry"],
     inStock: true,
   },
