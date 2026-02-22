@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { addOrder, type StoredOrder } from "@/lib/admin-store";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -240,6 +241,25 @@ export async function POST(request: NextRequest) {
     }
 
     const orderId = generateOrderId();
+
+    const storedOrder: StoredOrder = {
+      id: orderId,
+      customer: order.customer,
+      items: order.items,
+      subtotal: order.subtotal,
+      shippingCost: order.shippingCost,
+      total: order.total,
+      paymentMethod: order.paymentMethod,
+      paymentStatus: order.paymentMethod === "online" ? "paid" : "pending",
+      status: "pending",
+      region: order.region,
+      shippingZone: order.shippingZone,
+      currency: order.currency,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    addOrder(storedOrder);
+
     const resend = getResend();
 
     if (resend) {
