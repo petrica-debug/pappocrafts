@@ -122,6 +122,95 @@ function buildEmailHtml(order: OrderPayload, orderId: string): string {
 </html>`;
 }
 
+function buildCustomerEmailHtml(order: OrderPayload, orderId: string): string {
+  const itemRows = order.items
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;">${item.name}<br><span style="color:#888;font-size:12px;">by ${item.artisan}</span></td>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">${item.quantity}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;text-align:right;font-weight:500;">&euro;${(item.price * item.quantity).toFixed(2)}</td>
+      </tr>`
+    )
+    .join("");
+
+  const paymentNote =
+    order.paymentMethod === "online"
+      ? `<p style="color:#4A9B3F;font-weight:600;">Payment received online via Stripe. No further action needed.</p>`
+      : `<div style="background:#FFF8F0;border:1px solid #F5DEB3;border-radius:8px;padding:16px;margin:16px 0;">
+          <p style="margin:0 0 4px;font-weight:600;color:#E67E22;">Payment: Pay Later</p>
+          <p style="margin:0;color:#666;font-size:13px;">Our team will contact you shortly with payment details. You can pay by cash on delivery or bank transfer.</p>
+        </div>`;
+
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#2D2D2D;max-width:640px;margin:0 auto;padding:20px;background:#ffffff;">
+  <div style="text-align:center;padding:28px 0;border-bottom:2px solid #4A9B3F;">
+    <h1 style="margin:0;color:#4A9B3F;font-size:28px;">PappoCrafts</h1>
+    <p style="margin:8px 0 0;color:#666;font-size:14px;">Handcrafted with Heart &amp; Heritage</p>
+  </div>
+
+  <div style="padding:32px 0 24px;text-align:center;">
+    <div style="display:inline-block;background:#E8F5E6;border-radius:50%;width:60px;height:60px;line-height:60px;font-size:28px;margin-bottom:16px;">&#10003;</div>
+    <h2 style="margin:0 0 8px;font-size:22px;color:#2D2D2D;">Thank you for your order, ${order.customer.name.split(" ")[0]}!</h2>
+    <p style="margin:0;color:#888;font-size:14px;">We have received your order and our team will be in touch soon.</p>
+  </div>
+
+  <div style="background:#f9faf9;border-radius:8px;padding:16px;margin:0 0 24px;">
+    <table style="width:100%;font-size:14px;">
+      <tr><td style="padding:4px 0;color:#888;">Order Number</td><td style="padding:4px 0;font-weight:700;font-size:15px;font-family:monospace;">${orderId}</td></tr>
+      <tr><td style="padding:4px 0;color:#888;">Date</td><td style="padding:4px 0;">${new Date().toLocaleString("en-GB", { dateStyle: "long", timeStyle: "short" })}</td></tr>
+    </table>
+  </div>
+
+  ${paymentNote}
+
+  <h3 style="font-size:15px;margin:24px 0 8px;color:#2D2D2D;">Your Items</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:14px;">
+    <thead>
+      <tr style="background:#f5f5f5;">
+        <th style="padding:10px 12px;text-align:left;font-weight:600;">Product</th>
+        <th style="padding:10px 12px;text-align:center;font-weight:600;">Qty</th>
+        <th style="padding:10px 12px;text-align:right;font-weight:600;">Price</th>
+      </tr>
+    </thead>
+    <tbody>${itemRows}</tbody>
+  </table>
+
+  <div style="margin-top:16px;padding:16px;background:#f9faf9;border-radius:8px;font-size:14px;">
+    <table style="width:100%;">
+      <tr><td style="padding:4px 0;color:#888;">Subtotal</td><td style="padding:4px 0;text-align:right;">&euro;${order.subtotal.toFixed(2)}</td></tr>
+      <tr><td style="padding:4px 0;color:#888;">Shipping</td><td style="padding:4px 0;text-align:right;">${order.shippingCost === 0 ? '<span style="color:#4A9B3F;font-weight:500;">FREE</span>' : `&euro;${order.shippingCost.toFixed(2)}`}</td></tr>
+      <tr><td style="padding:10px 0 4px;font-weight:700;font-size:17px;border-top:2px solid #4A9B3F;">Total</td><td style="padding:10px 0 4px;text-align:right;font-weight:700;font-size:17px;border-top:2px solid #4A9B3F;">&euro;${order.total.toFixed(2)}</td></tr>
+    </table>
+  </div>
+
+  <h3 style="font-size:15px;margin:24px 0 8px;color:#2D2D2D;">Shipping To</h3>
+  <div style="background:#f9faf9;border-radius:8px;padding:16px;font-size:14px;color:#555;">
+    <p style="margin:0;font-weight:600;color:#2D2D2D;">${order.customer.name}</p>
+    <p style="margin:4px 0 0;">${order.customer.address}</p>
+    <p style="margin:2px 0 0;">${order.customer.city}${order.customer.postalCode ? ` ${order.customer.postalCode}` : ""}</p>
+    <p style="margin:2px 0 0;">${order.customer.country}</p>
+  </div>
+
+  <div style="margin-top:32px;padding:24px;background:#f0f7ef;border-radius:8px;text-align:center;">
+    <p style="margin:0 0 8px;font-weight:600;color:#2D2D2D;">Questions about your order?</p>
+    <p style="margin:0;font-size:14px;color:#666;">
+      Email us at <a href="mailto:petrica@redi-ngo.eu" style="color:#4A9B3F;font-weight:600;">petrica@redi-ngo.eu</a>
+      and include your order number <strong>${orderId}</strong>.
+    </p>
+  </div>
+
+  <div style="margin-top:32px;padding-top:20px;border-top:1px solid #eee;text-align:center;">
+    <p style="color:#888;font-size:13px;margin:0 0 4px;">Your purchase supports Roma artisans in the Western Balkans.</p>
+    <p style="color:#aaa;font-size:12px;margin:0;">&copy; ${new Date().getFullYear()} PappoCrafts. All rights reserved.</p>
+  </div>
+</body>
+</html>`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const order = (await request.json()) as OrderPayload;
@@ -154,20 +243,29 @@ export async function POST(request: NextRequest) {
     const resend = getResend();
 
     if (resend) {
-      await resend.emails.send({
-        from: "PappoCrafts Orders <onboarding@resend.dev>",
-        to: ["petrica@redi-ngo.eu"],
-        replyTo: order.customer.email,
-        subject: `New Order ${orderId} — ${order.customer.name} (${order.paymentMethod === "online" ? "Paid Online" : "Pay Later"})`,
-        html: buildEmailHtml(order, orderId),
-      });
+      await Promise.allSettled([
+        resend.emails.send({
+          from: "PappoCrafts Orders <onboarding@resend.dev>",
+          to: ["petrica@redi-ngo.eu"],
+          replyTo: order.customer.email,
+          subject: `New Order ${orderId} — ${order.customer.name} (${order.paymentMethod === "online" ? "Paid Online" : "Pay Later"})`,
+          html: buildEmailHtml(order, orderId),
+        }),
+        resend.emails.send({
+          from: "PappoCrafts <onboarding@resend.dev>",
+          to: [order.customer.email],
+          replyTo: "petrica@redi-ngo.eu",
+          subject: `Order Confirmed — ${orderId}`,
+          html: buildCustomerEmailHtml(order, orderId),
+        }),
+      ]);
     }
 
     return NextResponse.json({
       success: true,
       orderId,
       message: resend
-        ? "Order placed and notification sent."
+        ? "Order placed and confirmations sent."
         : "Order placed. (Email not configured — add RESEND_API_KEY)",
     });
   } catch (err) {
