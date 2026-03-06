@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/lib/cart-context";
@@ -107,6 +108,14 @@ export default function CheckoutPage() {
         }
       }
 
+      if (posthog.__loaded) {
+        posthog.capture("purchase_completed", {
+          order_id: data.orderId,
+          total: totalPrice,
+          item_count: items.length,
+          payment_method: paymentMethod,
+        });
+      }
       clearCart();
       router.push(`/checkout/success?order=${data.orderId}&method=${paymentMethod}`);
     } catch {
@@ -117,6 +126,9 @@ export default function CheckoutPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (posthog.__loaded) {
+      posthog.capture("checkout_started", { item_count: items.length, total: totalPrice });
+    }
     setTouched({ name: true, email: true, phone: true, address: true, city: true, country: true });
     if (!formValid) return;
     submitOrder();

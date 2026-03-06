@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import posthog from "posthog-js";
 import type { Product } from "./products";
 
 export interface CartItem {
@@ -39,9 +40,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, { product, quantity }];
     });
     setIsCartOpen(true);
+    if (posthog.__loaded) {
+      posthog.capture("add_to_cart", {
+        product_id: product.id,
+        product_name: product.name,
+        price: product.price,
+        quantity,
+      });
+    }
   }, []);
 
   const removeItem = useCallback((productId: string) => {
+    if (posthog.__loaded) posthog.capture("remove_from_cart", { product_id: productId });
     setItems((prev) => prev.filter((item) => item.product.id !== productId));
   }, []);
 
