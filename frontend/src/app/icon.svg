@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#FAFAF8"/>
+  <!-- Stylized "P" from PappoCrafts logo: vertical lines + horizontal stripes -->
+  <g stroke="#9B7B73" stroke-linecap="round" fill="none">
+    <!-- Vertical lines of P stem -->
+    <line x1="16" y1="12" x2="16" y2="44" stroke-width="3.5"/>
+    <line x1="22" y1="12" x2="22" y2="44" stroke-width="3.5"/>
+    <!-- Horizontal stripes of P bowl -->
+    <line x1="22" y1="13" x2="40" y2="13" stroke-width="2.5"/>
+    <line x1="22" y1="17.5" x2="43" y2="17.5" stroke-width="2.5"/>
+    <line x1="22" y1="22" x2="43" y2="22" stroke-width="2.5"/>
+    <line x1="22" y1="26.5" x2="40" y2="26.5" stroke-width="2.5"/>
+    <line x1="22" y1="31" x2="35" y2="31" stroke-width="2.5"/>
+    <!-- Curved right side of P -->
+    <path d="M40 13 C50 13 50 31 35 31" stroke-width="2.5" fill="none"/>
+  </g>
+  <!-- "crafts" accent line -->
+  <line x1="12" y1="50" x2="52" y2="50" stroke="#6BB5A0" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="32" y="58" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="9" fill="#6BB5A0">crafts</text>
+</svg>

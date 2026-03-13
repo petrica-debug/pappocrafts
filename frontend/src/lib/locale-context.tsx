@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from "react";
 import { translations, type Locale, type TranslationKey } from "./translations";
 import {
   getRegionForLocale,
@@ -13,38 +13,64 @@ import {
   type ShippingZone,
 } from "./pricing";
 
-export type CurrencyCode = "EUR" | "RSD" | "ALL" | "BAM" | "MKD" | "TRY";
+export type CurrencyCode = "EUR" | "USD" | "GBP" | "RSD" | "ALL" | "BAM" | "MKD" | "TRY" | "CHF";
 
 interface LocaleConfig {
   code: Locale;
   name: string;
   flag: string;
-  currency: CurrencyCode;
-  currencySymbol: string;
-  exchangeRate: number;
+  defaultCurrency: CurrencyCode;
 }
 
-export const locales: LocaleConfig[] = [
-  { code: "en", name: "English", flag: "🇬🇧", currency: "EUR", currencySymbol: "€", exchangeRate: 1 },
-  { code: "sr", name: "Srpski", flag: "🇷🇸", currency: "RSD", currencySymbol: "RSD", exchangeRate: 117.2 },
-  { code: "sq", name: "Shqip", flag: "🇦🇱", currency: "ALL", currencySymbol: "L", exchangeRate: 100.5 },
-  { code: "bs", name: "Bosanski", flag: "🇧🇦", currency: "BAM", currencySymbol: "KM", exchangeRate: 1.956 },
-  { code: "mk", name: "Македонски", flag: "🇲🇰", currency: "MKD", currencySymbol: "ден", exchangeRate: 61.5 },
-  { code: "cnr", name: "Crnogorski", flag: "🇲🇪", currency: "EUR", currencySymbol: "€", exchangeRate: 1 },
-  { code: "tr", name: "Türkçe", flag: "🇹🇷", currency: "TRY", currencySymbol: "₺", exchangeRate: 38.5 },
+export interface CurrencyConfig {
+  code: CurrencyCode;
+  symbol: string;
+  name: string;
+  flag: string;
+  symbolPosition: "before" | "after";
+  decimals: number;
+}
+
+export const currencies: CurrencyConfig[] = [
+  { code: "EUR", symbol: "€", name: "Euro", flag: "🇪🇺", symbolPosition: "before", decimals: 2 },
+  { code: "USD", symbol: "$", name: "US Dollar", flag: "🇺🇸", symbolPosition: "before", decimals: 2 },
+  { code: "GBP", symbol: "£", name: "British Pound", flag: "🇬🇧", symbolPosition: "before", decimals: 2 },
+  { code: "CHF", symbol: "CHF", name: "Swiss Franc", flag: "🇨🇭", symbolPosition: "before", decimals: 2 },
+  { code: "RSD", symbol: "RSD", name: "Serbian Dinar", flag: "🇷🇸", symbolPosition: "after", decimals: 0 },
+  { code: "ALL", symbol: "L", name: "Albanian Lek", flag: "🇦🇱", symbolPosition: "after", decimals: 0 },
+  { code: "BAM", symbol: "KM", name: "Bosnian Mark", flag: "🇧🇦", symbolPosition: "after", decimals: 2 },
+  { code: "MKD", symbol: "ден", name: "Macedonian Denar", flag: "🇲🇰", symbolPosition: "after", decimals: 0 },
+  { code: "TRY", symbol: "₺", name: "Turkish Lira", flag: "🇹🇷", symbolPosition: "before", decimals: 2 },
 ];
+
+export const locales: LocaleConfig[] = [
+  { code: "en", name: "English", flag: "🇬🇧", defaultCurrency: "EUR" },
+  { code: "sr", name: "Srpski", flag: "🇷🇸", defaultCurrency: "RSD" },
+  { code: "sq", name: "Shqip", flag: "🇦🇱", defaultCurrency: "ALL" },
+  { code: "bs", name: "Bosanski", flag: "🇧🇦", defaultCurrency: "BAM" },
+  { code: "mk", name: "Македонски", flag: "🇲🇰", defaultCurrency: "MKD" },
+  { code: "cnr", name: "Crnogorski", flag: "🇲🇪", defaultCurrency: "EUR" },
+  { code: "tr", name: "Türkçe", flag: "🇹🇷", defaultCurrency: "TRY" },
+];
+
+const FALLBACK_RATES: Record<string, number> = {
+  EUR: 1, USD: 1.08, GBP: 0.86, RSD: 117.2, ALL: 100.5,
+  BAM: 1.956, MKD: 61.5, TRY: 38.5, CHF: 0.97,
+};
 
 interface LocaleContextValue {
   locale: Locale;
   localeConfig: LocaleConfig;
   setLocale: (locale: Locale) => void;
   t: (key: TranslationKey) => string;
-  formatPrice: (eurPrice: number) => string;
-  /** Applies regional multiplier then formats in local currency */
-  formatRegionalPrice: (eurBasePrice: number) => string;
-  /** Returns the regional EUR price (with multiplier applied) */
-  getRegionalEurPrice: (eurBasePrice: number) => number;
   currency: CurrencyCode;
+  currencyConfig: CurrencyConfig;
+  setCurrency: (code: CurrencyCode) => void;
+  exchangeRates: Record<string, number>;
+  ratesSource: "loading" | "live" | "fallback" | "cached";
+  formatPrice: (eurPrice: number) => string;
+  formatRegionalPrice: (eurBasePrice: number) => string;
+  getRegionalEurPrice: (eurBasePrice: number) => number;
   currencySymbol: string;
   region: PricingRegion;
   shippingZone: ShippingZone;
@@ -57,18 +83,74 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en");
+  const [currency, setCurrencyState] = useState<CurrencyCode>("EUR");
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>(FALLBACK_RATES);
+  const [ratesSource, setRatesSource] = useState<"loading" | "live" | "fallback" | "cached">("loading");
 
   const localeConfig = locales.find((l) => l.code === locale) || locales[0];
+  const currencyConfig = currencies.find((c) => c.code === currency) || currencies[0];
   const region = getRegionForLocale(locale);
   const shippingZone = getShippingZoneForLocale(locale);
   const regionConfig = getRegionConfig(region);
   const shippingRate = getShippingRate(shippingZone);
 
+  // Fetch live exchange rates on mount
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRates() {
+      try {
+        const res = await fetch("/api/exchange-rates");
+        if (!res.ok) throw new Error("Failed");
+        const data = await res.json();
+        if (!cancelled && data.rates) {
+          setExchangeRates(data.rates);
+          setRatesSource(data.source === "live" ? "live" : data.source === "cached" ? "cached" : "fallback");
+        }
+      } catch {
+        if (!cancelled) {
+          setExchangeRates(FALLBACK_RATES);
+          setRatesSource("fallback");
+        }
+      }
+    }
+
+    loadRates();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Restore saved preferences from localStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const savedLocale = localStorage.getItem("pappocrafts-locale") as Locale | null;
+    const savedCurrency = localStorage.getItem("pappocrafts-currency") as CurrencyCode | null;
+    if (savedLocale && locales.some((l) => l.code === savedLocale)) {
+      setLocaleState(savedLocale);
+      if (!savedCurrency) {
+        const lc = locales.find((l) => l.code === savedLocale);
+        if (lc) setCurrencyState(lc.defaultCurrency);
+      }
+    }
+    if (savedCurrency && currencies.some((c) => c.code === savedCurrency)) {
+      setCurrencyState(savedCurrency);
+    }
+  }, []);
+
   const setLocale = useCallback((code: Locale) => {
     setLocaleState(code);
+    const lc = locales.find((l) => l.code === code);
+    if (lc) setCurrencyState(lc.defaultCurrency);
     if (typeof window !== "undefined") {
       localStorage.setItem("pappocrafts-locale", code);
+      if (lc) localStorage.setItem("pappocrafts-currency", lc.defaultCurrency);
       document.documentElement.lang = code === "cnr" ? "sr-ME" : code;
+    }
+  }, []);
+
+  const setCurrency = useCallback((code: CurrencyCode) => {
+    setCurrencyState(code);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pappocrafts-currency", code);
     }
   }, []);
 
@@ -81,22 +163,18 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   const formatCurrency = useCallback(
     (eurAmount: number): string => {
-      const converted = eurAmount * localeConfig.exchangeRate;
-      if (localeConfig.currency === "EUR") {
-        return `€${converted.toFixed(2)}`;
-      }
-      if (localeConfig.currency === "RSD" || localeConfig.currency === "ALL" || localeConfig.currency === "MKD") {
-        return `${Math.round(converted).toLocaleString()} ${localeConfig.currencySymbol}`;
-      }
-      if (localeConfig.currency === "BAM") {
-        return `${converted.toFixed(2)} ${localeConfig.currencySymbol}`;
-      }
-      if (localeConfig.currency === "TRY") {
-        return `${localeConfig.currencySymbol}${converted.toFixed(2)}`;
-      }
-      return `${localeConfig.currencySymbol}${converted.toFixed(2)}`;
+      const rate = exchangeRates[currency] || FALLBACK_RATES[currency] || 1;
+      const converted = eurAmount * rate;
+
+      const formatted = currencyConfig.decimals === 0
+        ? Math.round(converted).toLocaleString()
+        : converted.toFixed(currencyConfig.decimals);
+
+      return currencyConfig.symbolPosition === "before"
+        ? `${currencyConfig.symbol}${formatted}`
+        : `${formatted} ${currencyConfig.symbol}`;
     },
-    [localeConfig]
+    [currency, currencyConfig, exchangeRates]
   );
 
   const formatPrice = formatCurrency;
@@ -126,18 +204,22 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       localeConfig,
       setLocale,
       t,
+      currency,
+      currencyConfig,
+      setCurrency,
+      exchangeRates,
+      ratesSource,
       formatPrice,
       formatRegionalPrice,
       getRegionalEurPrice,
-      currency: localeConfig.currency,
-      currencySymbol: localeConfig.currencySymbol,
+      currencySymbol: currencyConfig.symbol,
       region,
       shippingZone,
       regionLabel: regionConfig.label,
       getShippingCost,
       shippingEstimate: shippingRate.estimatedDays,
     }),
-    [locale, localeConfig, setLocale, t, formatPrice, formatRegionalPrice, getRegionalEurPrice, region, shippingZone, regionConfig, getShippingCost, shippingRate]
+    [locale, localeConfig, setLocale, t, currency, currencyConfig, setCurrency, exchangeRates, ratesSource, formatPrice, formatRegionalPrice, getRegionalEurPrice, region, shippingZone, regionConfig, getShippingCost, shippingRate]
   );
 
   return (

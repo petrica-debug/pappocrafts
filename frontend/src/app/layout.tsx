@@ -21,6 +21,10 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pappo.org"),
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon" }],
+  },
   title: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
   description:
     "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans. Pottery, textiles, jewelry, woodwork, and more — each piece tells a story.",

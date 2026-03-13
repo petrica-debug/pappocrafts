@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
-import { useLocale, locales } from "@/lib/locale-context";
+import { useLocale, locales, currencies } from "@/lib/locale-context";
 import { useSiteSettings } from "@/lib/site-settings-context";
 import CartSidebar from "./CartSidebar";
 
@@ -40,21 +40,19 @@ function LanguageSelector({ variant }: { variant: "desktop" | "mobile" }) {
             ? "flex items-center gap-1.5 rounded-full border border-charcoal/10 px-3 py-1.5 text-xs font-medium text-charcoal/70 hover:border-green/30 hover:text-charcoal transition-all"
             : "flex items-center gap-1 p-2 text-charcoal"
         }
+        title="Change language"
       >
         <span className={variant === "desktop" ? "text-base leading-none" : "text-lg"}>
           {localeConfig.flag}
         </span>
         {variant === "desktop" && (
-          <>
-            <span>{localeConfig.currency}</span>
-            <svg className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
-          </>
+          <svg className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
+        <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
           {locales.map((l) => (
             <button
               key={l.code}
@@ -67,7 +65,71 @@ function LanguageSelector({ variant }: { variant: "desktop" | "mobile" }) {
             >
               <span className="text-lg">{l.flag}</span>
               <span className="flex-1 text-left">{l.name}</span>
-              <span className="text-xs text-charcoal/40">{l.currency}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CurrencySelector({ variant }: { variant: "desktop" | "mobile" }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { currency, setCurrency, currencyConfig, ratesSource } = useLocale();
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={
+          variant === "desktop"
+            ? "flex items-center gap-1.5 rounded-full border border-charcoal/10 px-3 py-1.5 text-xs font-medium text-charcoal/70 hover:border-green/30 hover:text-charcoal transition-all"
+            : "flex items-center gap-1 px-2 py-1 text-xs font-medium text-charcoal/70 border border-charcoal/10 rounded-full"
+        }
+        title="Change currency"
+      >
+        <span className="text-xs font-semibold">{currencyConfig.symbol}</span>
+        {variant === "desktop" && (
+          <>
+            <span>{currency}</span>
+            <svg className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </>
+        )}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-charcoal/10 bg-white py-1.5 shadow-xl z-50">
+          <div className="px-4 py-2 border-b border-charcoal/5">
+            <p className="text-[10px] font-semibold text-charcoal/30 uppercase tracking-wider">Currency</p>
+            {ratesSource === "live" && (
+              <p className="text-[9px] text-green/60 mt-0.5">Live ECB rates</p>
+            )}
+          </div>
+          {currencies.map((c) => (
+            <button
+              key={c.code}
+              onClick={() => { setCurrency(c.code); setOpen(false); }}
+              className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                currency === c.code
+                  ? "bg-green/5 text-green font-medium"
+                  : "text-charcoal/70 hover:bg-light-dark"
+              }`}
+            >
+              <span className="text-base">{c.flag}</span>
+              <span className="flex-1 text-left">{c.name}</span>
+              <span className="text-xs text-charcoal/40 font-mono">{c.symbol}</span>
             </button>
           ))}
         </div>
@@ -106,7 +168,10 @@ export default function Navbar() {
                 {t("nav.howItWorks")}
               </Link>
 
-              <LanguageSelector variant="desktop" />
+              <div className="flex items-center gap-1.5">
+                <CurrencySelector variant="desktop" />
+                <LanguageSelector variant="desktop" />
+              </div>
 
               <Link
                 href={loggedIn ? "/account" : "/login"}
@@ -141,6 +206,7 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
+              <CurrencySelector variant="mobile" />
               <LanguageSelector variant="mobile" />
               <Link href={loggedIn ? "/account" : "/login"} className="p-2 text-charcoal" aria-label="Account">
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
