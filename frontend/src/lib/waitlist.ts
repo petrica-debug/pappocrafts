@@ -57,6 +57,6 @@ export async function addToWaitlist(
 
   return {
     success: true,
-    message: "Welcome aboard! You'll be the first to know when PappoCrafts launches.",
+    message: "Welcome aboard! You'll be the first to know when PappoShop launches.",
   };
 }

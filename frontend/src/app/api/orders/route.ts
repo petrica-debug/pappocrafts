@@ -75,7 +75,7 @@ function buildEmailHtml(order: OrderPayload, orderId: string): string {
 <head><meta charset="utf-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#2D2D2D;max-width:640px;margin:0 auto;padding:20px;">
   <div style="text-align:center;padding:24px 0;border-bottom:2px solid #4A9B3F;">
-    <h1 style="margin:0;color:#4A9B3F;font-size:24px;">PappoCrafts</h1>
+    <h1 style="margin:0;color:#4A9B3F;font-size:24px;">PappoShop</h1>
     <p style="margin:4px 0 0;color:#888;font-size:13px;">New Order Received</p>
   </div>
 
@@ -122,7 +122,7 @@ function buildEmailHtml(order: OrderPayload, orderId: string): string {
   </div>
 
   <div style="margin-top:32px;padding-top:16px;border-top:1px solid #eee;text-align:center;color:#aaa;font-size:12px;">
-    <p>This email was sent automatically by PappoCrafts.</p>
+    <p>This email was sent automatically by PappoShop.</p>
   </div>
 </body>
 </html>`;
@@ -160,7 +160,7 @@ function buildCustomerEmailHtml(order: OrderPayload, orderId: string): string {
 <head><meta charset="utf-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#2D2D2D;max-width:640px;margin:0 auto;padding:20px;background:#ffffff;">
   <div style="text-align:center;padding:28px 0;border-bottom:2px solid #4A9B3F;">
-    <h1 style="margin:0;color:#4A9B3F;font-size:28px;">PappoCrafts</h1>
+    <h1 style="margin:0;color:#4A9B3F;font-size:28px;">PappoShop</h1>
     <p style="margin:8px 0 0;color:#666;font-size:14px;">Handcrafted with Heart &amp; Heritage</p>
   </div>
 
@@ -218,7 +218,7 @@ function buildCustomerEmailHtml(order: OrderPayload, orderId: string): string {
 
   <div style="margin-top:32px;padding-top:20px;border-top:1px solid #eee;text-align:center;">
     <p style="color:#888;font-size:13px;margin:0 0 4px;">Your purchase supports Roma artisans in the Western Balkans.</p>
-    <p style="color:#aaa;font-size:12px;margin:0;">&copy; ${new Date().getFullYear()} PappoCrafts. All rights reserved.</p>
+    <p style="color:#aaa;font-size:12px;margin:0;">&copy; ${new Date().getFullYear()} PappoShop. All rights reserved.</p>
   </div>
 </body>
 </html>`;
@@ -277,14 +277,14 @@ export async function POST(request: NextRequest) {
     if (resend) {
       await Promise.allSettled([
         resend.emails.send({
-          from: "PappoCrafts Orders <onboarding@resend.dev>",
+          from: "PappoShop Orders <onboarding@resend.dev>",
           to: ["petrica@redi-ngo.eu", "lejla@redi-ngo.eu"],
           replyTo: order.customer.email,
           subject: `New Order ${orderId} — ${order.customer.name} (${order.paymentMethod === "online" ? "Paid Online" : "Pay Later"})`,
           html: buildEmailHtml(order, orderId),
         }),
         resend.emails.send({
-          from: "PappoCrafts <onboarding@resend.dev>",
+          from: "PappoShop <onboarding@resend.dev>",
           to: [order.customer.email],
           replyTo: "petrica@redi-ngo.eu",
           subject: `Order Confirmed — ${orderId}`,

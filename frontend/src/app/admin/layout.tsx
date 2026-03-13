@@ -110,7 +110,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
-          <span className="text-sm font-bold text-white">PappoCrafts Admin</span>
+          <span className="text-sm font-bold text-white">PappoShop Admin</span>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#4A9B3F] to-[#2D7A25] flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-[#4A9B3F]/20">P</div>
             <div>
-              <span className="text-sm font-bold text-white">PappoCrafts</span>
+              <span className="text-sm font-bold text-white">PappoShop</span>
               <span className="block text-[10px] text-white/30 -mt-0.5">Admin Panel</span>
             </div>
           </Link>

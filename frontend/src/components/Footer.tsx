@@ -15,7 +15,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div>
-            <Image src={logo_url} alt="PappoCrafts" width={140} height={42} className="h-10 w-auto brightness-0 invert" unoptimized />
+            <Image src={logo_url} alt="PappoShop" width={140} height={42} className="h-10 w-auto brightness-0 invert" unoptimized />
             <p className="mt-3 text-sm text-white/50 leading-relaxed max-w-xs">
               {footer_description || t("footer.desc")}
             </p>
@@ -54,7 +54,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-charcoal-light pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/40">&copy; {currentYear} PappoCrafts. All rights reserved.</p>
+          <p className="text-xs text-white/40">&copy; {currentYear} PappoShop. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="text-xs text-white/40 hover:text-white/60 transition-colors">{t("footer.privacy")}</a>
             <a href="#" className="text-xs text-white/40 hover:text-white/60 transition-colors">{t("footer.terms")}</a>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" rx="14" fill="#FAFAF8"/>
-  <!-- Stylized "P" from PappoCrafts logo: vertical lines + horizontal stripes -->
+  <!-- Stylized "P" from PappoShop logo: vertical lines + horizontal stripes -->
   <g stroke="#9B7B73" stroke-linecap="round" fill="none">
     <!-- Vertical lines of P stem -->
     <line x1="16" y1="12" x2="16" y2="44" stroke-width="3.5"/>
@@ -14,7 +14,7 @@
     <!-- Curved right side of P -->
     <path d="M40 13 C50 13 50 31 35 31" stroke-width="2.5" fill="none"/>
   </g>
-  <!-- "crafts" accent line -->
+  <!-- "shop" accent line -->
   <line x1="12" y1="50" x2="52" y2="50" stroke="#6BB5A0" stroke-width="2.5" stroke-linecap="round"/>
-  <text x="32" y="58" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="9" fill="#6BB5A0">crafts</text>
+  <text x="32" y="58" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="9" fill="#6BB5A0">shop</text>
 </svg>

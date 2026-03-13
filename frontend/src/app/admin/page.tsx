@@ -99,7 +99,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-sm text-white/40 mt-1">Welcome back. Here&apos;s what&apos;s happening with PappoCrafts.</p>
+          <p className="text-sm text-white/40 mt-1">Welcome back. Here&apos;s what&apos;s happening with PappoShop.</p>
         </div>
         <div className="hidden sm:flex items-center gap-2">
           <Link href="/admin/products" className="rounded-xl bg-[#4A9B3F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3D8234] transition-colors">

@@ -14,9 +14,11 @@ import { Suspense } from "react";
 function ShopContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "All";
+  const artisanFilter = searchParams.get("artisan") || "";
 
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
+  const [activeArtisan, setActiveArtisan] = useState(artisanFilter);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -46,6 +48,9 @@ function ShopContent() {
 
   const filtered = useMemo(() => {
     let result = products;
+    if (activeArtisan) {
+      result = result.filter((p) => p.artisan === activeArtisan);
+    }
     if (activeCategory !== "All") {
       result = result.filter((p) => p.category === activeCategory);
     }
@@ -60,7 +65,7 @@ function ShopContent() {
       );
     }
     return result;
-  }, [activeCategory, search, products]);
+  }, [activeCategory, activeArtisan, search, products]);
 
   return (
     <>
@@ -108,6 +113,23 @@ function ShopContent() {
               ))}
             </div>
           </div>
+
+          {activeArtisan && (
+            <div className="mb-8 flex items-center gap-3 rounded-xl bg-green/5 border border-green/10 px-5 py-3">
+              <svg className="h-5 w-5 text-green flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+              <p className="text-sm text-charcoal/70 flex-1">
+                Showing products by <strong className="text-charcoal">{activeArtisan}</strong>
+              </p>
+              <button
+                onClick={() => setActiveArtisan("")}
+                className="text-xs font-medium text-green hover:text-green-dark transition-colors"
+              >
+                Show all
+              </button>
+            </div>
+          )}
 
           {loading ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -168,7 +190,14 @@ function ShopContent() {
                           </h3>
                         </Link>
                         <p className="text-xs text-charcoal/50 mt-0.5">
-                          {t("shop.by")} {product.artisan} &middot; {product.country}
+                          {t("shop.by")}{" "}
+                          <button
+                            onClick={(e) => { e.preventDefault(); setActiveArtisan(product.artisan); }}
+                            className="font-medium text-charcoal/70 hover:text-green transition-colors"
+                          >
+                            {product.artisan}
+                          </button>
+                          {" "}&middot; {product.country}
                         </p>
                       </div>
                       <p className="text-lg font-bold text-green whitespace-nowrap">

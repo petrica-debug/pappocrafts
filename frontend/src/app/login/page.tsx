@@ -69,7 +69,7 @@ export default function LoginPage() {
             <Link href="/">
               <Image
                 src={logo_url}
-                alt="PappoCrafts"
+                alt="PappoShop"
                 width={180}
                 height={54}
                 className="h-12 w-auto mx-auto"
@@ -79,7 +79,7 @@ export default function LoginPage() {
             </Link>
             <h1 className="mt-6 text-2xl font-bold text-charcoal">Welcome back</h1>
             <p className="mt-2 text-sm text-charcoal/50">
-              Sign in to your PappoCrafts account
+              Sign in to your PappoShop account
             </p>
           </div>
 

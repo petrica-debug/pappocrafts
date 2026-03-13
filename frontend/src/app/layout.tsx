@@ -25,16 +25,16 @@ export const metadata: Metadata = {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/apple-icon" }],
   },
-  title: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
+  title: "PappoShop — Handmade by Roma Artisans in the Balkans",
   description:
     "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans. Pottery, textiles, jewelry, woodwork, and more — each piece tells a story.",
   keywords: [
     "handmade", "Roma artisans", "Balkans", "marketplace", "pottery",
     "textiles", "jewelry", "woodwork", "Western Balkans", "craftsmanship",
   ],
-  authors: [{ name: "PappoCrafts", url: "https://pappo.org" }],
-  creator: "PappoCrafts",
-  publisher: "PappoCrafts",
+  authors: [{ name: "PappoShop", url: "https://pappo.org" }],
+  creator: "PappoShop",
+  publisher: "PappoShop",
   alternates: {
     canonical: "https://pappo.org",
   },
@@ -47,23 +47,23 @@ export const metadata: Metadata = {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
   openGraph: {
-    title: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
+    title: "PappoShop — Handmade by Roma Artisans in the Balkans",
     description: "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans.",
     type: "website",
     locale: "en_US",
-    siteName: "PappoCrafts",
+    siteName: "PappoShop",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
+        alt: "PappoShop — Handmade by Roma Artisans in the Balkans",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PappoCrafts — Handmade by Roma Artisans in the Balkans",
+    title: "PappoShop — Handmade by Roma Artisans in the Balkans",
     description: "Discover unique handmade products crafted by Roma entrepreneurs across the Western Balkans.",
     images: ["/og-image.png"],
   },

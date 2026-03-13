@@ -46,7 +46,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-[#0F1117] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">PappoCrafts</h1>
+          <h1 className="text-2xl font-bold text-white">PappoShop</h1>
           <p className="text-sm text-white/40 mt-1">Admin Dashboard</p>
         </div>
 

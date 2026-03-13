@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PappoCrafts",
-    short_name: "PappoCrafts",
+    name: "PappoShop",
+    short_name: "PappoShop",
     description: "Handmade by Roma Artisans in the Balkans",
     start_url: "/",
     display: "standalone",

@@ -122,8 +122,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   // Restore saved preferences from localStorage
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const savedLocale = localStorage.getItem("pappocrafts-locale") as Locale | null;
-    const savedCurrency = localStorage.getItem("pappocrafts-currency") as CurrencyCode | null;
+    const savedLocale = (localStorage.getItem("papposhop-locale") || localStorage.getItem("pappocrafts-locale")) as Locale | null;
+    const savedCurrency = (localStorage.getItem("papposhop-currency") || localStorage.getItem("pappocrafts-currency")) as CurrencyCode | null;
     if (savedLocale && locales.some((l) => l.code === savedLocale)) {
       setLocaleState(savedLocale);
       if (!savedCurrency) {
@@ -141,8 +141,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     const lc = locales.find((l) => l.code === code);
     if (lc) setCurrencyState(lc.defaultCurrency);
     if (typeof window !== "undefined") {
-      localStorage.setItem("pappocrafts-locale", code);
-      if (lc) localStorage.setItem("pappocrafts-currency", lc.defaultCurrency);
+      localStorage.setItem("papposhop-locale", code);
+      if (lc) localStorage.setItem("papposhop-currency", lc.defaultCurrency);
       document.documentElement.lang = code === "cnr" ? "sr-ME" : code;
     }
   }, []);
@@ -150,7 +150,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const setCurrency = useCallback((code: CurrencyCode) => {
     setCurrencyState(code);
     if (typeof window !== "undefined") {
-      localStorage.setItem("pappocrafts-currency", code);
+      localStorage.setItem("papposhop-currency", code);
     }
   }, []);
 

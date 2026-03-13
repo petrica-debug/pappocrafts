@@ -28,7 +28,7 @@ const DEFAULTS: SiteSettings = {
   mission_badge: "Our Mission",
   mission_title: "Empowering Roma Artisans Across the Balkans",
   mission_desc1:
-    "PappoCrafts connects talented Roma artisans and service providers with customers who value authenticity, quality, and social impact. Every purchase directly supports Roma entrepreneurs and their families.",
+    "PappoShop connects talented Roma artisans and service providers with customers who value authenticity, quality, and social impact. Every purchase directly supports Roma entrepreneurs and their families.",
   mission_desc2:
     "We believe that economic empowerment is the most sustainable path to social inclusion. By providing a platform for Roma entrepreneurs, we help preserve centuries-old crafting traditions while creating new opportunities.",
 };
