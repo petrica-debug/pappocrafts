@@ -1,0 +1,16 @@
+-- REDI used Supabase Auth + public.profiles.role = 'admin' for client-side SELECT.
+-- Pappocrafts authenticates admins via admin_sessions; the admin UI reads feedback
+-- through GET /api/admin/feedback using the service role (see frontend).
+--
+-- If you later link admins to Supabase Auth and a profiles (or similar) table, add:
+--
+-- CREATE POLICY "Admins can read feedback"
+--   ON public.feedback
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM public.profiles
+--       WHERE profiles.id = auth.uid()
+--       AND profiles.role = 'admin'
+--     )
+--   );

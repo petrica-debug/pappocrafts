@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Feedback — PappoShop</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 560px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; color: #1e293b; }
+    label { display: block; margin-top: 1rem; font-weight: 500; color: #475569; }
+    input, select, textarea { width: 100%; padding: 0.5rem 0.75rem; margin-top: 0.25rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
+    textarea { min-height: 80px; resize: vertical; }
+    button { margin-top: 1.5rem; padding: 0.6rem 1.5rem; background: #4a9b3f; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    button:hover { background: #2d7a25; }
+    .success { background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .error { background: #fef2f2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .error a { color: #dc2626; font-weight: 600; text-decoration: underline; }
+    .section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; }
+    small { color: #64748b; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <h1>Testing Feedback — PappoShop</h1>
+  <p><small>Thank you for helping us improve the platform.</small></p>
+
+  <form id="feedbackForm" action="/api/feedback" method="POST">
+    <label>Report type *</label>
+    <select name="report_type" required>
+      <option value="" selected>— Select —</option>
+      <option value="bug">Bug / Technical error</option>
+      <option value="feedback">General feedback</option>
+      <option value="suggestion">Improvement suggestion</option>
+    </select>
+
+    <label>Email (optional)</label>
+    <input type="email" name="email" placeholder="for follow-up">
+
+    <div id="bugFields" class="section" style="display:none">
+      <label>Short title *</label>
+      <input type="text" name="title" placeholder="e.g. Save button doesn't work">
+
+      <label>What were you doing when the error occurred? *</label>
+      <textarea name="what_you_were_doing" required></textarea>
+
+      <label>What did you expect to happen?</label>
+      <textarea name="expected_behavior"></textarea>
+
+      <label>What actually happened? *</label>
+      <textarea name="actual_behavior" required></textarea>
+
+      <label>Page URL</label>
+      <input type="text" name="url" placeholder="e.g. https://yoursite.com/shop">
+
+      <label>Severity</label>
+      <select name="severity">
+        <option value="blocking">Blocking (cannot continue)</option>
+        <option value="major">Major (feature broken)</option>
+        <option value="minor">Minor (inconvenience)</option>
+      </select>
+
+      <label>Browser</label>
+      <select name="browser">
+        <option value="chrome">Chrome</option>
+        <option value="edge">Edge</option>
+        <option value="firefox">Firefox</option>
+        <option value="safari">Safari</option>
+        <option value="other">Other</option>
+      </select>
+
+      <label>Device</label>
+      <input type="text" name="device" placeholder="e.g. Windows laptop, iPhone 14">
+    </div>
+
+    <div id="feedbackFields" class="section" style="display:none">
+      <label>What did you like?</label>
+      <textarea name="what_you_liked"></textarea>
+
+      <label>What was confusing or frustrating?</label>
+      <textarea name="what_was_confusing"></textarea>
+
+      <label>Improvement suggestions</label>
+      <textarea name="suggestions"></textarea>
+
+      <label>Easy to use? (1–5)</label>
+      <select name="ease_of_use">
+        <option value="">—</option>
+        <option value="1">1 - Very difficult</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 - Very easy</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <label>Comment / Additional details</label>
+      <textarea name="comment" placeholder="Anything else you'd like to tell us"></textarea>
+    </div>
+
+    <button type="submit">Submit feedback</button>
+  </form>
+
+  <div id="successMsg" class="success" style="display:none">
+    Thank you! Your feedback has been submitted. We will review it shortly.
+  </div>
+
+  <div id="errorMsg" class="error" style="display:none">
+    <p><strong>Could not submit automatically.</strong></p>
+    <p id="errorDetail" class="mt-2"></p>
+    <p class="mt-3">Please send your feedback by email: <a id="mailtoLink" href="#">Click here to open your email client</a></p>
+  </div>
+
+  <script>
+    const tip = document.querySelector('select[name="report_type"]');
+    const bugFields = document.getElementById('bugFields');
+    const feedbackFields = document.getElementById('feedbackFields');
+    const form = document.getElementById('feedbackForm');
+    const successMsg = document.getElementById('successMsg');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        const firstInvalid = form.querySelector(':invalid');
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+      const formData = new FormData(form);
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+      successMsg.style.display = 'none';
+      errorMsg.style.display = 'none';
+
+      try {
+        const base = window.location.origin;
+        const res = await fetch(base + '/api/feedback', {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          form.style.display = 'none';
+          successMsg.style.display = 'block';
+          successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error(data.error || 'Submission failed');
+        }
+      } catch (err) {
+        const reportType = formData.get('report_type') || 'feedback';
+        const title = formData.get('title') || '';
+        const body = formData.get('what_you_were_doing') || formData.get('what_you_liked') || formData.get('comment') || '';
+        const subject = encodeURIComponent('[PappoShop] Testing feedback — ' + reportType + (title ? ': ' + title : ''));
+        const bodyEnc = encodeURIComponent('Report type: ' + reportType + '\n\n' + (formData.get('actual_behavior') || body) + '\n\n---\nBrowser: ' + formData.get('browser') + '\nDevice: ' + formData.get('device'));
+        document.getElementById('errorDetail').textContent = err.message || 'The server could not process your feedback.';
+        document.getElementById('mailtoLink').href = 'mailto:support@papposhop.org?subject=' + subject + '&body=' + bodyEnc;
+        errorMsg.style.display = 'block';
+        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit feedback'; }
+      }
+    });
+
+    const updateFields = () => {
+      bugFields.style.display = tip.value === 'bug' ? 'block' : 'none';
+      feedbackFields.style.display = (tip.value === 'feedback' || tip.value === 'suggestion') ? 'block' : 'none';
+      document.querySelectorAll('#bugFields [required]').forEach(el => el.required = tip.value === 'bug');
+    };
+    tip.addEventListener('change', updateFields);
+    updateFields();
+  </script>
+</body>
+</html>
