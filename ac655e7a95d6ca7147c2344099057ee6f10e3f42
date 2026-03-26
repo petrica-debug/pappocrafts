@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "ac655e7a95d6ca7147c2344099057ee6f10e3f42",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-26T23:33:08+02:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "editor_hook",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 1.0
+  },
+  "stats": {
+    "total_additions": 1094,
+    "total_deletions": 0,
+    "ai_additions": 1093,
+    "ai_deletions": 0,
+    "human_additions": 1,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/admin/layout.tsx": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "23,159,178",
+      "human_lines": ""
+    },
+    "frontend/src/app/admin/services/page.tsx": {
+      "ai_additions": 47,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "3,5,29,41,48-51,72-89,200-205,368,386-399",
+      "human_lines": ""
+    },
+    "frontend/src/app/admin/waitlist/page.tsx": {
+      "ai_additions": 604,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1-604",
+      "human_lines": ""
+    },
+    "frontend/src/app/api/admin/sellers/route.ts": {
+      "ai_additions": 16,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "4-9,56,63-69,151,174",
+      "human_lines": ""
+    },
+    "frontend/src/app/api/admin/services/route.ts": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "61,102-103",
+      "human_lines": ""
+    },
+    "frontend/src/app/api/admin/waitlist/convert/route.ts": {
+      "ai_additions": 211,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1-211",
+      "human_lines": ""
+    },
+    "frontend/src/app/api/admin/waitlist/route.ts": {
+      "ai_additions": 94,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1-94",
+      "human_lines": ""
+    },
+    "frontend/src/lib/admin-user-provision.ts": {
+      "ai_additions": 70,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1-70",
+      "human_lines": ""
+    },
+    "frontend/src/lib/waitlist.ts": {
+      "ai_additions": 23,
+      "human_additions": 1,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1,7,9-14,17-19,23-32,36-37",
+      "human_lines": "38"
+    },
+    "supabase/migrations/024_waitlist_role.sql": {
+      "ai_additions": 6,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1-6",
+      "human_lines": ""
+    },
+    "supabase/migrations/025_waitlist_status.sql": {
+      "ai_additions": 16,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "1-16",
+      "human_lines": ""
+    }
+  }
+}
