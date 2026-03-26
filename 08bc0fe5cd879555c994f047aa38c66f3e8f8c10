@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "08bc0fe5cd879555c994f047aa38c66f3e8f8c10",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-26T21:10:31+02:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 34,
+    "total_deletions": 35,
+    "ai_additions": 34,
+    "ai_deletions": 35,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/api/exchange-rates/route.ts": {
+      "ai_additions": 29,
+      "human_additions": 0,
+      "ai_deletions": 21,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/locale-context.tsx": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 14,
+      "human_deletions": 0
+    }
+  }
+}
