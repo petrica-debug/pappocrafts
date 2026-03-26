@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { categories, type Product, mapSupabaseProduct } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
 import { useLocale } from "@/lib/locale-context";
+import { translateShopCategory } from "@/lib/translations";
 import { trackAddToCart } from "@/components/Analytics";
 import { Suspense } from "react";
 
@@ -149,7 +150,7 @@ function ShopContent() {
                       : "bg-white text-charcoal/60 border border-charcoal/10 hover:border-green/30 hover:text-green"
                   }`}
                 >
-                  {cat === "All" ? t("shop.all") : cat}
+                  {translateShopCategory(cat, t)}
                 </button>
               ))}
             </div>

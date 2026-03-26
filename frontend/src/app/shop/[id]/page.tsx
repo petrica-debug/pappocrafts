@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { type Product, mapSupabaseProduct } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
 import { useLocale } from "@/lib/locale-context";
+import { translateShopCategory } from "@/lib/translations";
 import { trackViewContent, trackAddToCart } from "@/components/Analytics";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -110,7 +111,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             <Link href="/shop" className="hover:text-green transition-colors">{t("nav.shop")}</Link>
             <span>/</span>
             <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-green transition-colors">
-              {product.category}
+              {translateShopCategory(product.category, t)}
             </Link>
             <span>/</span>
             <span className="text-charcoal">{product.name}</span>
@@ -132,7 +133,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             <div className="flex flex-col">
               <div className="flex items-center gap-2 mb-2">
                 <span className="rounded-full bg-green/10 px-3 py-1 text-xs font-medium text-green">
-                  {product.category}
+                  {translateShopCategory(product.category, t)}
                 </span>
                 <span className="rounded-full bg-blue/10 px-3 py-1 text-xs font-medium text-blue">
                   {product.country}
