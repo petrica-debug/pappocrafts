@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import { serviceCategories } from "@/lib/services";
 
 interface DBService {
@@ -25,6 +26,7 @@ interface DBService {
   completed_jobs: number;
   created_at: string;
   updated_at: string;
+  seller_id?: string | null;
 }
 
 type EditableService = Omit<DBService, "created_at" | "updated_at">;
@@ -36,13 +38,17 @@ const emptyService: EditableService = {
   currency: "EUR", rating: 5, review_count: 0, location: "", country: "",
   image: "",
   badges: [], available: true, response_time: "Under 1 hour", completed_jobs: 0,
+  seller_id: null,
 };
 
 function getToken() {
   return localStorage.getItem("admin-token") || "";
 }
 
-export default function AdminServices() {
+function AdminServicesInner() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const prefillApplied = useRef(false);
   const [services, setServices] = useState<DBService[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditableService | null>(null);
@@ -63,7 +69,24 @@ export default function AdminServices() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchServices(); }, [fetchServices]);
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
+
+  useEffect(() => {
+    if (loading || prefillApplied.current) return;
+    const sid = searchParams.get("prefillSellerId")?.trim();
+    if (!sid) return;
+    prefillApplied.current = true;
+    setEditing({
+      ...emptyService,
+      id: `service-${Date.now()}`,
+      seller_id: sid,
+    });
+    setIsNew(true);
+    setBadgeInput("");
+    router.replace("/admin/services", { scroll: false });
+  }, [loading, searchParams, router]);
 
   const filtered = services.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.title.toLowerCase().includes(search.toLowerCase());
@@ -174,6 +197,12 @@ export default function AdminServices() {
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-[#1A1D27] border border-white/10 p-6" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-bold text-white mb-5">{isNew ? "Add Service Provider" : "Edit Provider"}</h2>
             <div className="space-y-4">
+              {editing.seller_id ? (
+                <p className="rounded-xl border border-[#4A9B3F]/25 bg-[#4A9B3F]/10 px-4 py-3 text-xs text-[#4A9B3F]/95">
+                  This listing is linked to seller account <span className="font-mono opacity-90">{editing.seller_id}</span>.
+                  It will show under that provider after you save.
+                </p>
+              ) : null}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-white/40 mb-1.5">Provider Name *</label>
@@ -336,6 +365,7 @@ export default function AdminServices() {
                       country: provider.country, image: provider.image, badges: provider.badges,
                       available: provider.available, response_time: provider.response_time,
                       completed_jobs: provider.completed_jobs,
+                      seller_id: provider.seller_id ?? null,
                     });
                     setIsNew(false);
                     setBadgeInput("");
@@ -351,5 +381,19 @@ export default function AdminServices() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminServicesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[200px] items-center justify-center p-8">
+          <div className="animate-pulse text-sm text-white/40">Loading services…</div>
+        </div>
+      }
+    >
+      <AdminServicesInner />
+    </Suspense>
   );
 }

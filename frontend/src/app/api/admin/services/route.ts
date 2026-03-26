@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
       years_experience: body.yearsExperience ?? body.years_experience ?? "",
       languages_spoken: body.languagesSpoken ?? body.languages_spoken ?? "",
       booking_calendar_url: body.bookingCalendarUrl ?? body.booking_calendar_url ?? "",
+      seller_id: body.sellerId ?? body.seller_id ?? null,
     }).select().single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -98,6 +99,8 @@ export async function PATCH(request: NextRequest) {
     if (body.languages_spoken !== undefined) updates.languages_spoken = body.languages_spoken;
     if (body.bookingCalendarUrl !== undefined) updates.booking_calendar_url = body.bookingCalendarUrl;
     if (body.booking_calendar_url !== undefined) updates.booking_calendar_url = body.booking_calendar_url;
+    if (body.sellerId !== undefined) updates.seller_id = body.sellerId || null;
+    if (body.seller_id !== undefined) updates.seller_id = body.seller_id || null;
 
     const db = createAdminClient();
     const { data, error } = await db.from("services").update(updates).eq("id", body.id).select().single();

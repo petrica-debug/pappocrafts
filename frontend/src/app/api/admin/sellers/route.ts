@@ -1,12 +1,12 @@
-import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { validateSession } from "@/lib/admin-store";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { slugifyBusinessName } from "@/lib/slug";
-
-function sha256(input: string) {
-  return createHash("sha256").update(input).digest("hex");
-}
+import {
+  ALLOWED_SELLER_COUNTRIES,
+  insertSellerUser,
+  nextUniqueBusinessSlug,
+  sha256Password,
+} from "@/lib/admin-user-provision";
 
 function getSession(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -16,26 +16,6 @@ function getSession(request: NextRequest) {
 
 function isStaff(s: ReturnType<typeof validateSession>) {
   return s && (s.role === "superadmin" || s.role === "admin");
-}
-
-const ALLOWED_COUNTRIES = ["North Macedonia", "Serbia", "Albania"] as const;
-
-/** For new sellers omit excludeUserId; when editing pass the seller id so their current slug is ignored. */
-async function nextUniqueBusinessSlug(
-  db: ReturnType<typeof createAdminClient>,
-  businessName: string,
-  excludeUserId?: string | null
-): Promise<string> {
-  const baseSlug = slugifyBusinessName(businessName);
-  let slug = baseSlug;
-  for (let i = 0; i < 20; i++) {
-    let q = db.from("admin_users").select("id").eq("business_slug", slug);
-    if (excludeUserId) q = q.neq("id", excludeUserId);
-    const { data: existing } = await q.maybeSingle();
-    if (!existing) break;
-    slug = `${baseSlug}-${i + 2}`;
-  }
-  return slug;
 }
 
 export async function GET(request: NextRequest) {
@@ -73,29 +53,20 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    if (!ALLOWED_COUNTRIES.includes(baseCountry as (typeof ALLOWED_COUNTRIES)[number])) {
+    if (!ALLOWED_SELLER_COUNTRIES.includes(baseCountry as (typeof ALLOWED_SELLER_COUNTRIES)[number])) {
       return NextResponse.json(
         { error: "baseCountry must be North Macedonia, Serbia, or Albania." },
         { status: 400 }
       );
     }
 
-    const db = createAdminClient();
-    const slug = await nextUniqueBusinessSlug(db, businessName);
-
-    const { data, error } = await db
-      .from("admin_users")
-      .insert({
-        email,
-        password_hash: sha256(password),
-        role: "seller",
-        name,
-        business_name: businessName,
-        business_slug: slug,
-        base_country: baseCountry,
-      })
-      .select("id, email, name, business_name, business_slug, base_country")
-      .single();
+    const { data, error } = await insertSellerUser({
+      email,
+      password,
+      name,
+      businessName,
+      baseCountry: baseCountry as (typeof ALLOWED_SELLER_COUNTRIES)[number],
+    });
 
     if (error) {
       if (error.code === "23505") {
@@ -177,7 +148,7 @@ export async function PATCH(request: NextRequest) {
 
     if (body.baseCountry !== undefined || body.base_country !== undefined) {
       const baseCountry = String(body.baseCountry ?? body.base_country ?? "").trim();
-      if (!ALLOWED_COUNTRIES.includes(baseCountry as (typeof ALLOWED_COUNTRIES)[number])) {
+      if (!ALLOWED_SELLER_COUNTRIES.includes(baseCountry as (typeof ALLOWED_SELLER_COUNTRIES)[number])) {
         return NextResponse.json(
           { error: "baseCountry must be North Macedonia, Serbia, or Albania." },
           { status: 400 }
@@ -200,7 +171,7 @@ export async function PATCH(request: NextRequest) {
       if (password.length < 6) {
         return NextResponse.json({ error: "Password must be at least 6 characters." }, { status: 400 });
       }
-      updates.password_hash = sha256(password);
+      updates.password_hash = sha256Password(password);
     }
 
     if (Object.keys(updates).length === 0) {

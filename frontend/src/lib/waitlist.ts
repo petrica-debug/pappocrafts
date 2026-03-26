@@ -1,62 +1,39 @@
-import { promises as fs } from "fs";
-import path from "path";
-
-export interface WaitlistEntry {
-  email: string;
-  role: "buyer" | "seller";
-  timestamp: string;
-}
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "waitlist.json");
-
-async function ensureDataFile(): Promise<void> {
-  try {
-    await fs.access(DATA_DIR);
-  } catch {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-  }
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, JSON.stringify([], null, 2));
-  }
-}
-
-async function readEntries(): Promise<WaitlistEntry[]> {
-  await ensureDataFile();
-  const raw = await fs.readFile(DATA_FILE, "utf-8");
-  return JSON.parse(raw);
-}
-
-async function writeEntries(entries: WaitlistEntry[]): Promise<void> {
-  await ensureDataFile();
-  await fs.writeFile(DATA_FILE, JSON.stringify(entries, null, 2));
-}
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function addToWaitlist(
   email: string,
   role: "buyer" | "seller"
 ): Promise<{ success: boolean; message: string }> {
-  const entries = await readEntries();
+  const normalized = email.toLowerCase().trim();
 
-  const exists = entries.some(
-    (entry) => entry.email.toLowerCase() === email.toLowerCase()
-  );
-  if (exists) {
-    return { success: false, message: "This email is already on the waitlist." };
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    console.error("[waitlist] missing Supabase env (URL or service role key)");
+    throw new Error("Waitlist storage is not configured.");
   }
 
-  entries.push({
-    email: email.toLowerCase().trim(),
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("waitlist").insert({
+    email: normalized,
     role,
-    timestamp: new Date().toISOString(),
   });
 
-  await writeEntries(entries);
+  if (error) {
+    if (error.code === "23505") {
+      return {
+        success: false,
+        message: "This email is already on the waitlist.",
+      };
+    }
+    console.error("[waitlist] insert failed:", error.code, error.message);
+    throw error;
+  }
 
   return {
     success: true,
-    message: "Welcome aboard! You'll be the first to know when PappoShop launches.",
+    message:
+      "Welcome aboard! You'll be the first to know when PappoShop launches.",
   };
 }
