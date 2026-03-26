@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,10 +15,16 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
   const [loading, setLoading] = useState(true);
   const [showBooking, setShowBooking] = useState(false);
   const [bookingDate, setBookingDate] = useState("");
-  const [bookingTime, setBookingTime] = useState("");
+  const [timeStart, setTimeStart] = useState("12:00");
+  const [timeEnd, setTimeEnd] = useState("17:00");
   const [bookingMessage, setBookingMessage] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [bookingStatus, setBookingStatus] = useState<"idle" | "sent">("idle");
-  const { t, formatRegionalPrice } = useLocale();
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const { t, formatRegionalPrice, locale } = useLocale();
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +52,21 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
     };
   }, [id]);
 
+  const durationHours = useMemo(() => {
+    const [sh, sm] = timeStart.split(":").map(Number);
+    const [eh, em] = timeEnd.split(":").map(Number);
+    if ([sh, sm, eh, em].some((n) => Number.isNaN(n))) return null;
+    const a = sh * 60 + sm;
+    const b = eh * 60 + em;
+    if (b <= a) return null;
+    return Math.round(((b - a) / 60) * 100) / 100;
+  }, [timeStart, timeEnd]);
+
+  const estimateEur = useMemo(() => {
+    if (!provider || durationHours == null || provider.hourlyRate <= 0) return null;
+    return Math.round(durationHours * provider.hourlyRate * 100) / 100;
+  }, [provider, durationHours]);
+
   if (loading) {
     return (
       <>
@@ -58,13 +79,47 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
 
   if (!provider) notFound();
 
+  const svc = provider!;
+
   const related = serviceProviders
-    .filter((p) => p.category === provider.category && p.id !== provider.id)
+    .filter((p) => p.category === svc.category && p.id !== svc.id)
     .slice(0, 3);
 
-  function handleBookingSubmit(e: React.FormEvent) {
+  async function handleBookingSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setBookingStatus("sent");
+    setBookingError("");
+    if (durationHours == null) {
+      setBookingError(t("service.bookingSubmitError"));
+      return;
+    }
+    setBookingSubmitting(true);
+    try {
+      const res = await fetch("/api/service-bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          providerId: svc.id,
+          providerName: svc.name,
+          providerCategory: svc.category,
+          customerName,
+          customerEmail,
+          customerPhone,
+          preferredDate: bookingDate,
+          timeStart,
+          timeEnd,
+          message: bookingMessage,
+          hourlyRateEur: svc.hourlyRate,
+          locale,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "fail");
+      setBookingStatus("sent");
+    } catch {
+      setBookingError(t("service.bookingSubmitError"));
+    } finally {
+      setBookingSubmitting(false);
+    }
   }
 
   return (
@@ -206,6 +261,35 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                 ) : (
                   <form onSubmit={handleBookingSubmit} className="space-y-3">
                     <div>
+                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.yourName")}</label>
+                      <input
+                        type="text"
+                        required
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.yourEmail")}</label>
+                      <input
+                        type="email"
+                        required
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.yourPhone")}</label>
+                      <input
+                        type="tel"
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                      />
+                    </div>
+                    <div>
                       <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.prefDate")}</label>
                       <input
                         type="date"
@@ -215,20 +299,41 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                         className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.prefTime")}</label>
-                      <select
-                        required
-                        value={bookingTime}
-                        onChange={(e) => setBookingTime(e.target.value)}
-                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                      >
-                        <option value="">{t("service.selectTime")}</option>
-                        <option value="morning">{t("service.morning")}</option>
-                        <option value="afternoon">{t("service.afternoon")}</option>
-                        <option value="evening">{t("service.evening")}</option>
-                      </select>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.bookingStart")}</label>
+                        <input
+                          type="time"
+                          required
+                          value={timeStart}
+                          onChange={(e) => setTimeStart(e.target.value)}
+                          className="w-full rounded-lg border border-charcoal/10 px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.bookingEnd")}</label>
+                        <input
+                          type="time"
+                          required
+                          value={timeEnd}
+                          onChange={(e) => setTimeEnd(e.target.value)}
+                          className="w-full rounded-lg border border-charcoal/10 px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                        />
+                      </div>
                     </div>
+                    {provider.hourlyRate > 0 && (
+                      <div className="rounded-lg bg-green/5 border border-green/10 px-3 py-2 text-sm">
+                        <span className="text-charcoal/60">{t("service.estimatedTotal")}: </span>
+                        <span className="font-bold text-green">
+                          {estimateEur != null ? formatRegionalPrice(estimateEur) : "—"}
+                        </span>
+                        {durationHours != null && (
+                          <span className="text-charcoal/45 text-xs ml-1">
+                            ({durationHours}h × {formatRegionalPrice(provider.hourlyRate)}{t("services.perHour")})
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div>
                       <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.describeNeed")}</label>
                       <textarea
@@ -240,11 +345,13 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                         className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm placeholder:text-charcoal/30 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent resize-none"
                       />
                     </div>
+                    {bookingError && <p className="text-xs text-red-600">{bookingError}</p>}
                     <button
                       type="submit"
-                      className="w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
+                      disabled={bookingSubmitting}
+                      className="w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all disabled:opacity-60"
                     >
-                      {t("service.sendRequest")}
+                      {bookingSubmitting ? "…" : t("service.sendRequest")}
                     </button>
                     <button
                       type="button"

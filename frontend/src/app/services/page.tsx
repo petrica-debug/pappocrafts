@@ -15,6 +15,8 @@ function ServicesContent() {
   const initialCategory = searchParams.get("category") || "All";
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
+  const [sortMode, setSortMode] = useState<"rating" | "price-asc" | "price-desc" | "reviews">("rating");
+  const [countryFilter, setCountryFilter] = useState("");
   const [list, setList] = useState<ServiceProvider[]>(serviceProviders);
   const [preview, setPreview] = useState<ServiceProvider | null>(null);
   const { t, formatRegionalPrice } = useLocale();
@@ -35,10 +37,21 @@ function ServicesContent() {
     };
   }, []);
 
+  const countryOptions = useMemo(() => {
+    const s = new Set<string>();
+    list.forEach((p) => {
+      if (p.country?.trim()) s.add(p.country.trim());
+    });
+    return [...s].sort((a, b) => a.localeCompare(b));
+  }, [list]);
+
   const filtered = useMemo(() => {
     let result = list;
     if (activeCategory !== "All") {
       result = result.filter((p) => p.category === activeCategory);
+    }
+    if (countryFilter) {
+      result = result.filter((p) => p.country === countryFilter);
     }
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -54,7 +67,16 @@ function ServicesContent() {
       );
     }
     return result;
-  }, [activeCategory, search, list]);
+  }, [activeCategory, search, list, countryFilter]);
+
+  const sortedProviders = useMemo(() => {
+    const copy = [...filtered];
+    if (sortMode === "price-asc") copy.sort((a, b) => (a.hourlyRate || 0) - (b.hourlyRate || 0));
+    else if (sortMode === "price-desc") copy.sort((a, b) => (b.hourlyRate || 0) - (a.hourlyRate || 0));
+    else if (sortMode === "reviews") copy.sort((a, b) => b.reviewCount - a.reviewCount);
+    else copy.sort((a, b) => b.rating - a.rating);
+    return copy;
+  }, [filtered, sortMode]);
 
   const closePreview = useCallback(() => setPreview(null), []);
 
@@ -71,18 +93,18 @@ function ServicesContent() {
       <Navbar />
       <main className="pt-20 pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="text-center max-w-2xl mx-auto mb-5">
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal tracking-tight">
               {t("services.title")}
             </h1>
-            <p className="mt-4 text-lg text-charcoal/60 leading-relaxed">
+            <p className="mt-3 text-base text-charcoal/60 leading-relaxed">
               {t("services.desc")}
             </p>
           </div>
 
-          <div className="max-w-md mx-auto mb-8">
-            <div className="relative">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-charcoal/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center max-w-3xl mx-auto">
+            <div className="relative flex-1 min-w-[200px] max-w-sm mx-auto sm:mx-0">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-charcoal/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
               <input
@@ -90,35 +112,66 @@ function ServicesContent() {
                 placeholder={t("services.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-full border border-charcoal/10 bg-white py-3 pl-12 pr-5 text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                className="w-full rounded-full border border-charcoal/10 bg-white py-2 pl-9 pr-3 text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
               />
+            </div>
+            <label className="flex items-center gap-2 text-xs text-charcoal/60 whitespace-nowrap justify-center sm:justify-start">
+              <span className="text-charcoal/50">{t("shop.sortBy")}</span>
+              <select
+                value={sortMode}
+                onChange={(e) => setSortMode(e.target.value as typeof sortMode)}
+                className="rounded-full border border-charcoal/10 bg-white py-2 pl-3 pr-8 text-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-green"
+              >
+                <option value="rating">{t("service.rating")}</option>
+                <option value="reviews">{t("service.reviews")}</option>
+                <option value="price-asc">{t("shop.sortPriceAsc")}</option>
+                <option value="price-desc">{t("shop.sortPriceDesc")}</option>
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-xs text-charcoal/60 whitespace-nowrap justify-center sm:justify-start">
+              <span className="text-charcoal/50">{t("shop.filterCountry")}</span>
+              <select
+                value={countryFilter}
+                onChange={(e) => setCountryFilter(e.target.value)}
+                className="rounded-full border border-charcoal/10 bg-white py-2 pl-3 pr-8 text-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-green max-w-[160px]"
+              >
+                <option value="">{t("shop.countryAll")}</option>
+                {countryOptions.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mb-10 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <p className="text-center text-[11px] font-semibold uppercase tracking-wider text-charcoal/40 mb-2">
+              {t("cat.badge")}
+            </p>
+            <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory sm:flex-wrap sm:justify-center sm:overflow-visible">
+              {serviceCategories.map((cat) => (
+                <button
+                  key={cat.name}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.name)}
+                  className={`flex flex-col items-center gap-1 rounded-xl p-2.5 min-w-[5.5rem] sm:min-w-0 flex-shrink-0 snap-start text-center transition-all ${
+                    activeCategory === cat.name
+                      ? "bg-green text-white shadow-md"
+                      : "bg-white text-charcoal/70 border border-charcoal/5 hover:border-green/20 hover:shadow-sm"
+                  }`}
+                >
+                  <span className="text-xl sm:text-2xl">{cat.icon}</span>
+                  <span className="text-[10px] sm:text-xs font-medium leading-tight max-w-[5rem]">{cat.name}</span>
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-3 mb-12">
-            {serviceCategories.map((cat) => (
-              <button
-                key={cat.name}
-                type="button"
-                onClick={() => setActiveCategory(cat.name)}
-                className={`flex flex-col items-center gap-1.5 rounded-xl p-3 text-center transition-all ${
-                  activeCategory === cat.name
-                    ? "bg-green text-white shadow-md"
-                    : "bg-white text-charcoal/70 border border-charcoal/5 hover:border-green/20 hover:shadow-sm"
-                }`}
-              >
-                <span className="text-2xl">{cat.icon}</span>
-                <span className="text-xs font-medium leading-tight">{cat.name}</span>
-              </button>
-            ))}
-          </div>
-
-          {filtered.length === 0 ? (
+          {sortedProviders.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-charcoal/50 text-lg">{t("services.noProviders")}</p>
               <button
                 type="button"
-                onClick={() => { setSearch(""); setActiveCategory("All"); }}
+                onClick={() => { setSearch(""); setActiveCategory("All"); setCountryFilter(""); setSortMode("rating"); }}
                 className="mt-4 text-green font-medium hover:text-green-dark transition-colors"
               >
                 {t("services.clearFilters")}
@@ -126,7 +179,7 @@ function ServicesContent() {
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((provider) => (
+              {sortedProviders.map((provider) => (
                 <button
                   key={provider.id}
                   type="button"

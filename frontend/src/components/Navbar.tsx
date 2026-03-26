@@ -167,6 +167,12 @@ export default function Navbar() {
               <Link href="/#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
                 {t("nav.howItWorks")}
               </Link>
+              <a
+                href={`mailto:${t("footer.supportEmail")}`}
+                className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors"
+              >
+                {t("nav.support")}
+              </a>
 
               <div className="flex items-center gap-1.5">
                 <CurrencySelector variant="desktop" />
@@ -259,6 +265,13 @@ export default function Navbar() {
               <Link href="/#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
                 {t("nav.howItWorks")}
               </Link>
+              <a
+                href={`mailto:${t("footer.supportEmail")}`}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors"
+              >
+                {t("nav.support")}
+              </a>
               <Link href="/shop" onClick={() => setMobileOpen(false)} className="mt-2 inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors">
                 {t("nav.browseProducts")}
               </Link>

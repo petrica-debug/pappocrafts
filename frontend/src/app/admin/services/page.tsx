@@ -31,7 +31,8 @@ type EditableService = Omit<DBService, "created_at" | "updated_at">;
 
 const emptyService: EditableService = {
   id: "", name: "", title: "", description: "", long_description: "",
-  category: serviceCategories[1].name, hourly_rate: 0, fixed_rate_from: null,
+  category: serviceCategories.find((c) => c.name === "Home Repair")?.name ?? "Home Repair",
+  hourly_rate: 0, fixed_rate_from: null,
   currency: "EUR", rating: 5, review_count: 0, location: "", country: "",
   image: "",
   badges: [], available: true, response_time: "Under 1 hour", completed_jobs: 0,

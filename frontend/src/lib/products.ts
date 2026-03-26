@@ -17,6 +17,7 @@ export interface Product {
   inStock: boolean;
 }
 
+/** Canonical order: crafts & fashion → home & living → food & nature → other (filters / URLs use these English strings). */
 export const categories = [
   "All",
   "Pottery & Ceramics",
@@ -24,17 +25,17 @@ export const categories = [
   "Jewelry & Metalwork",
   "Woodwork & Carving",
   "Leather Goods",
-  "Food & Spices",
-  "Furniture",
-  "Machines",
-  "Home Decor",
-  "Art & Paintings",
-  "Beauty & Personal Care",
   "Traditional Clothing",
   "Handmade Accessories",
+  "Art & Paintings",
+  "Home Decor",
+  "Furniture",
+  "Food & Spices",
   "Eco Products",
   "Natural Products",
   "Agricultural Products",
+  "Beauty & Personal Care",
+  "Machines",
   "Other",
 ];
 

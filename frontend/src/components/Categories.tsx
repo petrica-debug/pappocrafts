@@ -2,19 +2,32 @@
 
 import Link from "next/link";
 import { useLocale } from "@/lib/locale-context";
-import type { TranslationKey } from "@/lib/translations";
+import { categories } from "@/lib/products";
+import { translateShopCategory } from "@/lib/translations";
 
-const categories: { nameKey: TranslationKey; descKey: TranslationKey; filterName: string; emoji: string; accent: string }[] = [
-  { nameKey: "cat.pottery", descKey: "cat.potteryDesc", filterName: "Pottery & Ceramics", emoji: "🏺", accent: "bg-green/10" },
-  { nameKey: "cat.textiles", descKey: "cat.textilesDesc", filterName: "Textiles & Weaving", emoji: "🧶", accent: "bg-blue/10" },
-  { nameKey: "cat.jewelry", descKey: "cat.jewelryDesc", filterName: "Jewelry & Metalwork", emoji: "💍", accent: "bg-green/10" },
-  { nameKey: "cat.woodwork", descKey: "cat.woodworkDesc", filterName: "Woodwork & Carving", emoji: "🪵", accent: "bg-blue/10" },
-  { nameKey: "cat.leather", descKey: "cat.leatherDesc", filterName: "Leather Goods", emoji: "👜", accent: "bg-green/10" },
-  { nameKey: "cat.food", descKey: "cat.foodDesc", filterName: "Food & Spices", emoji: "🫙", accent: "bg-blue/10" },
-];
+const EMOJI: Record<string, string> = {
+  "Pottery & Ceramics": "🏺",
+  "Textiles & Weaving": "🧶",
+  "Jewelry & Metalwork": "💍",
+  "Woodwork & Carving": "🪵",
+  "Leather Goods": "👜",
+  "Traditional Clothing": "👗",
+  "Handmade Accessories": "🎀",
+  "Art & Paintings": "🖼️",
+  "Home Decor": "🏡",
+  Furniture: "🪑",
+  "Food & Spices": "🫙",
+  "Eco Products": "♻️",
+  "Natural Products": "🌿",
+  "Agricultural Products": "🌾",
+  "Beauty & Personal Care": "✨",
+  Machines: "⚙️",
+  Other: "📦",
+};
 
 export default function Categories() {
   const { t } = useLocale();
+  const browse = categories.filter((c) => c !== "All");
 
   return (
     <section id="categories" className="py-24 sm:py-32 bg-white">
@@ -31,22 +44,30 @@ export default function Categories() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((cat) => (
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {browse.map((filterName) => (
             <Link
-              key={cat.filterName}
-              href={`/shop?category=${encodeURIComponent(cat.filterName)}`}
-              className="group relative rounded-2xl border border-charcoal/5 bg-light/50 p-6 hover:bg-white hover:border-green/20 hover:shadow-md transition-all"
+              key={filterName}
+              href={`/shop?category=${encodeURIComponent(filterName)}`}
+              className="group flex items-center gap-3 rounded-xl border border-charcoal/5 bg-light/50 px-4 py-3 hover:bg-white hover:border-green/20 hover:shadow-md transition-all"
             >
-              <div className={`inline-flex h-14 w-14 items-center justify-center rounded-xl text-2xl ${cat.accent}`}>
-                {cat.emoji}
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-charcoal group-hover:text-green transition-colors">
-                {t(cat.nameKey)}
-              </h3>
-              <p className="mt-2 text-sm text-charcoal/60 leading-relaxed">{t(cat.descKey)}</p>
+              <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-green/10 text-xl">
+                {EMOJI[filterName] || "📦"}
+              </span>
+              <span className="text-sm font-semibold text-charcoal group-hover:text-green transition-colors leading-snug">
+                {translateShopCategory(filterName, t)}
+              </span>
             </Link>
           ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            href="/shop"
+            className="inline-flex items-center justify-center rounded-full bg-green px-8 py-3 text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
+          >
+            {t("nav.browseProducts")}
+          </Link>
         </div>
       </div>
     </section>

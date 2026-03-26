@@ -51,12 +51,12 @@ export default function WaitlistForm() {
             {t("waitlist.desc")}
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-10 max-w-md mx-auto">
-            <div className="flex gap-3 mb-4 justify-center">
+          <form onSubmit={handleSubmit} className="mt-8 max-w-lg mx-auto">
+            <div className="flex gap-2 mb-3 justify-center">
               <button
                 type="button"
                 onClick={() => setRole("buyer")}
-                className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                   role === "buyer"
                     ? "bg-green text-white"
                     : "bg-charcoal-light text-white/60 hover:text-white"
@@ -67,7 +67,7 @@ export default function WaitlistForm() {
               <button
                 type="button"
                 onClick={() => setRole("seller")}
-                className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                   role === "seller"
                     ? "bg-blue text-white"
                     : "bg-charcoal-light text-white/60 hover:text-white"
@@ -77,7 +77,7 @@ export default function WaitlistForm() {
               </button>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <input
                 type="email"
                 required
@@ -87,12 +87,12 @@ export default function WaitlistForm() {
                   setEmail(e.target.value);
                   if (status !== "idle") setStatus("idle");
                 }}
-                className="flex-1 rounded-full bg-charcoal-light px-5 py-3 text-white placeholder:text-white/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
+                className="flex-1 min-w-0 rounded-full bg-charcoal-light px-4 py-2 text-sm text-white placeholder:text-white/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
               />
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="rounded-full bg-green px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark disabled:opacity-50 transition-all"
+                className="rounded-full bg-green px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark disabled:opacity-50 transition-all shrink-0"
               >
                 {status === "loading" ? "..." : t("waitlist.join")}
               </button>
