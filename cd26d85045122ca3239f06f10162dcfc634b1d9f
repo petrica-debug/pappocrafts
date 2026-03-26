@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "cd26d85045122ca3239f06f10162dcfc634b1d9f",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-26T22:20:46+02:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 843,
+    "total_deletions": 146,
+    "ai_additions": 843,
+    "ai_deletions": 146,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/admin/bookings/page.tsx": {
+      "ai_additions": 112,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/layout.tsx": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/services/page.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/bookings/route.ts": {
+      "ai_additions": 30,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/service-bookings/route.ts": {
+      "ai_additions": 78,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/[id]/page.tsx": {
+      "ai_additions": 128,
+      "human_additions": 0,
+      "ai_deletions": 21,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/page.tsx": {
+      "ai_additions": 79,
+      "human_additions": 0,
+      "ai_deletions": 26,
+      "human_deletions": 0
+    },
+    "frontend/src/app/shop/page.tsx": {
+      "ai_additions": 85,
+      "human_additions": 0,
+      "ai_deletions": 14,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Categories.tsx": {
+      "ai_additions": 42,
+      "human_additions": 0,
+      "ai_deletions": 21,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Footer.tsx": {
+      "ai_additions": 70,
+      "human_additions": 0,
+      "ai_deletions": 24,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Navbar.tsx": {
+      "ai_additions": 13,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ServicesPreview.tsx": {
+      "ai_additions": 16,
+      "human_additions": 0,
+      "ai_deletions": 14,
+      "human_deletions": 0
+    },
+    "frontend/src/components/WaitlistForm.tsx": {
+      "ai_additions": 7,
+      "human_additions": 0,
+      "ai_deletions": 7,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/products.ts": {
+      "ai_additions": 7,
+      "human_additions": 0,
+      "ai_deletions": 6,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/services.ts": {
+      "ai_additions": 20,
+      "human_additions": 0,
+      "ai_deletions": 8,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/translations.ts": {
+      "ai_additions": 120,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "supabase/migrations/023_service_bookings.sql": {
+      "ai_additions": 30,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    }
+  }
+}
