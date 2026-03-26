@@ -1,0 +1,204 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "a4dbe9d9226fc4c1c4b927dc26174bf061c984b5",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-26T20:49:15+02:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 1430,
+    "total_deletions": 108,
+    "ai_additions": 1430,
+    "ai_deletions": 108,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/next.config.ts": {
+      "ai_additions": 6,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/account/page.tsx": {
+      "ai_additions": 317,
+      "human_additions": 0,
+      "ai_deletions": 52,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/approvals/page.tsx": {
+      "ai_additions": 101,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/layout.tsx": {
+      "ai_additions": 7,
+      "human_additions": 0,
+      "ai_deletions": 5,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/login/page.tsx": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/sellers/page.tsx": {
+      "ai_additions": 174,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/auth/route.ts": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/feedback/route.ts": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/product-approvals/route.ts": {
+      "ai_additions": 75,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/products/route.ts": {
+      "ai_additions": 14,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/sellers/route.ts": {
+      "ai_additions": 99,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/services/route.ts": {
+      "ai_additions": 14,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/external/products/route.ts": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/products/route.ts": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/seller/me/route.ts": {
+      "ai_additions": 30,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/seller/products/route.ts": {
+      "ai_additions": 139,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/services/route.ts": {
+      "ai_additions": 34,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/login/page.tsx": {
+      "ai_additions": 10,
+      "human_additions": 0,
+      "ai_deletions": 6,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/[id]/page.tsx": {
+      "ai_additions": 65,
+      "human_additions": 0,
+      "ai_deletions": 4,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/page.tsx": {
+      "ai_additions": 135,
+      "human_additions": 0,
+      "ai_deletions": 12,
+      "human_deletions": 0
+    },
+    "frontend/src/app/shop/[id]/layout.tsx": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/shop/[id]/page.tsx": {
+      "ai_additions": 7,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/app/shop/page.tsx": {
+      "ai_additions": 53,
+      "human_additions": 0,
+      "ai_deletions": 7,
+      "human_deletions": 0
+    },
+    "frontend/src/app/sitemap.ts": {
+      "ai_additions": 10,
+      "human_additions": 0,
+      "ai_deletions": 7,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/admin-store.ts": {
+      "ai_additions": 29,
+      "human_additions": 0,
+      "ai_deletions": 7,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/products.ts": {
+      "ai_additions": 11,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/services.ts": {
+      "ai_additions": 34,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/slug.ts": {
+      "ai_additions": 9,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/translations.ts": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "supabase/migrations/022_marketplace_sellers_moderation.sql": {
+      "ai_additions": 43,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    }
+  }
+}
