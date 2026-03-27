@@ -34,7 +34,7 @@ export default function CartSidebar() {
             </svg>
             <p className="text-charcoal/50 mb-4">{t("cart.empty")}</p>
             <Link
-              href="/shop"
+              href="/"
               onClick={() => setIsCartOpen(false)}
               className="rounded-full bg-green px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-dark transition-colors"
             >

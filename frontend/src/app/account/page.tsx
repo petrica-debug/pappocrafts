@@ -96,7 +96,7 @@ function SellerDashboard() {
           <p className="text-xs text-charcoal/50 mt-1">
             {profile.base_country && `${profile.base_country} · `}
             Public shop filter:{" "}
-            <Link href={`/shop?business=${encodeURIComponent(profile.business_slug)}`} className="text-green font-medium hover:underline">
+            <Link href={`/?business=${encodeURIComponent(profile.business_slug)}`} className="text-green font-medium hover:underline">
               View your catalogue
             </Link>
           </p>
@@ -333,7 +333,7 @@ export default function AccountPage() {
                     <h2 className="text-sm font-semibold text-charcoal/40 uppercase tracking-wider mb-4">Explore</h2>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <Link
-                        href="/shop"
+                        href="/"
                         className="flex items-center gap-4 rounded-xl border border-charcoal/8 p-5 hover:border-green/30 transition-all"
                       >
                         <p className="text-sm font-semibold text-charcoal">Browse shop</p>
@@ -354,7 +354,7 @@ export default function AccountPage() {
                   <h2 className="text-sm font-semibold text-charcoal/40 uppercase tracking-wider mb-4">Quick Actions</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <Link
-                      href="/shop"
+                      href="/"
                       className="flex items-center gap-4 rounded-xl border border-charcoal/8 p-5 hover:border-green/30 hover:shadow-md transition-all group"
                     >
                       <div className="h-11 w-11 rounded-lg bg-green/10 flex items-center justify-center group-hover:bg-green/20 transition-colors">

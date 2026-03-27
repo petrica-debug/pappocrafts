@@ -62,13 +62,13 @@ export default function Footer() {
           <div className="lg:col-span-3">
             <h3 className="text-sm font-semibold text-white/80 uppercase tracking-wide">{t("footer.shop")}</h3>
             <div className="mt-3 flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
-              <Link href="/shop" className="text-sm text-white/50 hover:text-green transition-colors shrink-0">
+              <Link href="/" className="text-sm text-white/50 hover:text-green transition-colors shrink-0">
                 {t("footer.allProducts")}
               </Link>
               {productCats.map((cat) => (
                 <Link
                   key={cat}
-                  href={`/shop?category=${encodeURIComponent(cat)}`}
+                  href={`/?category=${encodeURIComponent(cat)}`}
                   className="text-sm text-white/50 hover:text-green transition-colors shrink-0"
                 >
                   {translateShopCategory(cat, t)}

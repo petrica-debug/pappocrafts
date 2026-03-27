@@ -82,7 +82,7 @@ function SuccessContent() {
 
       <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
         <Link
-          href="/shop"
+          href="/"
           className="inline-flex items-center justify-center rounded-full bg-green px-8 py-3 text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
         >
           {t("success.continueShopping")}

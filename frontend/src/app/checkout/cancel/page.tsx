@@ -34,7 +34,7 @@ export default function CheckoutCancel() {
               {t("cancel.returnCheckout")}
             </Link>
             <Link
-              href="/shop"
+              href="/"
               className="inline-flex items-center justify-center rounded-full border-2 border-charcoal/20 px-8 py-3 text-base font-semibold text-charcoal hover:border-green hover:text-green transition-colors"
             >
               {t("cancel.keepShopping")}

@@ -35,7 +35,7 @@ function buildSchemas(cfg: DomainConfig) {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${cfg.baseUrl}/shop?search={search_term_string}`,
+        urlTemplate: `${cfg.baseUrl}/?search={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -46,7 +46,7 @@ function buildSchemas(cfg: DomainConfig) {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
     name: "PappoShop",
-    url: `${cfg.baseUrl}/shop`,
+    url: cfg.baseUrl,
     description:
       cfg.region === "balkans"
         ? "Online marketplace for handmade products and services from Roma entrepreneurs in Serbia, Albania, Bosnia, Kosovo, North Macedonia, and Montenegro."
@@ -65,7 +65,7 @@ function buildSchemas(cfg: DomainConfig) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: cfg.baseUrl },
-      { "@type": "ListItem", position: 2, name: "Shop", item: `${cfg.baseUrl}/shop` },
+      { "@type": "ListItem", position: 2, name: "Shop", item: cfg.baseUrl },
       { "@type": "ListItem", position: 3, name: "Services", item: `${cfg.baseUrl}/services` },
     ],
   };

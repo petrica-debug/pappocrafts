@@ -48,7 +48,7 @@ export default function Categories() {
           {browse.map((filterName) => (
             <Link
               key={filterName}
-              href={`/shop?category=${encodeURIComponent(filterName)}`}
+              href={`/?category=${encodeURIComponent(filterName)}`}
               className="group flex items-center gap-3 rounded-xl border border-charcoal/5 bg-light/50 px-4 py-3 hover:bg-white hover:border-green/20 hover:shadow-md transition-all"
             >
               <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-green/10 text-xl">
@@ -63,7 +63,7 @@ export default function Categories() {
 
         <div className="mt-10 text-center">
           <Link
-            href="/shop"
+            href="/"
             className="inline-flex items-center justify-center rounded-full bg-green px-8 py-3 text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
           >
             {t("nav.browseProducts")}

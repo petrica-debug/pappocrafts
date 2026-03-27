@@ -44,8 +44,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const productIds = await getProductIds();
 
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${BASE_URL}/shop`, lastModified: now, changeFrequency: "daily", priority: 0.95 },
+    { url: BASE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: `${BASE_URL}/landing`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE_URL}/services`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
@@ -55,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoryPages: MetadataRoute.Sitemap = categories
     .filter((c) => c !== "All")
     .map((cat) => ({
-      url: `${BASE_URL}/shop?category=${encodeURIComponent(cat)}`,
+      url: `${BASE_URL}/?category=${encodeURIComponent(cat)}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.7,

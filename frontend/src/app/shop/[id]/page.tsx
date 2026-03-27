@@ -92,7 +92,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center py-24">
             <h1 className="font-serif text-3xl font-bold text-charcoal">Product Not Found</h1>
             <p className="mt-4 text-charcoal/60">The product you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-            <Link href="/shop" className="mt-6 inline-block rounded-full bg-green px-6 py-3 text-white font-semibold hover:bg-green-dark transition-colors">
+            <Link href="/" className="mt-6 inline-block rounded-full bg-green px-6 py-3 text-white font-semibold hover:bg-green-dark transition-colors">
               Back to Shop
             </Link>
           </div>
@@ -108,9 +108,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
       <main className="pt-20 pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <nav className="mb-8 flex items-center gap-2 text-sm text-charcoal/50">
-            <Link href="/shop" className="hover:text-green transition-colors">{t("nav.shop")}</Link>
+            <Link href="/" className="hover:text-green transition-colors">{t("nav.shop")}</Link>
             <span>/</span>
-            <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-green transition-colors">
+            <Link href={`/?category=${encodeURIComponent(product.category)}`} className="hover:text-green transition-colors">
               {translateShopCategory(product.category, t)}
             </Link>
             <span>/</span>
@@ -149,8 +149,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <Link
                   href={
                     product.businessSlug
-                      ? `/shop?business=${encodeURIComponent(product.businessSlug)}`
-                      : `/shop?artisan=${encodeURIComponent(product.artisan)}`
+                      ? `/?business=${encodeURIComponent(product.businessSlug)}`
+                      : `/?artisan=${encodeURIComponent(product.artisan)}`
                   }
                   className="font-bold text-charcoal hover:text-green transition-colors"
                 >

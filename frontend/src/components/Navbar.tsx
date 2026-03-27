@@ -156,15 +156,12 @@ export default function Navbar() {
 
             <div className="hidden md:flex items-center gap-5">
               <Link href="/" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
-                {t("nav.home")}
-              </Link>
-              <Link href="/shop" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
                 {t("nav.shop")}
               </Link>
               <Link href="/services" className="text-sm font-medium text-charcoal/70 hover:text-blue transition-colors">
                 {t("nav.services")}
               </Link>
-              <Link href="/#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
+              <Link href="/landing#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
                 {t("nav.howItWorks")}
               </Link>
               <a
@@ -204,7 +201,7 @@ export default function Navbar() {
                 )}
               </button>
               <Link
-                href="/shop"
+                href="/"
                 className="inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-dark transition-colors"
               >
                 {t("nav.browseProducts")}
@@ -254,15 +251,12 @@ export default function Navbar() {
           <div className="md:hidden border-t border-charcoal/10 bg-white">
             <div className="flex flex-col gap-1 px-4 py-3">
               <Link href="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
-                {t("nav.home")}
-              </Link>
-              <Link href="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
                 {t("nav.shop")}
               </Link>
               <Link href="/services" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-blue transition-colors">
                 {t("nav.services")}
               </Link>
-              <Link href="/#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
+              <Link href="/landing#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
                 {t("nav.howItWorks")}
               </Link>
               <a
@@ -272,7 +266,7 @@ export default function Navbar() {
               >
                 {t("nav.support")}
               </a>
-              <Link href="/shop" onClick={() => setMobileOpen(false)} className="mt-2 inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors">
+              <Link href="/" onClick={() => setMobileOpen(false)} className="mt-2 inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors">
                 {t("nav.browseProducts")}
               </Link>
             </div>

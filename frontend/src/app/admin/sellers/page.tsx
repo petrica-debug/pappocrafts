@@ -259,7 +259,7 @@ export default function AdminSellersPage() {
                   <div className="min-w-0">
                     <p className="font-medium text-white">{s.business_name}</p>
                     <p className="text-white/45 text-xs mt-0.5">
-                      {s.name} · {s.email} · {s.base_country || "—"} · /shop?business={s.business_slug}
+                      {s.name} · {s.email} · {s.base_country || "—"} · /?business={s.business_slug}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2 shrink-0">
