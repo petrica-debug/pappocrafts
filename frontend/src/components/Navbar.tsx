@@ -151,7 +151,7 @@ export default function Navbar() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center">
-              <Image src={logo_url} alt="PappoShop" width={160} height={48} className="h-10 w-auto" priority unoptimized />
+              <Image src={logo_url} alt="PappoShop" width={220} height={64} className="h-14 w-auto" priority unoptimized />
             </Link>
 
             <div className="hidden md:flex items-center gap-5">

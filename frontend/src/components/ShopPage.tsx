@@ -141,14 +141,6 @@ function ShopContent() {
       <Navbar />
       <main className="pt-20 pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-5">
-            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal tracking-tight">
-              {t("shop.title")}
-            </h1>
-            <p className="mt-3 text-base text-charcoal/60 leading-relaxed">
-              {t("shop.desc")}
-            </p>
-          </div>
 
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center max-w-3xl mx-auto">
             <div className="relative flex-1 min-w-[200px] max-w-sm mx-auto sm:mx-0">
