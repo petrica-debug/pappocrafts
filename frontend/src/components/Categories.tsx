@@ -30,7 +30,7 @@ export default function Categories() {
   const browse = categories.filter((c) => c !== "All");
 
   return (
-    <section id="categories" className="py-24 sm:py-32 bg-white">
+    <section id="categories" className="bg-white pt-24 sm:pt-32 pb-10 sm:pb-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto">
           <p className="text-sm font-semibold text-blue uppercase tracking-wide">
