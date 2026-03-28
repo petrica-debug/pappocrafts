@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "205c690384d9f25be1d9ea5de5332cd5d24fa986",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-28T14:47:06+02:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "editor_hook",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 1.0
+  },
+  "stats": {
+    "total_additions": 16,
+    "total_deletions": 0,
+    "ai_additions": 16,
+    "ai_deletions": 0,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/components/Footer.tsx": {
+      "ai_additions": 7,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "30,33,35,38,40,101,103",
+      "human_lines": ""
+    },
+    "frontend/src/components/Navbar.tsx": {
+      "ai_additions": 9,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "6,144,151,172-173,177,268-269,274",
+      "human_lines": ""
+    }
+  }
+}
