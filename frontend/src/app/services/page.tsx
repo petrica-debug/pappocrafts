@@ -93,11 +93,9 @@ function ServicesContent() {
       <Navbar />
       <main className="pt-20 pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="sr-only">{t("services.title")}</h1>
           <div className="text-center max-w-2xl mx-auto mb-5">
-            <h1 className="font-serif text-4xl sm:text-5xl font-bold text-charcoal tracking-tight">
-              {t("services.title")}
-            </h1>
-            <p className="mt-3 text-base text-charcoal/60 leading-relaxed">
+            <p className="text-base text-charcoal/60 leading-relaxed">
               {t("services.desc")}
             </p>
           </div>

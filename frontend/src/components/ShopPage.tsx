@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback, Suspense } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -11,6 +11,8 @@ import { useCart } from "@/lib/cart-context";
 import { useLocale } from "@/lib/locale-context";
 import { translateShopCategory } from "@/lib/translations";
 import { trackAddToCart } from "@/components/Analytics";
+
+const PRODUCTS_PER_PAGE = 12;
 
 function ShopContent() {
   const router = useRouter();
@@ -152,6 +154,73 @@ function ShopContent() {
     else if (sortMode === "price-desc") copy.sort((a, b) => b.price - a.price);
     return copy;
   }, [filtered, sortMode]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedProducts.length / PRODUCTS_PER_PAGE));
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
+  const rawPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+  const currentPage = Math.min(rawPage, totalPages);
+
+  const paginatedProducts = useMemo(
+    () =>
+      sortedProducts.slice(
+        (currentPage - 1) * PRODUCTS_PER_PAGE,
+        currentPage * PRODUCTS_PER_PAGE
+      ),
+    [sortedProducts, currentPage]
+  );
+
+  const filterKey = `${activeCategory}|${search}|${countryFilter}|${inStockOnly}|${activeArtisan}|${activeBusinessSlug}|${sortMode}`;
+  const prevFilterKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (prevFilterKeyRef.current === null) {
+      prevFilterKeyRef.current = filterKey;
+      return;
+    }
+    if (prevFilterKeyRef.current !== filterKey) {
+      prevFilterKeyRef.current = filterKey;
+      if (searchParams.get("page")) {
+        const u = new URLSearchParams(searchParams.toString());
+        u.delete("page");
+        const q = u.toString();
+        router.replace(q ? `${listingBase}?${q}` : listingBase, { scroll: false });
+      }
+    }
+  }, [filterKey, listingBase, router, searchParams]);
+
+  useEffect(() => {
+    if (loading || error || sortedProducts.length === 0) return;
+    if (rawPage <= totalPages) return;
+    const u = new URLSearchParams(searchParams.toString());
+    if (totalPages <= 1) u.delete("page");
+    else u.set("page", String(totalPages));
+    const q = u.toString();
+    router.replace(q ? `${listingBase}?${q}` : listingBase, { scroll: false });
+  }, [
+    loading,
+    error,
+    rawPage,
+    totalPages,
+    sortedProducts.length,
+    listingBase,
+    router,
+    searchParams,
+  ]);
+
+  const goToPage = useCallback(
+    (next: number) => {
+      const u = new URLSearchParams(searchParams.toString());
+      if (next <= 1) u.delete("page");
+      else u.set("page", String(next));
+      const q = u.toString();
+      router.replace(q ? `${listingBase}?${q}` : listingBase);
+    },
+    [listingBase, router, searchParams]
+  );
+
+  const paginationInfo = t("shop.paginationInfo")
+    .replace("{current}", String(currentPage))
+    .replace("{total}", String(totalPages));
 
   return (
     <>
@@ -295,59 +364,85 @@ function ShopContent() {
               </button>
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {sortedProducts.map((product) => (
-                <button
-                  key={product.id}
-                  type="button"
-                  onClick={() => setPreview(product)}
-                  className="group text-left rounded-2xl bg-white border border-charcoal/5 overflow-hidden hover:shadow-lg hover:border-green/20 transition-all"
+            <>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {paginatedProducts.map((product) => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => setPreview(product)}
+                    className="group text-left rounded-2xl bg-white border border-charcoal/5 overflow-hidden hover:shadow-lg hover:border-green/20 transition-all"
+                  >
+                    <div className="p-5">
+                      <div className="flex items-start gap-4">
+                        <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-light">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                            unoptimized
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-charcoal group-hover:text-green transition-colors truncate">
+                              {product.name}
+                            </h3>
+                            {!product.inStock && (
+                              <span className="flex-shrink-0 rounded-full bg-charcoal/10 px-2 py-0.5 text-[10px] font-bold text-charcoal/50">
+                                OUT
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-charcoal/60 truncate">
+                            {translateShopCategory(product.category, t)}
+                          </p>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-charcoal/50">
+                            <span className="truncate max-w-[140px]">{product.businessName}</span>
+                            <span>{product.country}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="mt-3 text-sm text-charcoal/60 line-clamp-2">{product.description}</p>
+                      <div className="mt-4 flex items-center justify-between gap-2">
+                        <span className="text-sm font-bold text-green">{formatRegionalPrice(product.price)}</span>
+                        <div className="flex items-center gap-1 text-xs text-charcoal/40">
+                          <span className={`h-2 w-2 rounded-full ${product.inStock ? "bg-green" : "bg-charcoal/25"}`} />
+                          {product.inStock ? "In stock" : "Out of stock"}
+                        </div>
+                      </div>
+                      <p className="mt-3 text-xs font-medium text-green">Quick preview — click for details</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {totalPages > 1 && (
+                <nav
+                  className="mt-10 flex flex-wrap items-center justify-center gap-3"
+                  aria-label={paginationInfo}
                 >
-                  <div className="p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-light">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                          sizes="64px"
-                          unoptimized
-                        />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-charcoal group-hover:text-green transition-colors truncate">
-                            {product.name}
-                          </h3>
-                          {!product.inStock && (
-                            <span className="flex-shrink-0 rounded-full bg-charcoal/10 px-2 py-0.5 text-[10px] font-bold text-charcoal/50">
-                              OUT
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-charcoal/60 truncate">
-                          {translateShopCategory(product.category, t)}
-                        </p>
-                        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-charcoal/50">
-                          <span className="truncate max-w-[140px]">{product.businessName}</span>
-                          <span>{product.country}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mt-3 text-sm text-charcoal/60 line-clamp-2">{product.description}</p>
-                    <div className="mt-4 flex items-center justify-between gap-2">
-                      <span className="text-sm font-bold text-green">{formatRegionalPrice(product.price)}</span>
-                      <div className="flex items-center gap-1 text-xs text-charcoal/40">
-                        <span className={`h-2 w-2 rounded-full ${product.inStock ? "bg-green" : "bg-charcoal/25"}`} />
-                        {product.inStock ? "In stock" : "Out of stock"}
-                      </div>
-                    </div>
-                    <p className="mt-3 text-xs font-medium text-green">Quick preview — click for details</p>
-                  </div>
-                </button>
-              ))}
-            </div>
+                  <button
+                    type="button"
+                    disabled={currentPage <= 1}
+                    onClick={() => goToPage(currentPage - 1)}
+                    className="rounded-full border border-charcoal/15 bg-white px-4 py-2 text-sm font-medium text-charcoal transition-colors hover:border-green/30 hover:text-green disabled:pointer-events-none disabled:opacity-40"
+                  >
+                    {t("shop.paginationPrev")}
+                  </button>
+                  <p className="min-w-[8rem] text-center text-sm text-charcoal/60 tabular-nums">{paginationInfo}</p>
+                  <button
+                    type="button"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => goToPage(currentPage + 1)}
+                    className="rounded-full border border-charcoal/15 bg-white px-4 py-2 text-sm font-medium text-charcoal transition-colors hover:border-green/30 hover:text-green disabled:pointer-events-none disabled:opacity-40"
+                  >
+                    {t("shop.paginationNext")}
+                  </button>
+                </nav>
+              )}
+            </>
           )}
         </div>
       </main>
