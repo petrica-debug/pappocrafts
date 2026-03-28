@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { categories } from "@/lib/products";
+import { DEFAULT_LISTING_PHONE } from "@/lib/listing-phone";
 
 interface DBProduct {
   id: string;
@@ -14,6 +15,7 @@ interface DBProduct {
   category: string;
   artisan: string;
   country: string;
+  phone: string;
   image: string;
   tags: string[];
   in_stock: boolean;
@@ -24,6 +26,7 @@ interface DBProduct {
 const emptyProduct: Omit<DBProduct, "created_at" | "updated_at"> = {
   id: "", name: "", description: "", long_description: "", price: 0, currency: "EUR",
   category: categories[1], artisan: "", country: "",
+  phone: DEFAULT_LISTING_PHONE,
   image: "",
   tags: [], in_stock: true,
 };
@@ -68,7 +71,7 @@ export default function AdminProducts() {
   }
 
   async function saveProduct() {
-    if (!editing || !editing.name.trim()) return;
+    if (!editing || !editing.name.trim() || !editing.phone.trim()) return;
     setSaving(true);
     try {
       const method = isNew ? "POST" : "PATCH";
@@ -82,6 +85,7 @@ export default function AdminProducts() {
         category: editing.category,
         artisan: editing.artisan,
         country: editing.country,
+        phone: editing.phone.trim(),
         image: editing.image,
         tags: editing.tags,
         in_stock: editing.in_stock,
@@ -226,6 +230,15 @@ export default function AdminProducts() {
                 </div>
               </div>
               <div>
+                <label className="block text-xs font-medium text-white/40 mb-1.5">Phone *</label>
+                <input
+                  value={editing.phone}
+                  onChange={(e) => setEditing({ ...editing, phone: e.target.value })}
+                  placeholder="+389…"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#4A9B3F]/50"
+                />
+              </div>
+              <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-medium text-white/40">Product Image</label>
                   <div className="flex rounded-lg bg-white/5 p-0.5">
@@ -351,7 +364,9 @@ export default function AdminProducts() {
                         id: product.id, name: product.name, description: product.description,
                         long_description: product.long_description, price: Number(product.price),
                         currency: product.currency, category: product.category, artisan: product.artisan,
-                        country: product.country, image: product.image, tags: product.tags, in_stock: product.in_stock,
+                        country: product.country,
+                        phone: (product as DBProduct).phone || DEFAULT_LISTING_PHONE,
+                        image: product.image, tags: product.tags, in_stock: product.in_stock,
                       });
                       setIsNew(false);
                       setTagInput("");

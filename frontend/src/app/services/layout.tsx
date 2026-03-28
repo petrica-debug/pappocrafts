@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
         ],
     alternates: { canonical: `${cfg.baseUrl}/services` },
     openGraph: {
-      title: "Local Services from Roma Entrepreneurs | PappoShop",
+      
       description: isEU
         ? "Trusted services from Roma professionals — available across Europe."
         : "Trusted local services from Roma professionals across the Western Balkans.",

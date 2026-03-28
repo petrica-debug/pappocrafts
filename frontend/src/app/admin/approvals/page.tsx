@@ -66,6 +66,19 @@ export default function AdminApprovalsPage() {
                 <p className="text-xs text-white/45 mt-1">
                   {(p.business_name || p.artisan) as string} · submitted {p.submitted_at ? new Date(String(p.submitted_at)).toLocaleString() : "—"}
                 </p>
+                {!(p.seller_id as string | null | undefined) && (
+                  <span className="inline-block mt-2 text-[10px] font-semibold uppercase tracking-wide text-amber-200 bg-amber-500/15 px-2 py-0.5 rounded">
+                    Public listing form
+                  </span>
+                )}
+                {((p.submitter_email as string | undefined) ||
+                  (p.submitter_phone as string | undefined) ||
+                  (p.phone as string | undefined)) && (
+                  <p className="text-xs text-white/50 mt-2">
+                    Contact:{" "}
+                    {[String(p.submitter_email || ""), String((p.phone as string) || p.submitter_phone || "")].filter(Boolean).join(" · ")}
+                  </p>
+                )}
                 {p.sla_overdue ? (
                   <span className="inline-block mt-2 text-[11px] font-semibold uppercase tracking-wide text-red-300 bg-red-500/15 px-2 py-0.5 rounded">
                     Over 24h — review now

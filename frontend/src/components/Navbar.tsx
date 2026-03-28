@@ -7,6 +7,7 @@ import { useCart } from "@/lib/cart-context";
 import { useLocale, locales, currencies } from "@/lib/locale-context";
 import { useSiteSettings } from "@/lib/site-settings-context";
 import CartSidebar from "./CartSidebar";
+import ListingOfferModal from "./ListingOfferModal";
 
 function useLoggedIn() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -139,6 +140,7 @@ function CurrencySelector({ variant }: { variant: "desktop" | "mobile" }) {
 }
 
 export default function Navbar() {
+  const [listingModalOpen, setListingModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
   const { t } = useLocale();
@@ -200,12 +202,13 @@ export default function Navbar() {
                   </span>
                 )}
               </button>
-              <Link
-                href="/"
+              <button
+                type="button"
+                onClick={() => setListingModalOpen(true)}
                 className="inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-dark transition-colors"
               >
-                {t("nav.browseProducts")}
-              </Link>
+                {t("nav.listOffer")}
+              </button>
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
@@ -266,14 +269,22 @@ export default function Navbar() {
               >
                 {t("nav.support")}
               </a>
-              <Link href="/" onClick={() => setMobileOpen(false)} className="mt-2 inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors">
-                {t("nav.browseProducts")}
-              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setListingModalOpen(true);
+                }}
+                className="mt-2 w-full inline-flex items-center justify-center rounded-full bg-green px-5 py-2 text-sm font-semibold text-white hover:bg-green-dark transition-colors"
+              >
+                {t("nav.listOffer")}
+              </button>
             </div>
           </div>
         )}
       </nav>
       <CartSidebar />
+      <ListingOfferModal open={listingModalOpen} onClose={() => setListingModalOpen(false)} />
     </>
   );
 }

@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { serviceCategories } from "@/lib/services";
+import { DEFAULT_LISTING_PHONE } from "@/lib/listing-phone";
 
 interface DBService {
   id: string;
@@ -19,6 +20,7 @@ interface DBService {
   review_count: number;
   location: string;
   country: string;
+  phone: string;
   image: string;
   badges: string[];
   available: boolean;
@@ -36,6 +38,7 @@ const emptyService: EditableService = {
   category: serviceCategories.find((c) => c.name === "Home Repair")?.name ?? "Home Repair",
   hourly_rate: 0, fixed_rate_from: null,
   currency: "EUR", rating: 5, review_count: 0, location: "", country: "",
+  phone: DEFAULT_LISTING_PHONE,
   image: "",
   badges: [], available: true, response_time: "Under 1 hour", completed_jobs: 0,
   seller_id: null,
@@ -101,7 +104,7 @@ function AdminServicesInner() {
   }
 
   async function saveService() {
-    if (!editing || !editing.name.trim()) return;
+    if (!editing || !editing.name.trim() || !editing.phone.trim()) return;
     setSaving(true);
     try {
       const method = isNew ? "POST" : "PATCH";
@@ -242,6 +245,15 @@ function AdminServicesInner() {
                 </div>
               </div>
               <div>
+                <label className="block text-xs font-medium text-white/40 mb-1.5">Phone *</label>
+                <input
+                  value={editing.phone}
+                  onChange={(e) => setEditing({ ...editing, phone: e.target.value })}
+                  placeholder="+389…"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#4A9B3F]/50"
+                />
+              </div>
+              <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-medium text-white/40">Provider Photo</label>
                   <div className="flex rounded-lg bg-white/5 p-0.5">
@@ -362,7 +374,9 @@ function AdminServicesInner() {
                       fixed_rate_from: provider.fixed_rate_from ? Number(provider.fixed_rate_from) : null,
                       currency: provider.currency, rating: Number(provider.rating),
                       review_count: provider.review_count, location: provider.location,
-                      country: provider.country, image: provider.image, badges: provider.badges,
+                      country: provider.country,
+                      phone: (provider as DBService).phone || DEFAULT_LISTING_PHONE,
+                      image: provider.image, badges: provider.badges,
                       available: provider.available, response_time: provider.response_time,
                       completed_jobs: provider.completed_jobs,
                       seller_id: provider.seller_id ?? null,

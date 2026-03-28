@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateSession } from "@/lib/admin-store";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 
 function getSession(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -33,6 +34,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
+    if (!isValidListingPhone(phone)) {
+      return NextResponse.json({ error: "phone is required (min 6 characters)." }, { status: 400 });
+    }
     const db = createAdminClient();
     const { data, error } = await db.from("services").insert({
       id: body.id || `service-${Date.now()}`,
@@ -48,6 +53,7 @@ export async function POST(request: NextRequest) {
       review_count: body.reviewCount ?? body.review_count ?? 0,
       location: body.location || "",
       country: body.country || "",
+      phone,
       image: body.image || "",
       badges: body.badges || [],
       available: body.available ?? true,
@@ -86,6 +92,13 @@ export async function PATCH(request: NextRequest) {
     if (body.fixedRateFrom !== undefined) updates.fixed_rate_from = body.fixedRateFrom;
     if (body.location !== undefined) updates.location = body.location;
     if (body.country !== undefined) updates.country = body.country;
+    if (body.phone !== undefined || body.contactPhone !== undefined) {
+      const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
+      if (!isValidListingPhone(phone)) {
+        return NextResponse.json({ error: "phone is required (min 6 characters)." }, { status: 400 });
+      }
+      updates.phone = phone;
+    }
     if (body.image !== undefined) updates.image = body.image;
     if (body.badges !== undefined) updates.badges = body.badges;
     if (body.available !== undefined) updates.available = body.available;

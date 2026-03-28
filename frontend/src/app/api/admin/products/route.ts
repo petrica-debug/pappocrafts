@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateSession } from "@/lib/admin-store";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 
 function getSession(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -33,6 +34,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
+    if (!isValidListingPhone(phone)) {
+      return NextResponse.json({ error: "phone is required (min 6 characters)." }, { status: 400 });
+    }
     const db = createAdminClient();
     const { data, error } = await db.from("products").insert({
       id: body.id || `product-${Date.now()}`,
@@ -44,6 +49,7 @@ export async function POST(request: NextRequest) {
       category: body.category || "",
       artisan: body.artisan || "",
       country: body.country || "",
+      phone,
       image: body.image || "",
       tags: body.tags || [],
       in_stock: body.inStock ?? body.in_stock ?? true,
@@ -87,6 +93,13 @@ export async function PATCH(request: NextRequest) {
     if (body.business_name !== undefined) updates.business_name = body.business_name;
     if (body.businessSlug !== undefined) updates.business_slug = body.businessSlug;
     if (body.business_slug !== undefined) updates.business_slug = body.business_slug;
+    if (body.phone !== undefined || body.contactPhone !== undefined) {
+      const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
+      if (!isValidListingPhone(phone)) {
+        return NextResponse.json({ error: "phone is required (min 6 characters)." }, { status: 400 });
+      }
+      updates.phone = phone;
+    }
     if (body.approval_status !== undefined) updates.approval_status = body.approval_status;
     if (body.approvalStatus !== undefined) updates.approval_status = body.approvalStatus;
     if (updates.approval_status !== undefined) {

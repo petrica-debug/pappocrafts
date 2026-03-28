@@ -1,3 +1,5 @@
+import { DEFAULT_LISTING_PHONE } from "./listing-phone";
+
 export interface ServiceProvider {
   id: string;
   name: string;
@@ -12,6 +14,8 @@ export interface ServiceProvider {
   reviewCount: number;
   location: string;
   country: string;
+  /** Provider contact phone. */
+  phone: string;
   image: string;
   badges: string[];
   available: boolean;
@@ -41,6 +45,7 @@ export function mapSupabaseServiceRow(row: any): ServiceProvider {
     reviewCount: Number(row.review_count) || 0,
     location: row.location || "",
     country: row.country || "",
+    phone: typeof row.phone === "string" && row.phone.trim() ? row.phone.trim() : "",
     image: row.image || "",
     badges: Array.isArray(row.badges) ? row.badges : [],
     available: row.available !== false,
@@ -94,6 +99,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 87,
     location: "Belgrade",
     country: "Serbia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=400&fit=crop&crop=face",
     badges: ["Verified", "Top Rated"],
     available: true,
@@ -114,6 +120,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 63,
     location: "Pristina",
     country: "Kosovo",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
     badges: ["Verified", "Top Rated"],
     available: true,
@@ -134,6 +141,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 52,
     location: "Sarajevo",
     country: "Bosnia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=400&fit=crop&crop=face",
     badges: ["Verified", "Certified"],
     available: true,
@@ -154,6 +162,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 94,
     location: "Tirana",
     country: "Albania",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=400&fit=crop",
     badges: ["Verified", "Eco-Friendly"],
     available: true,
@@ -174,6 +183,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 41,
     location: "Skopje",
     country: "North Macedonia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=400&fit=crop&crop=face",
     badges: ["Verified"],
     available: true,
@@ -194,6 +204,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 38,
     location: "Belgrade",
     country: "Serbia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face",
     badges: ["Verified", "Top Rated"],
     available: true,
@@ -214,6 +225,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 29,
     location: "Tirana",
     country: "Albania",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=400&fit=crop&crop=face",
     badges: ["Verified"],
     available: true,
@@ -234,6 +246,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 56,
     location: "Podgorica",
     country: "Montenegro",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=400&fit=crop",
     badges: ["Verified", "Top Rated"],
     available: true,
@@ -254,6 +267,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 44,
     location: "Belgrade",
     country: "Serbia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=400&fit=crop",
     badges: ["Verified"],
     available: true,
@@ -274,6 +288,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 31,
     location: "Sarajevo",
     country: "Bosnia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=400&fit=crop",
     badges: ["Verified", "Top Rated"],
     available: true,
@@ -294,6 +309,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 22,
     location: "Pristina",
     country: "Kosovo",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop",
     badges: ["Verified"],
     available: true,
@@ -314,6 +330,7 @@ export const serviceProviders: ServiceProvider[] = [
     reviewCount: 47,
     location: "Skopje",
     country: "North Macedonia",
+    phone: DEFAULT_LISTING_PHONE,
     image: "https://images.unsplash.com/photo-1556740758-90de940a6755?w=400&h=400&fit=crop",
     badges: ["Verified", "Top Rated"],
     available: true,

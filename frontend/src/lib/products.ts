@@ -12,6 +12,8 @@ export interface Product {
   /** Stable filter for “all products from this business” when set. */
   businessSlug: string;
   country: string;
+  /** Listing contact phone (E.164 or local format). */
+  phone: string;
   image: string;
   tags: string[];
   inStock: boolean;
@@ -84,6 +86,7 @@ export function mapSupabaseProduct(row: any): Product {
     businessName,
     businessSlug,
     country: row.country || "",
+    phone: typeof row.phone === "string" && row.phone.trim() ? row.phone.trim() : "",
     image: row.image || "",
     tags: Array.isArray(row.tags) ? row.tags : [],
     inStock: row.in_stock !== false,

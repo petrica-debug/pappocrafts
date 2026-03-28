@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { categories } from "@/lib/products";
+import { DEFAULT_LISTING_PHONE } from "@/lib/listing-phone";
 
 interface UserInfo {
   email: string;
@@ -34,6 +35,7 @@ function SellerDashboard() {
     image: "",
     country: "North Macedonia" as (typeof SELLER_COUNTRIES)[number],
     artisan: "",
+    phone: DEFAULT_LISTING_PHONE,
   });
 
   const load = useCallback(() => {
@@ -69,6 +71,7 @@ function SellerDashboard() {
         image: form.image || "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&h=600&fit=crop",
         country: form.country,
         artisan: form.artisan || undefined,
+        phone: form.phone.trim(),
       }),
     });
     const data = await res.json();
@@ -84,6 +87,7 @@ function SellerDashboard() {
       price: "",
       image: "",
       artisan: "",
+      phone: f.phone,
     }));
     load();
   }
@@ -214,6 +218,18 @@ function SellerDashboard() {
               onChange={(e) => setForm((f) => ({ ...f, artisan: e.target.value }))}
               className="mt-1 w-full rounded-xl border border-charcoal/15 px-4 py-2.5 text-sm"
               placeholder="Defaults to your account name"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-charcoal/50">Contact phone (shown to buyers after approval)</label>
+            <input
+              required
+              type="tel"
+              minLength={6}
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              className="mt-1 w-full rounded-xl border border-charcoal/15 px-4 py-2.5 text-sm"
+              placeholder="+389…"
             />
           </div>
           {err && <p className="text-sm text-red-600">{err}</p>}

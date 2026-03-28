@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { redactPublicListingContact } from "@/lib/public-listing-response";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
       if (error || !data) {
         return NextResponse.json({ error: "Product not found" }, { status: 404 });
       }
-      return NextResponse.json(data, {
+      return NextResponse.json(redactPublicListingContact(data as Record<string, unknown>), {
         headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
       });
     }
@@ -48,7 +49,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data || [], {
+    const rows = (data || []).map((r) => redactPublicListingContact(r as Record<string, unknown>));
+    return NextResponse.json(rows, {
       headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
     });
   } catch {

@@ -132,6 +132,7 @@ function formatProduct(row: any, format: string | null) {
     category: row.category,
     artisan: row.artisan,
     country: row.country,
+    phone: row.phone || "",
     image: row.image,
     tags: row.tags || [],
     in_stock: row.in_stock,

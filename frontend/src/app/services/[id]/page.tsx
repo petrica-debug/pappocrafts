@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useMemo, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -13,18 +13,13 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
   const { id } = use(params);
   const [provider, setProvider] = useState<ServiceProvider | null>(() => getServiceProvider(id) ?? null);
   const [loading, setLoading] = useState(true);
-  const [showBooking, setShowBooking] = useState(false);
-  const [bookingDate, setBookingDate] = useState("");
-  const [timeStart, setTimeStart] = useState("12:00");
-  const [timeEnd, setTimeEnd] = useState("17:00");
-  const [bookingMessage, setBookingMessage] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [bookingStatus, setBookingStatus] = useState<"idle" | "sent">("idle");
-  const [bookingSubmitting, setBookingSubmitting] = useState(false);
-  const [bookingError, setBookingError] = useState("");
-  const { t, formatRegionalPrice, locale } = useLocale();
+
+  const [revealedPhone, setRevealedPhone] = useState<string | null>(null);
+  const [revealCount, setRevealCount] = useState<number | null>(null);
+  const [revealLoading, setRevealLoading] = useState(false);
+  const [revealError, setRevealError] = useState("");
+
+  const { t, formatRegionalPrice } = useLocale();
 
   useEffect(() => {
     let cancelled = false;
@@ -52,21 +47,6 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
     };
   }, [id]);
 
-  const durationHours = useMemo(() => {
-    const [sh, sm] = timeStart.split(":").map(Number);
-    const [eh, em] = timeEnd.split(":").map(Number);
-    if ([sh, sm, eh, em].some((n) => Number.isNaN(n))) return null;
-    const a = sh * 60 + sm;
-    const b = eh * 60 + em;
-    if (b <= a) return null;
-    return Math.round(((b - a) / 60) * 100) / 100;
-  }, [timeStart, timeEnd]);
-
-  const estimateEur = useMemo(() => {
-    if (!provider || durationHours == null || provider.hourlyRate <= 0) return null;
-    return Math.round(durationHours * provider.hourlyRate * 100) / 100;
-  }, [provider, durationHours]);
-
   if (loading) {
     return (
       <>
@@ -85,40 +65,37 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
     .filter((p) => p.category === svc.category && p.id !== svc.id)
     .slice(0, 3);
 
-  async function handleBookingSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setBookingError("");
-    if (durationHours == null) {
-      setBookingError(t("service.bookingSubmitError"));
-      return;
-    }
-    setBookingSubmitting(true);
+  async function handleRevealContact() {
+    if (revealLoading || revealedPhone) return;
+    setRevealError("");
+    setRevealLoading(true);
     try {
-      const res = await fetch("/api/service-bookings", {
+      const res = await fetch("/api/public/reveal-contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          providerId: svc.id,
-          providerName: svc.name,
-          providerCategory: svc.category,
-          customerName,
-          customerEmail,
-          customerPhone,
-          preferredDate: bookingDate,
-          timeStart,
-          timeEnd,
-          message: bookingMessage,
-          hourlyRateEur: svc.hourlyRate,
-          locale,
-        }),
+        body: JSON.stringify({ kind: "service", id: svc.id }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "fail");
-      setBookingStatus("sent");
+      if (res.ok && typeof data.phone === "string" && data.phone.trim()) {
+        setRevealedPhone(data.phone.trim());
+        setRevealCount(typeof data.contactRevealCount === "number" ? data.contactRevealCount : null);
+        return;
+      }
+      if (svc.phone?.trim()) {
+        setRevealedPhone(svc.phone.trim());
+        setRevealCount(null);
+        return;
+      }
+      setRevealError(typeof data.error === "string" ? data.error : t("listing.error"));
     } catch {
-      setBookingError(t("service.bookingSubmitError"));
+      if (svc.phone?.trim()) {
+        setRevealedPhone(svc.phone.trim());
+        setRevealCount(null);
+      } else {
+        setRevealError(t("listing.error"));
+      }
     } finally {
-      setBookingSubmitting(false);
+      setRevealLoading(false);
     }
   }
 
@@ -160,7 +137,7 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                     ))}
                   </div>
                   <p className="text-lg text-charcoal/60 mt-1">{provider.title}</p>
-                  <div className="mt-2 flex items-center gap-4 text-sm text-charcoal/50">
+                  <div className="mt-2 flex items-center gap-4 text-sm text-charcoal/50 flex-wrap">
                     <span className="flex items-center gap-1">
                       <svg className="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clipRule="evenodd" />
@@ -226,142 +203,44 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                   )}
                 </div>
 
-                {provider.bookingCalendarUrl ? (
-                  <a
-                    href={provider.bookingCalendarUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
-                  >
-                    View availability & book
-                  </a>
-                ) : !showBooking ? (
-                  <div className="space-y-3">
+                <div className="space-y-3">
+                  {provider.bookingCalendarUrl && (
+                    <a
+                      href={provider.bookingCalendarUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full rounded-full border-2 border-green py-3 text-center text-sm font-semibold text-green hover:bg-green hover:text-white transition-all"
+                    >
+                      View availability & book
+                    </a>
+                  )}
+
+                  {!revealedPhone ? (
                     <button
                       type="button"
-                      onClick={() => setShowBooking(true)}
-                      className="w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
-                    >
-                      {t("service.requestBooking")}
-                    </button>
-                    <button className="w-full rounded-full border-2 border-charcoal/10 py-3 text-center text-sm font-semibold text-charcoal hover:border-green hover:text-green transition-colors">
-                      {t("service.sendMessage")}
-                    </button>
-                  </div>
-                ) : bookingStatus === "sent" ? (
-                  <div className="text-center py-4">
-                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green/10">
-                      <svg className="h-6 w-6 text-green" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                      </svg>
-                    </div>
-                    <p className="font-semibold text-charcoal">{t("service.requestSent")}</p>
-                    <p className="text-sm text-charcoal/50 mt-1">{provider.name} {t("service.respondsIn")} {provider.responseTime.toLowerCase()}.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleBookingSubmit} className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.yourName")}</label>
-                      <input
-                        type="text"
-                        required
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.yourEmail")}</label>
-                      <input
-                        type="email"
-                        required
-                        value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
-                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.yourPhone")}</label>
-                      <input
-                        type="tel"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.prefDate")}</label>
-                      <input
-                        type="date"
-                        required
-                        value={bookingDate}
-                        onChange={(e) => setBookingDate(e.target.value)}
-                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.bookingStart")}</label>
-                        <input
-                          type="time"
-                          required
-                          value={timeStart}
-                          onChange={(e) => setTimeStart(e.target.value)}
-                          className="w-full rounded-lg border border-charcoal/10 px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.bookingEnd")}</label>
-                        <input
-                          type="time"
-                          required
-                          value={timeEnd}
-                          onChange={(e) => setTimeEnd(e.target.value)}
-                          className="w-full rounded-lg border border-charcoal/10 px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                    {provider.hourlyRate > 0 && (
-                      <div className="rounded-lg bg-green/5 border border-green/10 px-3 py-2 text-sm">
-                        <span className="text-charcoal/60">{t("service.estimatedTotal")}: </span>
-                        <span className="font-bold text-green">
-                          {estimateEur != null ? formatRegionalPrice(estimateEur) : "—"}
-                        </span>
-                        {durationHours != null && (
-                          <span className="text-charcoal/45 text-xs ml-1">
-                            ({durationHours}h × {formatRegionalPrice(provider.hourlyRate)}{t("services.perHour")})
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    <div>
-                      <label className="block text-xs font-medium text-charcoal/60 mb-1">{t("service.describeNeed")}</label>
-                      <textarea
-                        required
-                        rows={3}
-                        value={bookingMessage}
-                        onChange={(e) => setBookingMessage(e.target.value)}
-                        placeholder={t("service.bookingPlaceholder")}
-                        className="w-full rounded-lg border border-charcoal/10 px-3 py-2 text-sm placeholder:text-charcoal/30 focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent resize-none"
-                      />
-                    </div>
-                    {bookingError && <p className="text-xs text-red-600">{bookingError}</p>}
-                    <button
-                      type="submit"
-                      disabled={bookingSubmitting}
+                      onClick={handleRevealContact}
+                      disabled={revealLoading}
                       className="w-full rounded-full bg-green py-3 text-center text-sm font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all disabled:opacity-60"
                     >
-                      {bookingSubmitting ? "…" : t("service.sendRequest")}
+                      {revealLoading ? t("listing.submitting") : t("listing.revealContactDetails")}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowBooking(false)}
-                      className="w-full py-2 text-center text-xs text-charcoal/40 hover:text-charcoal transition-colors"
-                    >
-                      {t("service.cancel")}
-                    </button>
-                  </form>
-                )}
+                  ) : (
+                    <div className="rounded-2xl border border-green/20 bg-green/5 px-4 py-4">
+                      <p className="text-sm text-charcoal/60">
+                        <span className="text-charcoal/45">{t("service.providerPhone")}: </span>
+                        <a href={`tel:${revealedPhone.replace(/\s/g, "")}`} className="font-semibold text-green hover:underline">
+                          {revealedPhone}
+                        </a>
+                      </p>
+                      {revealCount != null && (
+                        <p className="mt-2 text-xs text-charcoal/45">
+                          {t("listing.contactRevealCount").replace("{count}", String(revealCount))}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {revealError && <p className="text-xs text-red-600 text-center">{revealError}</p>}
+                </div>
 
                 <div className="mt-6 pt-4 border-t border-charcoal/10 space-y-2">
                   <div className="flex items-center gap-2 text-xs text-charcoal/50">

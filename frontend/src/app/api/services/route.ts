@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { redactPublicListingContact } from "@/lib/public-listing-response";
 
 /** Public catalog of service providers (no auth). */
 export async function GET(request: NextRequest) {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     if (id) {
       const { data, error } = await db.from("services").select("*").eq("id", id).single();
       if (error || !data) return NextResponse.json({ error: "Not found" }, { status: 404 });
-      return NextResponse.json(data, {
+      return NextResponse.json(redactPublicListingContact(data as Record<string, unknown>), {
         headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=300" },
       });
     }
@@ -25,7 +26,8 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await query;
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json(data ?? [], {
+    const rows = (data ?? []).map((r) => redactPublicListingContact(r as Record<string, unknown>));
+    return NextResponse.json(rows, {
       headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=300" },
     });
   } catch {

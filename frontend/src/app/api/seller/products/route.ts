@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveUserIdFromEmail, validateSession } from "@/lib/admin-store";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 
 function getSession(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -49,6 +50,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const id = String(body.id || `product-${Date.now()}`);
     const artisan = String(body.artisan || profile.name || "").trim() || profile.name;
+    const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
+    if (!isValidListingPhone(phone)) {
+      return NextResponse.json({ error: "A valid contact phone number is required." }, { status: 400 });
+    }
 
     const row = {
       id,
@@ -68,6 +73,8 @@ export async function POST(request: NextRequest) {
       business_slug: String(profile.business_slug || "").trim(),
       approval_status: "pending",
       submitted_at: new Date().toISOString(),
+      phone,
+      submitter_phone: phone,
     };
 
     const { data, error } = await db.from("products").insert(row).select().single();
@@ -106,6 +113,14 @@ export async function PATCH(request: NextRequest) {
     if (body.tags !== undefined) updates.tags = body.tags;
     if (body.inStock !== undefined) updates.in_stock = body.inStock;
     if (body.in_stock !== undefined) updates.in_stock = body.in_stock;
+    if (body.phone !== undefined || body.contactPhone !== undefined) {
+      const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
+      if (!isValidListingPhone(phone)) {
+        return NextResponse.json({ error: "A valid contact phone number is required." }, { status: 400 });
+      }
+      updates.phone = phone;
+      updates.submitter_phone = phone;
+    }
 
     updates.approval_status = "pending";
     updates.submitted_at = new Date().toISOString();

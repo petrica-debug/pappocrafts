@@ -6,20 +6,23 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { type Product, mapSupabaseProduct } from "@/lib/products";
-import { useCart } from "@/lib/cart-context";
 import { useLocale } from "@/lib/locale-context";
 import { translateShopCategory } from "@/lib/translations";
-import { trackViewContent, trackAddToCart } from "@/components/Analytics";
+import { trackViewContent } from "@/components/Analytics";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { addItem } = useCart();
   const { t, formatRegionalPrice } = useLocale();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  const [revealedPhone, setRevealedPhone] = useState<string | null>(null);
+  const [revealCount, setRevealCount] = useState<number | null>(null);
+  const [revealLoading, setRevealLoading] = useState(false);
+  const [revealError, setRevealError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -58,8 +61,34 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     }
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
+
+  async function handleRevealContact() {
+    if (!product || revealLoading || revealedPhone) return;
+    setRevealError("");
+    setRevealLoading(true);
+    try {
+      const res = await fetch("/api/public/reveal-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "product", id: product.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && typeof data.phone === "string" && data.phone.trim()) {
+        setRevealedPhone(data.phone.trim());
+        setRevealCount(typeof data.contactRevealCount === "number" ? data.contactRevealCount : null);
+        return;
+      }
+      setRevealError(typeof data.error === "string" ? data.error : t("listing.error"));
+    } catch {
+      setRevealError(t("listing.error"));
+    } finally {
+      setRevealLoading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -138,6 +167,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <span className="rounded-full bg-blue/10 px-3 py-1 text-xs font-medium text-blue">
                   {product.country}
                 </span>
+                {!product.inStock && (
+                  <span className="rounded-full bg-charcoal/10 px-3 py-1 text-xs font-medium text-charcoal/50">
+                    Out of stock
+                  </span>
+                )}
               </div>
 
               <h1 className="font-serif text-3xl sm:text-4xl font-bold text-charcoal tracking-tight">
@@ -162,28 +196,32 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
               <p className="mt-6 text-charcoal/70 leading-relaxed">{product.longDescription}</p>
 
-              <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                {product.inStock ? (
-                  <>
-                    <button
-                      onClick={() => { addItem(product); trackAddToCart({ id: product.id, name: product.name, price: product.price }); }}
-                      className="flex-1 rounded-full bg-green py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all"
-                    >
-                      {t("product.addToCart")}
-                    </button>
-                    <Link
-                      href="/checkout"
-                      onClick={() => addItem(product)}
-                      className="flex-1 rounded-full border-2 border-green py-3.5 text-center text-base font-semibold text-green hover:bg-green hover:text-white transition-all"
-                    >
-                      {t("product.buyNow")}
-                    </Link>
-                  </>
+              <div className="mt-8 flex flex-col gap-3">
+                {!revealedPhone ? (
+                  <button
+                    type="button"
+                    onClick={handleRevealContact}
+                    disabled={revealLoading}
+                    className="w-full rounded-full bg-green py-3.5 text-center text-base font-semibold text-white shadow-lg shadow-green/25 hover:bg-green-dark transition-all disabled:opacity-60"
+                  >
+                    {revealLoading ? t("listing.submitting") : t("listing.revealContactDetails")}
+                  </button>
                 ) : (
-                  <div className="flex-1 rounded-full bg-charcoal/5 py-3.5 text-center text-base font-semibold text-charcoal/40">
-                    Out of Stock
+                  <div className="rounded-2xl border border-green/20 bg-green/5 px-5 py-4">
+                    <p className="text-sm text-charcoal/60">
+                      <span className="text-charcoal/50">{t("product.contactPhone")}: </span>
+                      <a href={`tel:${revealedPhone.replace(/\s/g, "")}`} className="font-semibold text-green hover:underline">
+                        {revealedPhone}
+                      </a>
+                    </p>
+                    {revealCount != null && (
+                      <p className="mt-2 text-xs text-charcoal/45">
+                        {t("listing.contactRevealCount").replace("{count}", String(revealCount))}
+                      </p>
+                    )}
                   </div>
                 )}
+                {revealError && <p className="text-sm text-red-600">{revealError}</p>}
               </div>
 
               <div className="mt-8 flex flex-wrap gap-2">
