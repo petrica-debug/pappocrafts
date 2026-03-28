@@ -39,6 +39,14 @@ export default function Footer() {
                   {t("footer.supportEmail")}
                 </span>
               </p>
+              <p className="mt-3">
+                <Link
+                  href="/feedback"
+                  className="text-sm font-medium text-green-light hover:text-green transition-colors"
+                >
+                  {t("footer.feedbackForm")}
+                </Link>
+              </p>
             </div>
           </div>
 
