@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "a96e36a27d7e743f55a0d10d2678bb3095daac66",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-28T14:36:34+02:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 199,
+    "total_deletions": 138,
+    "ai_additions": 199,
+    "ai_deletions": 138,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/admin/services/page.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/public/product-submission/route.ts": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 4,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/public/service-submission/route.ts": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/page.tsx": {
+      "ai_additions": 149,
+      "human_additions": 0,
+      "ai_deletions": 66,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Hero.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingOfferModal.tsx": {
+      "ai_additions": 6,
+      "human_additions": 0,
+      "ai_deletions": 8,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ShopPage.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 21,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/translations.ts": {
+      "ai_additions": 31,
+      "human_additions": 0,
+      "ai_deletions": 31,
+      "human_deletions": 0
+    }
+  }
+}
