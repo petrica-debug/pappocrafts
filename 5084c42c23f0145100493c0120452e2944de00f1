@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "5084c42c23f0145100493c0120452e2944de00f1",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T14:04:18+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "editor_hook",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 1.0
+  },
+  "stats": {
+    "total_additions": 17,
+    "total_deletions": 0,
+    "ai_additions": 17,
+    "ai_deletions": 0,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/account/page.tsx": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "296",
+      "human_lines": ""
+    },
+    "frontend/src/app/login/page.tsx": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "77-79",
+      "human_lines": ""
+    },
+    "frontend/src/components/Footer.tsx": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "26",
+      "human_lines": ""
+    },
+    "frontend/src/components/Hero.tsx": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "12",
+      "human_lines": ""
+    },
+    "frontend/src/components/Navbar.tsx": {
+      "ai_additions": 11,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "157-167",
+      "human_lines": ""
+    }
+  }
+}
