@@ -1,0 +1,186 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "51074a2300b5f854c253675b35cd213c285938f8",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T18:55:36+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 841,
+    "total_deletions": 220,
+    "ai_additions": 841,
+    "ai_deletions": 220,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/.env.local.example": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/account/page.tsx": {
+      "ai_additions": 26,
+      "human_additions": 0,
+      "ai_deletions": 11,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/products/page.tsx": {
+      "ai_additions": 107,
+      "human_additions": 0,
+      "ai_deletions": 48,
+      "human_deletions": 0
+    },
+    "frontend/src/app/admin/service-requests/page.tsx": {
+      "ai_additions": 14,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/products/route.ts": {
+      "ai_additions": 15,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/public/product-submission/route.ts": {
+      "ai_additions": 16,
+      "human_additions": 0,
+      "ai_deletions": 11,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/public/service-submission/route.ts": {
+      "ai_additions": 22,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/seller/products/route.ts": {
+      "ai_additions": 28,
+      "human_additions": 0,
+      "ai_deletions": 15,
+      "human_deletions": 0
+    },
+    "frontend/src/app/checkout/page.tsx": {
+      "ai_additions": 13,
+      "human_additions": 0,
+      "ai_deletions": 7,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/page.tsx": {
+      "ai_additions": 29,
+      "human_additions": 0,
+      "ai_deletions": 8,
+      "human_deletions": 0
+    },
+    "frontend/src/app/shop/[id]/layout.tsx": {
+      "ai_additions": 39,
+      "human_additions": 0,
+      "ai_deletions": 35,
+      "human_deletions": 0
+    },
+    "frontend/src/app/shop/[id]/page.tsx": {
+      "ai_additions": 47,
+      "human_additions": 0,
+      "ai_deletions": 13,
+      "human_deletions": 0
+    },
+    "frontend/src/components/CartSidebar.tsx": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingOfferModal.tsx": {
+      "ai_additions": 96,
+      "human_additions": 0,
+      "ai_deletions": 18,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingTurnstile.tsx": {
+      "ai_additions": 97,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Navbar.tsx": {
+      "ai_additions": 33,
+      "human_additions": 0,
+      "ai_deletions": 28,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ShopPage.tsx": {
+      "ai_additions": 43,
+      "human_additions": 0,
+      "ai_deletions": 8,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/cart-context.tsx": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/eur-fallback-rates.ts": {
+      "ai_additions": 17,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/listing-featured.ts": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/locale-context.tsx": {
+      "ai_additions": 21,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/product-images.ts": {
+      "ai_additions": 36,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/products.ts": {
+      "ai_additions": 9,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/translations.ts": {
+      "ai_additions": 53,
+      "human_additions": 0,
+      "ai_deletions": 8,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/verify-turnstile.ts": {
+      "ai_additions": 47,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "supabase/migrations/032_service_listing_hourly_rate.sql": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "supabase/migrations/033_product_images_service_listing_photo.sql": {
+      "ai_additions": 11,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    }
+  }
+}
