@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "1b1af17caf0be06b65acd24c5a273058b3da633a",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T15:54:11+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 481,
+    "total_deletions": 159,
+    "ai_additions": 481,
+    "ai_deletions": 159,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/account/page.tsx": {
+      "ai_additions": 8,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/settings/route.ts": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/exchange-rates/route.ts": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 12,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/public/product-submission/route.ts": {
+      "ai_additions": 13,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/seller/products/route.ts": {
+      "ai_additions": 33,
+      "human_additions": 0,
+      "ai_deletions": 4,
+      "human_deletions": 0
+    },
+    "frontend/src/app/landing/layout.tsx": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/[id]/page.tsx": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/layout.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/app/services/page.tsx": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Categories.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Footer.tsx": {
+      "ai_additions": 32,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingOfferModal.tsx": {
+      "ai_additions": 18,
+      "human_additions": 0,
+      "ai_deletions": 19,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ServicesPreview.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/components/StructuredData.tsx": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/domain-config.ts": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 5,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/eur-fallback-rates.ts": {
+      "ai_additions": 34,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/locale-context.tsx": {
+      "ai_additions": 15,
+      "human_additions": 0,
+      "ai_deletions": 14,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/pricing.ts": {
+      "ai_additions": 1,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/products.ts": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/shop-listing-metadata.ts": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/site-settings-context.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/translations.ts": {
+      "ai_additions": 290,
+      "human_additions": 0,
+      "ai_deletions": 76,
+      "human_deletions": 0
+    },
+    "supabase/migrations/030_products_category_remove_other.sql": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    }
+  }
+}
