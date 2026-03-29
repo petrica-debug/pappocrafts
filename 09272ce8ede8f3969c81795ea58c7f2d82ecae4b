@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "09272ce8ede8f3969c81795ea58c7f2d82ecae4b",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T19:50:07+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 40,
+    "total_deletions": 12,
+    "ai_additions": 40,
+    "ai_deletions": 12,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/.env.local.example": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingOfferModal.tsx": {
+      "ai_additions": 11,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingTurnstile.tsx": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/verify-turnstile.ts": {
+      "ai_additions": 21,
+      "human_additions": 0,
+      "ai_deletions": 7,
+      "human_deletions": 0
+    }
+  }
+}
