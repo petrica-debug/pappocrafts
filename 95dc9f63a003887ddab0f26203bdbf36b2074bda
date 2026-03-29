@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "95dc9f63a003887ddab0f26203bdbf36b2074bda",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T16:24:21+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 264,
+    "total_deletions": 45,
+    "ai_additions": 264,
+    "ai_deletions": 45,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/admin/site-settings/page.tsx": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/app/api/admin/settings/route.ts": {
+      "ai_additions": 4,
+      "human_additions": 0,
+      "ai_deletions": 6,
+      "human_deletions": 0
+    },
+    "frontend/src/app/layout.tsx": {
+      "ai_additions": 15,
+      "human_additions": 0,
+      "ai_deletions": 3,
+      "human_deletions": 0
+    },
+    "frontend/src/components/HowItWorks.tsx": {
+      "ai_additions": 2,
+      "human_additions": 0,
+      "ai_deletions": 2,
+      "human_deletions": 0
+    },
+    "frontend/src/components/ListingOfferModal.tsx": {
+      "ai_additions": 125,
+      "human_additions": 0,
+      "ai_deletions": 11,
+      "human_deletions": 0
+    },
+    "frontend/src/components/Mission.tsx": {
+      "ai_additions": 9,
+      "human_additions": 0,
+      "ai_deletions": 4,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/locale-context.tsx": {
+      "ai_additions": 41,
+      "human_additions": 0,
+      "ai_deletions": 11,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/site-settings-context.tsx": {
+      "ai_additions": 5,
+      "human_additions": 0,
+      "ai_deletions": 6,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/translations.ts": {
+      "ai_additions": 56,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "supabase/migrations/031_site_settings_mission_i18n.sql": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    }
+  }
+}
