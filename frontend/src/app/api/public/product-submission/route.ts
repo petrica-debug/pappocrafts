@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, isSupabaseMissingColumnError } from "@/lib/supabase/admin";
 import { verifyTurnstileFromRequest } from "@/lib/verify-turnstile";
 import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 import { slugifyBusinessName } from "@/lib/slug";
@@ -8,6 +8,16 @@ import { normalizeProductImageUrls, productImageDbPayload } from "@/lib/product-
 
 function isValidEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+function productSubmissionConfigErrorResponse() {
+  return NextResponse.json(
+    {
+      error:
+        "The server cannot reach the database. Check that NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set on the deployment.",
+    },
+    { status: 500 }
+  );
 }
 
 /** Anonymous product listing request; appears in admin product approvals (pending). */
@@ -63,7 +73,14 @@ export async function POST(request: NextRequest) {
     const baseSlug = slugifyBusinessName(artisan);
     const business_slug = `${baseSlug}-${id.slice(-10)}`;
 
-    const db = createAdminClient();
+    let db;
+    try {
+      db = createAdminClient();
+    } catch (e) {
+      console.error("[public/product-submission] admin client", e);
+      return productSubmissionConfigErrorResponse();
+    }
+
     const row = {
       id,
       name,
@@ -88,9 +105,13 @@ export async function POST(request: NextRequest) {
       phone: contactPhone,
     };
 
-    const { error } = await db.from("products").insert(row);
+    let { error } = await db.from("products").insert(row);
+    if (error && isSupabaseMissingColumnError(error, "images")) {
+      const { images: _omit, ...withoutImages } = row;
+      ({ error } = await db.from("products").insert(withoutImages));
+    }
     if (error) {
-      console.error("[public/product-submission]", error);
+      console.error("[public/product-submission]", error.code, error.message, error.details, error.hint);
       return NextResponse.json({ error: "Could not save your submission. Please try again later." }, { status: 500 });
     }
 
@@ -100,7 +121,8 @@ export async function POST(request: NextRequest) {
       message:
         "Your product was submitted for review. It will not appear in the shop until an administrator approves it.",
     });
-  } catch {
+  } catch (e) {
+    console.error("[public/product-submission] unexpected", e);
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 }

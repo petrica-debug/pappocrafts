@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, isPostgrestSchemaMismatch } from "@/lib/supabase/admin";
 import { verifyTurnstileFromRequest } from "@/lib/verify-turnstile";
 import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 import { isListingCurrency } from "@/lib/eur-fallback-rates";
 
 function isValidEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+function serviceSubmissionConfigErrorResponse() {
+  return NextResponse.json(
+    {
+      error:
+        "The server cannot reach the database. Check that NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set on the deployment.",
+    },
+    { status: 500 }
+  );
 }
 
 /** Anonymous service provider listing request; reviewed in admin (not on public services list). */
@@ -61,9 +71,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "If provided, photo must be a valid http(s) URL." }, { status: 400 });
     }
 
-    const db = createAdminClient();
+    let db;
+    try {
+      db = createAdminClient();
+    } catch (e) {
+      console.error("[public/service-submission] admin client", e);
+      return serviceSubmissionConfigErrorResponse();
+    }
+
     const payload = {
-      status: "pending",
+      status: "pending" as const,
       contact_name: contactName,
       contact_email: contactEmail || "",
       contact_phone: contactPhone,
@@ -78,9 +95,25 @@ export async function POST(request: NextRequest) {
       image_url: imageUrl,
     };
 
-    const { error } = await db.from("service_listing_requests").insert(payload);
+    const legacyPayload = {
+      status: "pending" as const,
+      contact_name: contactName,
+      contact_email: contactEmail || "",
+      contact_phone: contactPhone,
+      service_title: serviceTitle,
+      service_category: serviceCategory,
+      service_description: serviceDescription,
+      location,
+      country,
+      notes,
+    };
+
+    let { error } = await db.from("service_listing_requests").insert(payload);
+    if (error && isPostgrestSchemaMismatch(error)) {
+      ({ error } = await db.from("service_listing_requests").insert(legacyPayload));
+    }
     if (error) {
-      console.error("[public/service-submission]", error);
+      console.error("[public/service-submission]", error.code, error.message, error.details, error.hint);
       return NextResponse.json({ error: "Could not save your request. Please try again later." }, { status: 500 });
     }
 
@@ -90,7 +123,8 @@ export async function POST(request: NextRequest) {
       message:
         "Thank you. Our team will review your service listing and may contact you for more details before it goes live.",
     });
-  } catch {
+  } catch (e) {
+    console.error("[public/service-submission] unexpected", e);
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 }
