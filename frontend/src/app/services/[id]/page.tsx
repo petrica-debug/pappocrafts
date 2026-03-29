@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getServiceProvider, serviceProviders, mapSupabaseServiceRow, type ServiceProvider } from "@/lib/services";
 import { useLocale } from "@/lib/locale-context";
+import { translateServiceCategory } from "@/lib/translations";
 
 export default function ServiceProviderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -108,7 +109,7 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
             <Link href="/services" className="hover:text-green transition-colors">{t("nav.services")}</Link>
             <span>/</span>
             <Link href={`/services?category=${encodeURIComponent(provider.category)}`} className="hover:text-green transition-colors">
-              {provider.category}
+              {translateServiceCategory(provider.category, t)}
             </Link>
             <span>/</span>
             <span className="text-charcoal">{provider.name}</span>
@@ -268,7 +269,9 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
 
           {related.length > 0 && (
             <div className="mt-24">
-              <h2 className="font-serif text-2xl font-bold text-charcoal mb-8">{t("service.otherProviders")} {provider.category}</h2>
+              <h2 className="font-serif text-2xl font-bold text-charcoal mb-8">
+                {t("service.otherProviders")} {translateServiceCategory(provider.category, t)}
+              </h2>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {related.map((p) => (
                   <Link

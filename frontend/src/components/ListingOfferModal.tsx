@@ -2,17 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
+import { translateServiceCategory } from "@/lib/translations";
 import { categories } from "@/lib/products";
 import { serviceCategoryNames } from "@/lib/services";
 
-const LISTING_COUNTRIES = [
-  "Albania",
-  "Serbia",
-  "Kosovo",
-  "North Macedonia",
-  "Bosnia",
-  "Montenegro",
-] as const;
+/** Matches seller regions; values align with product `country` field (full MK name). */
+const LISTING_COUNTRIES = ["Albania", "Serbia", "North Macedonia"] as const;
 
 type Tab = "product" | "service";
 
@@ -23,7 +18,7 @@ export default function ListingOfferModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { t } = useLocale();
+  const { t, currency } = useLocale();
   const [tab, setTab] = useState<Tab>("product");
   const [done, setDone] = useState<"product" | "service" | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -33,9 +28,9 @@ export default function ListingOfferModal({
   const [productDesc, setProductDesc] = useState("");
   const [productLong, setProductLong] = useState("");
   const [productPrice, setProductPrice] = useState("");
-  const [productCategory, setProductCategory] = useState(categories[1] ?? "Other");
+  const [productCategory, setProductCategory] = useState(categories[1] ?? "Pottery & Ceramics");
   const [productArtisan, setProductArtisan] = useState("");
-  const [productCountry, setProductCountry] = useState<string>(LISTING_COUNTRIES[3]);
+  const [productCountry, setProductCountry] = useState<string>(LISTING_COUNTRIES[2]);
   const [productImage, setProductImage] = useState("");
   const [productEmail, setProductEmail] = useState("");
   const [productPhone, setProductPhone] = useState("");
@@ -49,7 +44,7 @@ export default function ListingOfferModal({
   );
   const [svcDesc, setSvcDesc] = useState("");
   const [svcLocation, setSvcLocation] = useState("");
-  const [svcCountry, setSvcCountry] = useState<string>(LISTING_COUNTRIES[3]);
+  const [svcCountry, setSvcCountry] = useState<string>(LISTING_COUNTRIES[2]);
   const [svcNotes, setSvcNotes] = useState("");
 
   useEffect(() => {
@@ -76,9 +71,9 @@ export default function ListingOfferModal({
     setProductDesc("");
     setProductLong("");
     setProductPrice("");
-    setProductCategory(categories[1] ?? "Other");
+    setProductCategory(categories[1] ?? "Pottery & Ceramics");
     setProductArtisan("");
-    setProductCountry(LISTING_COUNTRIES[3]);
+    setProductCountry(LISTING_COUNTRIES[2]);
     setProductImage("");
     setProductEmail("");
     setProductPhone("");
@@ -89,7 +84,7 @@ export default function ListingOfferModal({
     setSvcCategory(serviceCategoryNames.find((c) => c !== "All") ?? "Plumbing");
     setSvcDesc("");
     setSvcLocation("");
-    setSvcCountry(LISTING_COUNTRIES[3]);
+    setSvcCountry(LISTING_COUNTRIES[2]);
     setSvcNotes("");
   }
 
@@ -109,6 +104,7 @@ export default function ListingOfferModal({
           description: productDesc,
           longDescription: productLong,
           price: Number.isFinite(price) ? price : 0,
+          currency,
           category: productCategory,
           artisan: productArtisan,
           country: productCountry,
@@ -281,8 +277,10 @@ export default function ListingOfferModal({
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={labelClass}>{t("listing.priceEur")} *</label>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className={labelClass}>
+                        {t("listing.priceEur")} ({currency}) *
+                      </label>
                       <input
                         type="text"
                         inputMode="decimal"
@@ -292,8 +290,9 @@ export default function ListingOfferModal({
                         required
                         placeholder="0"
                       />
+                      <p className="mt-1 text-[11px] text-charcoal/45 leading-snug">{t("listing.priceCurrencyNote")}</p>
                     </div>
-                    <div>
+                    <div className="col-span-2 sm:col-span-1">
                       <label className={labelClass}>{t("listing.category")} *</label>
                       <select
                         className={inputClass}
@@ -402,7 +401,7 @@ export default function ListingOfferModal({
                         .filter((c) => c !== "All")
                         .map((c) => (
                           <option key={c} value={c}>
-                            {c}
+                            {translateServiceCategory(c, t)}
                           </option>
                         ))}
                     </select>

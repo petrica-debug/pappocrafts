@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveUserIdFromEmail, validateSession } from "@/lib/admin-store";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
+import { convertListedPriceToEur, isListingCurrency } from "@/lib/eur-fallback-rates";
 
 async function getSession(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -55,13 +56,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "A valid contact phone number is required." }, { status: 400 });
     }
 
+    const priceRaw = Number(body.price ?? 0);
+    const listingCurrency = String(body.listingCurrency || body.currency || "EUR")
+      .trim()
+      .toUpperCase();
+    if (!isListingCurrency(listingCurrency)) {
+      return NextResponse.json({ error: "Unsupported currency." }, { status: 400 });
+    }
+    let priceEur: number;
+    try {
+      priceEur = convertListedPriceToEur(priceRaw, listingCurrency);
+    } catch {
+      return NextResponse.json({ error: "Unsupported currency." }, { status: 400 });
+    }
+
     const row = {
       id,
       name: body.name,
       description: body.description || "",
       long_description: body.longDescription || body.long_description || "",
-      price: body.price ?? 0,
-      currency: body.currency || "EUR",
+      price: priceEur,
+      currency: "EUR",
       category: body.category || "",
       artisan,
       country: String(body.country || profile.base_country || "").trim() || "North Macedonia",
@@ -104,8 +119,22 @@ export async function PATCH(request: NextRequest) {
     if (body.description !== undefined) updates.description = body.description;
     if (body.longDescription !== undefined) updates.long_description = body.longDescription;
     if (body.long_description !== undefined) updates.long_description = body.long_description;
-    if (body.price !== undefined) updates.price = body.price;
-    if (body.currency !== undefined) updates.currency = body.currency;
+    if (body.price !== undefined) {
+      const listingCurrency = String(body.listingCurrency || body.currency || "EUR")
+        .trim()
+        .toUpperCase();
+      if (!isListingCurrency(listingCurrency)) {
+        return NextResponse.json({ error: "Unsupported currency." }, { status: 400 });
+      }
+      try {
+        updates.price = convertListedPriceToEur(Number(body.price), listingCurrency);
+        updates.currency = "EUR";
+      } catch {
+        return NextResponse.json({ error: "Unsupported currency." }, { status: 400 });
+      }
+    } else if (body.currency !== undefined) {
+      updates.currency = body.currency;
+    }
     if (body.category !== undefined) updates.category = body.category;
     if (body.artisan !== undefined) updates.artisan = body.artisan;
     if (body.country !== undefined) updates.country = body.country;

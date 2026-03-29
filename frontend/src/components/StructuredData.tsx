@@ -50,7 +50,7 @@ function buildSchemas(cfg: DomainConfig) {
     url: cfg.baseUrl,
     description:
       cfg.region === "balkans"
-        ? "Online marketplace for handmade products and services from Roma entrepreneurs in Serbia, Albania, Bosnia, Kosovo, North Macedonia, and Montenegro."
+        ? "Online marketplace for handmade products and services from Roma entrepreneurs in North Macedonia, Albania, and Serbia."
         : "Online marketplace delivering authentic handmade products from Roma artisans in the Balkans to customers across the European Union. Free EU shipping over €75.",
     currenciesAccepted: "EUR",
     paymentAccepted: "Credit Card, Bank Transfer, Cash on Delivery",
@@ -81,7 +81,7 @@ function buildSchemas(cfg: DomainConfig) {
         acceptedAnswer: {
           "@type": "Answer",
           text: cfg.region === "balkans"
-            ? "PappoShop is an online marketplace for unique handmade products and services from Roma entrepreneurs across the Western Balkans, including Serbia, Albania, Bosnia, Kosovo, North Macedonia, and Montenegro."
+            ? "PappoShop is an online marketplace for unique handmade products and services from Roma entrepreneurs in North Macedonia, Albania, and Serbia."
             : "PappoShop is an online marketplace bringing authentic handmade products from Roma artisans in the Balkans to customers across the European Union, with free shipping on orders over €75.",
         },
       },
@@ -99,7 +99,7 @@ function buildSchemas(cfg: DomainConfig) {
         acceptedAnswer: {
           "@type": "Answer",
           text: cfg.region === "balkans"
-            ? "PappoShop ships across the Western Balkans (Serbia, Albania, Bosnia, Kosovo, North Macedonia, Montenegro) and to all EU countries, the UK, US, Canada, and Switzerland."
+            ? "PappoShop ships from North Macedonia, Albania, and Serbia to customers across the region, as well as to all EU countries, the UK, US, Canada, and Switzerland."
             : "PappoShop delivers to all EU countries including Germany, France, Netherlands, Austria, Italy, Spain, Belgium, Ireland, Sweden, Poland, and more. We also ship to the UK, US, Canada, and Switzerland.",
         },
       },

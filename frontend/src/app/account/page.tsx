@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { categories } from "@/lib/products";
+import { useLocale } from "@/lib/locale-context";
 import { DEFAULT_LISTING_PHONE } from "@/lib/listing-phone";
 
 interface UserInfo {
@@ -18,6 +19,7 @@ interface UserInfo {
 const SELLER_COUNTRIES = ["North Macedonia", "Serbia", "Albania"] as const;
 
 function SellerDashboard() {
+  const { currency, t } = useLocale();
   const token = typeof window !== "undefined" ? localStorage.getItem("admin-token") : "";
   const [profile, setProfile] = useState<{
     business_name: string;
@@ -67,6 +69,7 @@ function SellerDashboard() {
         name: form.name,
         description: form.description,
         price: parseFloat(form.price) || 0,
+        currency,
         category: form.category,
         image: form.image || "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&h=600&fit=crop",
         country: form.country,
@@ -159,8 +162,10 @@ function SellerDashboard() {
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-charcoal/50">Price (EUR)</label>
+            <div className="sm:col-span-2">
+              <label className="text-xs text-charcoal/50">
+                Price ({currency})
+              </label>
               <input
                 required
                 type="number"
@@ -170,6 +175,7 @@ function SellerDashboard() {
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 className="mt-1 w-full rounded-xl border border-charcoal/15 px-4 py-2.5 text-sm"
               />
+              <p className="mt-1 text-[11px] text-charcoal/45">{t("listing.priceCurrencyNote")}</p>
             </div>
             <div>
               <label className="text-xs text-charcoal/50">Country (product)</label>

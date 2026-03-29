@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       cfg.region === "eu"
         ? "How PappoShop connects Roma artisans with customers across the EU. Categories, services, mission, and community waitlist."
-        : "How PappoShop works: discover handmade products and local services from Roma entrepreneurs across the Western Balkans.",
+        : "How PappoShop works: discover handmade products and local services from Roma entrepreneurs in North Macedonia, Albania, and Serbia.",
     alternates: { canonical: `${cfg.baseUrl}/landing` },
   };
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { UNITS_PER_ONE_EUR } from "@/lib/eur-fallback-rates";
 
-const SUPPORTED_CURRENCIES = ["USD", "GBP", "RSD", "ALL", "BAM", "MKD", "TRY", "CHF"] as const;
+const SUPPORTED_CURRENCIES = ["RSD", "ALL", "BAM", "MKD", "TRY"] as const;
 
 interface CachedRates {
   rates: Record<string, number>;
@@ -10,17 +11,7 @@ interface CachedRates {
 let cache: CachedRates | null = null;
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
-const FALLBACK_RATES: Record<string, number> = {
-  EUR: 1,
-  USD: 1.08,
-  GBP: 0.86,
-  RSD: 117.2,
-  ALL: 100.5,
-  BAM: 1.956,
-  MKD: 61.5,
-  TRY: 38.5,
-  CHF: 0.97,
-};
+const FALLBACK_RATES: Record<string, number> = { ...UNITS_PER_ONE_EUR };
 
 function mergeRates(partial: Record<string, number>): Record<string, number> {
   return { ...FALLBACK_RATES, ...partial, EUR: 1 };

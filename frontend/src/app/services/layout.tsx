@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
       : "Local Services from Roma Entrepreneurs in the Balkans",
     description: isEU
       ? "Find trusted services from Roma professionals — available across the EU and the Western Balkans. Home repair, cleaning, pet care, beauty, tutoring, transport, and IT services."
-      : "Find trusted local services from Roma professionals across Serbia, Albania, Bosnia, Kosovo, North Macedonia, and Montenegro. Home repair, cleaning, pet care, beauty, tutoring, transport, and IT services.",
+      : "Find trusted local services from Roma professionals in North Macedonia, Albania, and Serbia. Home repair, cleaning, pet care, beauty, tutoring, transport, and IT services.",
     keywords: isEU
       ? [
           "local services Europe", "Roma service providers EU", "handyman EU",
@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
           "tutoring services", "transport services", "beauty services",
           "usluge Srbija", "majstori Balkan", "čišćenje kuće",
           "shërbime lokale Shqipëri", "riparime shtëpie",
-          "usluge Bosna", "услуги Македонија",
+          "услуги Македонија", "shërbime Roma",
         ],
     alternates: { canonical: `${cfg.baseUrl}/services` },
     openGraph: {

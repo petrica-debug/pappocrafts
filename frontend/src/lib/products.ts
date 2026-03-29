@@ -19,7 +19,7 @@ export interface Product {
   inStock: boolean;
 }
 
-/** Canonical order: crafts & fashion → home & living → food & nature → other (filters / URLs use these English strings). */
+/** Canonical order: crafts & fashion → home & living → food & nature → electronics & auto (filters / URLs use these English strings). */
 export const categories = [
   "All",
   "Pottery & Ceramics",
@@ -38,7 +38,8 @@ export const categories = [
   "Agricultural Products",
   "Beauty & Personal Care",
   "Machines",
-  "Other",
+  "Electronics",
+  "Auto",
 ];
 
 /** Emoji per category for the same horizontal chip strip pattern as the services page. */
@@ -60,7 +61,8 @@ const SHOP_CATEGORY_ICONS: Partial<Record<string, string>> = {
   "Agricultural Products": "🌾",
   "Beauty & Personal Care": "✨",
   Machines: "⚙️",
-  Other: "📦",
+  Electronics: "💻",
+  Auto: "🚗",
 };
 
 export const shopCategoryChips = categories.map((name) => ({

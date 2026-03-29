@@ -22,12 +22,12 @@ const BALKANS_CONFIG: DomainConfig = {
   siteName: "PappoShop",
   title: "PappoShop — Handmade by Roma Artisans in the Western Balkans",
   description:
-    "Discover unique handmade products and services from Roma entrepreneurs across the Western Balkans — Serbia, Albania, Bosnia, Kosovo, North Macedonia, Montenegro. Pottery, textiles, jewelry, traditional clothing, furniture, and more.",
+    "Discover unique handmade products and services from Roma entrepreneurs in North Macedonia, Albania, and Serbia. Pottery, textiles, jewelry, traditional clothing, furniture, and more.",
   keywords: [
     "handmade products", "Roma artisans", "Western Balkans", "marketplace",
     "handcrafted", "pottery", "textiles", "jewelry", "woodwork", "craftsmanship",
     "traditional clothing", "furniture", "home decor", "eco products",
-    "Serbia", "Albania", "Bosnia", "Kosovo", "North Macedonia", "Montenegro",
+    "Serbia", "Albania", "North Macedonia",
     "ručni rad", "zanatstvo", "Balkanski proizvodi",
     "artizanë", "punë dore", "prodhime ballkanike",
     "Roma entrepreneurs", "social enterprise", "fair trade Balkans",
@@ -37,10 +37,7 @@ const BALKANS_CONFIG: DomainConfig = {
   areaServed: [
     { "@type": "Country", name: "Serbia" },
     { "@type": "Country", name: "Albania" },
-    { "@type": "Country", name: "Bosnia and Herzegovina" },
-    { "@type": "Country", name: "Kosovo" },
     { "@type": "Country", name: "North Macedonia" },
-    { "@type": "Country", name: "Montenegro" },
   ],
   ogLocale: "en_US",
   alternateLocales: ["sr_RS", "sq_AL", "bs_BA", "mk_MK", "tr_TR"],

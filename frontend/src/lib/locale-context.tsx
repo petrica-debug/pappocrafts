@@ -11,8 +11,9 @@ import {
   type PricingRegion,
   type ShippingZone,
 } from "./pricing";
+import { UNITS_PER_ONE_EUR } from "./eur-fallback-rates";
 
-export type CurrencyCode = "EUR" | "USD" | "GBP" | "RSD" | "ALL" | "BAM" | "MKD" | "TRY" | "CHF";
+export type CurrencyCode = "EUR" | "RSD" | "ALL" | "BAM" | "MKD" | "TRY";
 
 interface LocaleConfig {
   code: Locale;
@@ -32,9 +33,6 @@ export interface CurrencyConfig {
 
 export const currencies: CurrencyConfig[] = [
   { code: "EUR", symbol: "€", name: "Euro", flag: "🇪🇺", symbolPosition: "before", decimals: 2 },
-  { code: "USD", symbol: "$", name: "US Dollar", flag: "🇺🇸", symbolPosition: "before", decimals: 2 },
-  { code: "GBP", symbol: "£", name: "British Pound", flag: "🇬🇧", symbolPosition: "before", decimals: 2 },
-  { code: "CHF", symbol: "CHF", name: "Swiss Franc", flag: "🇨🇭", symbolPosition: "before", decimals: 2 },
   { code: "RSD", symbol: "RSD", name: "Serbian Dinar", flag: "🇷🇸", symbolPosition: "after", decimals: 0 },
   { code: "ALL", symbol: "L", name: "Albanian Lek", flag: "🇦🇱", symbolPosition: "after", decimals: 0 },
   { code: "BAM", symbol: "KM", name: "Bosnian Mark", flag: "🇧🇦", symbolPosition: "after", decimals: 2 },
@@ -52,10 +50,7 @@ export const locales: LocaleConfig[] = [
   { code: "tr", name: "Türkçe", flag: "🇹🇷", defaultCurrency: "TRY" },
 ];
 
-const FALLBACK_RATES: Record<string, number> = {
-  EUR: 1, USD: 1.08, GBP: 0.86, RSD: 117.2, ALL: 100.5,
-  BAM: 1.956, MKD: 61.5, TRY: 38.5, CHF: 0.97,
-};
+const FALLBACK_RATES: Record<string, number> = { ...UNITS_PER_ONE_EUR };
 
 interface LocaleContextValue {
   locale: Locale;
@@ -123,15 +118,21 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined") return;
     const savedLocale = (localStorage.getItem("papposhop-locale") || localStorage.getItem("pappocrafts-locale")) as Locale | null;
     const savedCurrency = (localStorage.getItem("papposhop-currency") || localStorage.getItem("pappocrafts-currency")) as CurrencyCode | null;
-    if (savedLocale && locales.some((l) => l.code === savedLocale)) {
+    const localeOk = savedLocale && locales.some((l) => l.code === savedLocale);
+
+    if (localeOk) {
       setLocaleState(savedLocale);
-      if (!savedCurrency) {
-        const lc = locales.find((l) => l.code === savedLocale);
-        if (lc) setCurrencyState(lc.defaultCurrency);
-      }
     }
-    if (savedCurrency && currencies.some((c) => c.code === savedCurrency)) {
+
+    const currencyOk = savedCurrency && currencies.some((c) => c.code === savedCurrency);
+    if (currencyOk) {
       setCurrencyState(savedCurrency);
+    } else if (localeOk) {
+      const lc = locales.find((l) => l.code === savedLocale);
+      if (lc) {
+        setCurrencyState(lc.defaultCurrency);
+        localStorage.setItem("papposhop-currency", lc.defaultCurrency);
+      }
     }
   }, []);
 

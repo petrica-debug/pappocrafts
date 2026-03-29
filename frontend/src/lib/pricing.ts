@@ -24,7 +24,7 @@ export const regionConfigs: RegionConfig[] = [
     region: "balkans",
     priceMultiplier: 0.75,
     label: "Western Balkans",
-    description: "Lower prices for local customers in Albania, Serbia, Kosovo, Bosnia, North Macedonia, Montenegro",
+    description: "Lower prices for local customers in Albania, Serbia, and North Macedonia",
   },
   {
     region: "turkey",

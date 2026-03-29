@@ -13,7 +13,7 @@ export async function generateShopListingMetadata(): Promise<Metadata> {
       : "Shop Handmade Products from Roma Artisans",
     description: isEU
       ? "Browse authentic handmade products from Roma artisans — delivered across the European Union. Pottery, textiles, jewelry, furniture, clothing, and more. Free EU shipping over €75."
-      : "Browse unique handmade products from Roma entrepreneurs across Serbia, Albania, Bosnia, Kosovo, North Macedonia, and Montenegro. Pottery, textiles, jewelry, furniture, clothing, and more.",
+      : "Browse unique handmade products from Roma entrepreneurs in North Macedonia, Albania, and Serbia. Pottery, textiles, jewelry, furniture, clothing, and more.",
     keywords: isEU
       ? [
           "handmade products Europe",
@@ -45,7 +45,7 @@ export async function generateShopListingMetadata(): Promise<Metadata> {
           "kupovina online",
           "artizanë shqiptare",
           "punë dore Ballkan",
-          "rukotvorine Bosna",
+          "handmade Serbia Albania Macedonia",
           "рачна изработка Македонија",
         ],
     alternates: { canonical },

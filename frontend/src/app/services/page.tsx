@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { serviceProviders, serviceCategories, mapSupabaseServiceRow, type ServiceProvider } from "@/lib/services";
 import { useLocale } from "@/lib/locale-context";
+import { translateServiceCategory } from "@/lib/translations";
 
 const SERVICES_PER_PAGE = 12;
 const SERVICES_LISTING_BASE = "/services";
@@ -219,7 +220,9 @@ function ServicesContent() {
                   }`}
                 >
                   <span className="text-xl sm:text-2xl">{cat.icon}</span>
-                  <span className="text-[10px] sm:text-xs font-medium leading-tight max-w-[5rem]">{cat.name}</span>
+                  <span className="text-[10px] sm:text-xs font-medium leading-tight max-w-[5rem]">
+                    {translateServiceCategory(cat.name, t)}
+                  </span>
                 </button>
               ))}
             </div>

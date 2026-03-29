@@ -22,7 +22,8 @@ const EMOJI: Record<string, string> = {
   "Agricultural Products": "🌾",
   "Beauty & Personal Care": "✨",
   Machines: "⚙️",
-  Other: "📦",
+  Electronics: "💻",
+  Auto: "🚗",
 };
 
 export default function Categories() {

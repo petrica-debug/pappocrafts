@@ -21,9 +21,9 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   footer_description:
     "Authentic handmade products and services from Roma entrepreneurs across the Western Balkans.",
   mission_badge: "Our Mission",
-  mission_title: "Empowering Roma Artisans Across the Balkans",
+  mission_title: "Empowering Roma Entrepreneurs Across the Balkans",
   mission_desc1:
-    "PappoShop connects talented Roma artisans and service providers with customers who value authenticity, quality, and social impact. Every purchase directly supports Roma entrepreneurs and their families.",
+    "PappoShop connects talented Roma entrepreneurs and service providers with customers who value authenticity and quality. And with every purchase, you directly support their path toward self-sustainability. By providing a platform for Roma entrepreneurs, we help preserve centuries-old craft traditions while also opening the door to a new world of digital opportunities. We believe that economic empowerment is the key to social inclusion.",
   mission_desc2:
     "We believe that economic empowerment is the most sustainable path to social inclusion. By providing a platform for Roma entrepreneurs, we help preserve centuries-old crafting traditions while creating new opportunities.",
 };

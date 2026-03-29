@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { serviceCategories } from "@/lib/services";
 import { useLocale } from "@/lib/locale-context";
+import { translateServiceCategory } from "@/lib/translations";
 
 export default function ServicesPreview() {
   const featured = serviceCategories.filter((c) => c.name !== "All");
@@ -35,7 +36,7 @@ export default function ServicesPreview() {
               </span>
               <span className="min-w-0 flex flex-col gap-0.5 text-left">
                 <span className="text-sm font-semibold text-charcoal group-hover:text-green transition-colors leading-snug">
-                  {cat.name}
+                  {translateServiceCategory(cat.name, t)}
                 </span>
                 <span className="text-xs text-charcoal/50 line-clamp-2 leading-snug">{cat.description}</span>
               </span>

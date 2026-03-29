@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 import { slugifyBusinessName } from "@/lib/slug";
+import { convertListedPriceToEur, isListingCurrency } from "@/lib/eur-fallback-rates";
 
 function isValidEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     const country = String(body.country || "").trim() || "North Macedonia";
     const image = String(body.image || body.imageUrl || "").trim();
     const price = Number(body.price);
-    const currency = String(body.currency || "EUR").trim() || "EUR";
+    const currency = String(body.currency || "EUR").trim().toUpperCase() || "EUR";
 
     if (name.length < 2) {
       return NextResponse.json({ error: "Product name is required." }, { status: 400 });
@@ -41,6 +42,15 @@ export async function POST(request: NextRequest) {
     if (!Number.isFinite(price) || price < 0) {
       return NextResponse.json({ error: "Price must be zero or greater." }, { status: 400 });
     }
+    if (!isListingCurrency(currency)) {
+      return NextResponse.json({ error: "Unsupported currency." }, { status: 400 });
+    }
+    let priceEur: number;
+    try {
+      priceEur = convertListedPriceToEur(price, currency);
+    } catch {
+      return NextResponse.json({ error: "Unsupported currency." }, { status: 400 });
+    }
     if (!isValidListingPhone(contactPhone)) {
       return NextResponse.json({ error: "A valid contact phone number is required." }, { status: 400 });
     }
@@ -55,8 +65,8 @@ export async function POST(request: NextRequest) {
       name,
       description,
       long_description: longDescription,
-      price,
-      currency,
+      price: priceEur,
+      currency: "EUR",
       category,
       artisan,
       country,
