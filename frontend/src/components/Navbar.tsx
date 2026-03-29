@@ -168,10 +168,10 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden md:flex items-center gap-5">
-              <Link href="/" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
+              <Link href="/" className="text-lg font-semibold text-charcoal/80 hover:text-green transition-colors">
                 {t("nav.shop")}
               </Link>
-              <Link href="/services" className="text-sm font-medium text-charcoal/70 hover:text-blue transition-colors">
+              <Link href="/services" className="text-lg font-semibold text-charcoal/80 hover:text-blue transition-colors">
                 {t("nav.services")}
               </Link>
               <Link href="/landing#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
@@ -264,10 +264,10 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="md:hidden border-t border-charcoal/10 bg-white">
             <div className="flex flex-col gap-1 px-4 py-3">
-              <Link href="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
+              <Link href="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-base font-semibold text-charcoal/80 hover:bg-light-dark hover:text-green transition-colors">
                 {t("nav.shop")}
               </Link>
-              <Link href="/services" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-blue transition-colors">
+              <Link href="/services" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-base font-semibold text-charcoal/80 hover:bg-light-dark hover:text-blue transition-colors">
                 {t("nav.services")}
               </Link>
               <Link href="/landing#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
