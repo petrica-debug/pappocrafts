@@ -149,6 +149,8 @@ export default function Navbar() {
   const { logo_url } = useSiteSettings();
   const loggedIn = useLoggedIn();
   const supportHref = `${pathname === "/" ? "/" : pathname}#contact`;
+  const shopActive = pathname === "/" || pathname.startsWith("/shop");
+  const servicesActive = pathname.startsWith("/services");
 
   return (
     <>
@@ -168,12 +170,28 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden md:flex items-center gap-5">
-              <Link href="/" className="text-lg font-semibold text-charcoal/80 hover:text-green transition-colors">
-                {t("nav.shop")}
-              </Link>
-              <Link href="/services" className="text-lg font-semibold text-charcoal/80 hover:text-blue transition-colors">
-                {t("nav.services")}
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/"
+                  className={`text-lg font-semibold rounded-full px-4 py-1.5 transition-all ${
+                    shopActive
+                      ? "bg-green/15 text-green-dark shadow-sm shadow-green/10 ring-1 ring-green/35"
+                      : "text-charcoal/75 hover:bg-green/10 hover:text-green-dark ring-1 ring-transparent hover:ring-green/20"
+                  }`}
+                >
+                  {t("nav.shop")}
+                </Link>
+                <Link
+                  href="/services"
+                  className={`text-lg font-semibold rounded-full px-4 py-1.5 transition-all ${
+                    servicesActive
+                      ? "bg-blue/15 text-blue-dark shadow-sm shadow-blue/10 ring-1 ring-blue/35"
+                      : "text-charcoal/75 hover:bg-blue/10 hover:text-blue-dark ring-1 ring-transparent hover:ring-blue/20"
+                  }`}
+                >
+                  {t("nav.services")}
+                </Link>
+              </div>
               <Link href="/landing#how-it-works" className="text-sm font-medium text-charcoal/70 hover:text-green transition-colors">
                 {t("nav.howItWorks")}
               </Link>
@@ -264,10 +282,26 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="md:hidden border-t border-charcoal/10 bg-white">
             <div className="flex flex-col gap-1 px-4 py-3">
-              <Link href="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-base font-semibold text-charcoal/80 hover:bg-light-dark hover:text-green transition-colors">
+              <Link
+                href="/"
+                onClick={() => setMobileOpen(false)}
+                className={`rounded-xl px-3 py-2.5 text-base font-semibold transition-colors ${
+                  shopActive
+                    ? "bg-green/15 text-green-dark ring-1 ring-green/30"
+                    : "text-charcoal/75 hover:bg-green/10 hover:text-green-dark"
+                }`}
+              >
                 {t("nav.shop")}
               </Link>
-              <Link href="/services" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-base font-semibold text-charcoal/80 hover:bg-light-dark hover:text-blue transition-colors">
+              <Link
+                href="/services"
+                onClick={() => setMobileOpen(false)}
+                className={`rounded-xl px-3 py-2.5 text-base font-semibold transition-colors ${
+                  servicesActive
+                    ? "bg-blue/15 text-blue-dark ring-1 ring-blue/30"
+                    : "text-charcoal/75 hover:bg-blue/10 hover:text-blue-dark"
+                }`}
+              >
                 {t("nav.services")}
               </Link>
               <Link href="/landing#how-it-works" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-charcoal/70 hover:bg-light-dark hover:text-green transition-colors">
