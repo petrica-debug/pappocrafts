@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "bb893eaeb5e959b0f173acfdf8a41c08117928e6",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T14:39:45+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "editor_hook",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 1.0
+  },
+  "stats": {
+    "total_additions": 42,
+    "total_deletions": 0,
+    "ai_additions": 42,
+    "ai_deletions": 0,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/components/Navbar.tsx": {
+      "ai_additions": 42,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0,
+      "ai_lines": "152-153,173-194,285-293,296-304",
+      "human_lines": ""
+    }
+  }
+}
