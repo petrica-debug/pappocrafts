@@ -62,6 +62,7 @@ export default function ListingOfferModal({
   const [svcNotes, setSvcNotes] = useState("");
   const [svcImageUrl, setSvcImageUrl] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaRemountKey, setCaptchaRemountKey] = useState(0);
 
   const captchaRequired = isListingTurnstileConfigured();
   const onCaptchaToken = useCallback((token: string | null) => {
@@ -115,6 +116,7 @@ export default function ListingOfferModal({
     setSvcNotes("");
     setSvcImageUrl("");
     setCaptchaToken(null);
+    setCaptchaRemountKey(0);
   }
 
   if (!open) return null;
@@ -146,11 +148,15 @@ export default function ListingOfferModal({
       const data = await res.json();
       if (!res.ok) {
         setError(typeof data.error === "string" ? data.error : t("listing.error"));
+        setCaptchaToken(null);
+        setCaptchaRemountKey((k) => k + 1);
         return;
       }
       setDone("product");
     } catch {
       setError(t("listing.error"));
+      setCaptchaToken(null);
+      setCaptchaRemountKey((k) => k + 1);
     } finally {
       setSubmitting(false);
     }
@@ -184,11 +190,15 @@ export default function ListingOfferModal({
       const data = await res.json();
       if (!res.ok) {
         setError(typeof data.error === "string" ? data.error : t("listing.error"));
+        setCaptchaToken(null);
+        setCaptchaRemountKey((k) => k + 1);
         return;
       }
       setDone("service");
     } catch {
       setError(t("listing.error"));
+      setCaptchaToken(null);
+      setCaptchaRemountKey((k) => k + 1);
     } finally {
       setSubmitting(false);
     }
@@ -309,7 +319,7 @@ export default function ListingOfferModal({
               {captchaRequired && (
                 <div className="mt-4 space-y-2 rounded-xl border border-charcoal/10 bg-charcoal/[0.02] px-3 py-3">
                   <p className="text-[11px] text-charcoal/50 leading-snug">{t("listing.captchaHint")}</p>
-                  <ListingTurnstile key={tab} onToken={onCaptchaToken} />
+                  <ListingTurnstile key={`${tab}-${captchaRemountKey}`} onToken={onCaptchaToken} />
                 </div>
               )}
 

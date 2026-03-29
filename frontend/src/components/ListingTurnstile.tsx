@@ -15,9 +15,11 @@ declare global {
           "expired-callback"?: () => void;
           "error-callback"?: () => void;
           appearance?: "always" | "execute" | "interaction-only";
+          theme?: "light" | "dark" | "auto";
         }
       ) => string;
       remove: (widgetId: string) => void;
+      reset?: (widgetId: string) => void;
     };
   }
 }
@@ -67,7 +69,8 @@ export default function ListingTurnstile({
         if (cancelled || !containerRef.current || !window.turnstile) return;
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: SITE_KEY,
-          appearance: "interaction-only",
+          appearance: "always",
+          theme: "light",
           callback: (token) => onTokenRef.current(token),
           "expired-callback": () => onTokenRef.current(null),
           "error-callback": () => onTokenRef.current(null),
