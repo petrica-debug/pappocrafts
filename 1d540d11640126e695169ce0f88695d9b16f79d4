@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "full",
+  "commit_sha": "1d540d11640126e695169ce0f88695d9b16f79d4",
+  "author": "cboldis@yahoo.com",
+  "timestamp": "2026-03-29T17:44:51+03:00",
+  "detection": {
+    "ai_assisted": true,
+    "method": "heuristic",
+    "tool": "cursor",
+    "model": "",
+    "confidence": 0.95
+  },
+  "stats": {
+    "total_additions": 73,
+    "total_deletions": 22,
+    "ai_additions": 73,
+    "ai_deletions": 22,
+    "human_additions": 0,
+    "human_deletions": 0
+  },
+  "files": {
+    "frontend/src/app/landing/layout.tsx": {
+      "ai_additions": 3,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    },
+    "frontend/src/components/HowItWorks.tsx": {
+      "ai_additions": 6,
+      "human_additions": 0,
+      "ai_deletions": 1,
+      "human_deletions": 0
+    },
+    "frontend/src/lib/locale-context.tsx": {
+      "ai_additions": 46,
+      "human_additions": 0,
+      "ai_deletions": 21,
+      "human_deletions": 0
+    },
+    "frontend/src/middleware.ts": {
+      "ai_additions": 18,
+      "human_additions": 0,
+      "ai_deletions": 0,
+      "human_deletions": 0
+    }
+  }
+}
