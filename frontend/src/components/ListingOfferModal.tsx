@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import {
   translateServiceCategory,
@@ -63,6 +63,13 @@ export default function ListingOfferModal({
   const [svcImageUrl, setSvcImageUrl] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaRemountKey, setCaptchaRemountKey] = useState(0);
+  const [productUploadingIndex, setProductUploadingIndex] = useState<number | null>(null);
+  const [productUploadTargetIndex, setProductUploadTargetIndex] = useState<number | null>(null);
+  const [serviceUploading, setServiceUploading] = useState(false);
+  const productGalleryInputRef = useRef<HTMLInputElement>(null);
+  const productCameraInputRef = useRef<HTMLInputElement>(null);
+  const serviceGalleryInputRef = useRef<HTMLInputElement>(null);
+  const serviceCameraInputRef = useRef<HTMLInputElement>(null);
 
   const captchaRequired = isListingTurnstileConfigured();
   const onCaptchaToken = useCallback((token: string | null) => {
@@ -117,6 +124,9 @@ export default function ListingOfferModal({
     setSvcImageUrl("");
     setCaptchaToken(null);
     setCaptchaRemountKey(0);
+    setProductUploadingIndex(null);
+    setProductUploadTargetIndex(null);
+    setServiceUploading(false);
   }
 
   if (!open) return null;
@@ -233,6 +243,74 @@ export default function ListingOfferModal({
     currentTarget: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
   }) {
     e.currentTarget.setCustomValidity("");
+  }
+
+  async function uploadPublicListingImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/public/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = (await res.json().catch(() => ({}))) as { error?: unknown; url?: unknown };
+    if (!res.ok || typeof data.url !== "string") {
+      throw new Error(typeof data.error === "string" ? data.error : t("listing.error"));
+    }
+    return data.url;
+  }
+
+  function triggerProductImagePicker(index: number, source: "gallery" | "camera") {
+    if (submitting || productUploadingIndex !== null || serviceUploading) return;
+    setError("");
+    setProductUploadTargetIndex(index);
+    const input = source === "camera" ? productCameraInputRef.current : productGalleryInputRef.current;
+    if (!input) return;
+    input.value = "";
+    input.click();
+  }
+
+  async function handleProductImageChosen(file: File | null) {
+    const slotIndex = productUploadTargetIndex;
+    if (!file || slotIndex === null) return;
+    setError("");
+    setProductUploadingIndex(slotIndex);
+    try {
+      const url = await uploadPublicListingImage(file);
+      setProductImages((prev) => {
+        const next = [...prev];
+        while (next.length < MAX_PRODUCT_IMAGES) next.push("");
+        next[slotIndex] = url;
+        return next;
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("listing.error"));
+    } finally {
+      setProductUploadingIndex(null);
+      setProductUploadTargetIndex(null);
+    }
+  }
+
+  function triggerServiceImagePicker(source: "gallery" | "camera") {
+    if (submitting || productUploadingIndex !== null || serviceUploading) return;
+    setError("");
+    const input = source === "camera" ? serviceCameraInputRef.current : serviceGalleryInputRef.current;
+    if (!input) return;
+    input.value = "";
+    input.click();
+  }
+
+  async function handleServiceImageChosen(file: File | null) {
+    if (!file) return;
+    setError("");
+    setServiceUploading(true);
+    try {
+      const url = await uploadPublicListingImage(file);
+      setSvcImageUrl(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("listing.error"));
+    } finally {
+      setServiceUploading(false);
+    }
   }
 
   return (
@@ -431,11 +509,47 @@ export default function ListingOfferModal({
                   </div>
                   <div className="space-y-2">
                     <p className={labelClass}>{t("listing.productPhotosHelp")}</p>
+                    <input
+                      ref={productGalleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleProductImageChosen(e.target.files?.[0] ?? null)}
+                      className="hidden"
+                    />
+                    <input
+                      ref={productCameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={(e) => handleProductImageChosen(e.target.files?.[0] ?? null)}
+                      className="hidden"
+                    />
                     {Array.from({ length: MAX_PRODUCT_IMAGES }, (_, i) => (
                       <div key={i}>
                         <label className={labelClass}>
                           {t("listing.photoNumber").replace("{n}", String(i + 1))}
                         </label>
+                        <div className="mt-1 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => triggerProductImagePicker(i, "gallery")}
+                            disabled={submitting || productUploadingIndex !== null || serviceUploading}
+                            className="rounded-lg border border-charcoal/15 px-2.5 py-1 text-[11px] font-medium text-charcoal/70 hover:bg-charcoal/5 disabled:opacity-60"
+                          >
+                            Gallery
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerProductImagePicker(i, "camera")}
+                            disabled={submitting || productUploadingIndex !== null || serviceUploading}
+                            className="rounded-lg border border-charcoal/15 px-2.5 py-1 text-[11px] font-medium text-charcoal/70 hover:bg-charcoal/5 disabled:opacity-60 sm:hidden"
+                          >
+                            Camera
+                          </button>
+                          {productUploadingIndex === i && (
+                            <span className="text-[11px] text-charcoal/45">Uploading…</span>
+                          )}
+                        </div>
                         <input
                           type="url"
                           className={inputClass}
@@ -485,7 +599,12 @@ export default function ListingOfferModal({
                   </div>
                   <button
                     type="submit"
-                    disabled={submitting || (captchaRequired && !captchaToken)}
+                    disabled={
+                      submitting ||
+                      productUploadingIndex !== null ||
+                      serviceUploading ||
+                      (captchaRequired && !captchaToken)
+                    }
                     className="mt-2 w-full rounded-full bg-green py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-dark disabled:opacity-60"
                   >
                     {submitting ? t("listing.submitting") : t("listing.submitProduct")}
@@ -534,6 +653,40 @@ export default function ListingOfferModal({
                   </div>
                   <div>
                     <label className={labelClass}>{t("listing.servicePhotoUrl")}</label>
+                    <div className="mt-1 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => triggerServiceImagePicker("gallery")}
+                        disabled={submitting || productUploadingIndex !== null || serviceUploading}
+                        className="rounded-lg border border-charcoal/15 px-2.5 py-1 text-[11px] font-medium text-charcoal/70 hover:bg-charcoal/5 disabled:opacity-60"
+                      >
+                        Gallery
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => triggerServiceImagePicker("camera")}
+                        disabled={submitting || productUploadingIndex !== null || serviceUploading}
+                        className="rounded-lg border border-charcoal/15 px-2.5 py-1 text-[11px] font-medium text-charcoal/70 hover:bg-charcoal/5 disabled:opacity-60 sm:hidden"
+                      >
+                        Camera
+                      </button>
+                      {serviceUploading && <span className="text-[11px] text-charcoal/45">Uploading…</span>}
+                    </div>
+                    <input
+                      ref={serviceGalleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleServiceImageChosen(e.target.files?.[0] ?? null)}
+                      className="hidden"
+                    />
+                    <input
+                      ref={serviceCameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={(e) => handleServiceImageChosen(e.target.files?.[0] ?? null)}
+                      className="hidden"
+                    />
                     <input
                       type="url"
                       className={inputClass}
@@ -639,7 +792,12 @@ export default function ListingOfferModal({
                   </div>
                   <button
                     type="submit"
-                    disabled={submitting || (captchaRequired && !captchaToken)}
+                    disabled={
+                      submitting ||
+                      productUploadingIndex !== null ||
+                      serviceUploading ||
+                      (captchaRequired && !captchaToken)
+                    }
                     className="mt-2 w-full rounded-full bg-blue py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-dark disabled:opacity-60"
                   >
                     {submitting ? t("listing.submitting") : t("listing.submitService")}
