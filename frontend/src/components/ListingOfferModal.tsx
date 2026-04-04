@@ -573,24 +573,25 @@ export default function ListingOfferModal({
                             <span className="text-[11px] text-charcoal/45">Uploading…</span>
                           )}
                         </div>
-                        <input
-                          type="url"
-                          className={inputClass}
-                          value={productImages[i] ?? ""}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            setProductImages((prev) => {
-                              const next = [...prev];
-                              while (next.length < MAX_PRODUCT_IMAGES) next.push("");
-                              next[i] = v;
-                              return next;
-                            });
-                          }}
-                          onInvalid={handleFieldInvalid}
-                          onInput={clearFieldValidity}
-                          placeholder="https://"
-                          maxLength={2000}
-                        />
+                        {productImages[i] ? (
+                          <div className="mt-1 flex items-center gap-2 text-[11px] text-charcoal/60">
+                            <span>Photo uploaded</span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setProductImages((prev) => {
+                                  const next = [...prev];
+                                  while (next.length < MAX_PRODUCT_IMAGES) next.push("");
+                                  next[i] = "";
+                                  return next;
+                                })
+                              }
+                              className="font-medium text-charcoal/70 underline underline-offset-2 hover:text-charcoal"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ) : null}
                       </div>
                     ))}
                   </div>
@@ -733,16 +734,18 @@ export default function ListingOfferModal({
                       onChange={(e) => handleServiceImageChosen(e.target.files?.[0] ?? null)}
                       className="hidden"
                     />
-                    <input
-                      type="url"
-                      className={inputClass}
-                      value={svcImageUrl}
-                      onChange={(e) => setSvcImageUrl(e.target.value)}
-                      onInvalid={handleFieldInvalid}
-                      onInput={clearFieldValidity}
-                      placeholder="https://"
-                      maxLength={2000}
-                    />
+                    {svcImageUrl ? (
+                      <div className="mt-1 flex items-center gap-2 text-[11px] text-charcoal/60">
+                        <span>Photo uploaded</span>
+                        <button
+                          type="button"
+                          onClick={() => setSvcImageUrl("")}
+                          className="font-medium text-charcoal/70 underline underline-offset-2 hover:text-charcoal"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                   <div>
                     <label className={labelClass}>{t("listing.serviceTitle")} *</label>
