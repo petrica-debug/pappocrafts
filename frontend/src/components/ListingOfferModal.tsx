@@ -11,9 +11,10 @@ import { categories } from "@/lib/products";
 import { serviceCategoryNames } from "@/lib/services";
 import { MAX_PRODUCT_IMAGES, normalizeProductImageUrls } from "@/lib/product-images";
 import ListingTurnstile, { isListingTurnstileConfigured } from "@/components/ListingTurnstile";
-
-/** Matches seller regions; values align with product `country` field (full MK name). */
-const LISTING_COUNTRIES = ["Albania", "Serbia", "North Macedonia"] as const;
+import {
+  LISTING_COUNTRIES,
+  currencyForListingCountry,
+} from "@/lib/country-currency";
 
 function listingCountryLabel(country: string, t: (key: TranslationKey) => string) {
   if (country === "Albania") return t("listing.countryAlbania");
@@ -31,7 +32,7 @@ export default function ListingOfferModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { t, currency } = useLocale();
+  const { t } = useLocale();
   const [tab, setTab] = useState<Tab>("product");
   const [done, setDone] = useState<"product" | "service" | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -47,6 +48,7 @@ export default function ListingOfferModal({
   const [productImages, setProductImages] = useState<string[]>(() => Array(MAX_PRODUCT_IMAGES).fill(""));
   const [productEmail, setProductEmail] = useState("");
   const [productPhone, setProductPhone] = useState("");
+  const [productInStock, setProductInStock] = useState(true);
 
   const [svcName, setSvcName] = useState("");
   const [svcEmail, setSvcEmail] = useState("");
@@ -59,6 +61,7 @@ export default function ListingOfferModal({
   const [svcHourlyRate, setSvcHourlyRate] = useState("");
   const [svcLocation, setSvcLocation] = useState("");
   const [svcCountry, setSvcCountry] = useState<string>(LISTING_COUNTRIES[2]);
+  const [svcAvailable, setSvcAvailable] = useState(true);
   const [svcNotes, setSvcNotes] = useState("");
   const [svcImageUrl, setSvcImageUrl] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -66,6 +69,8 @@ export default function ListingOfferModal({
   const [productUploadingIndex, setProductUploadingIndex] = useState<number | null>(null);
   const [productUploadTargetIndex, setProductUploadTargetIndex] = useState<number | null>(null);
   const [serviceUploading, setServiceUploading] = useState(false);
+  const productCurrency = currencyForListingCountry(productCountry);
+  const serviceCurrency = currencyForListingCountry(svcCountry);
   const productGalleryInputRef = useRef<HTMLInputElement>(null);
   const productCameraInputRef = useRef<HTMLInputElement>(null);
   const serviceGalleryInputRef = useRef<HTMLInputElement>(null);
@@ -111,6 +116,7 @@ export default function ListingOfferModal({
     setProductImages(Array(MAX_PRODUCT_IMAGES).fill(""));
     setProductEmail("");
     setProductPhone("");
+    setProductInStock(true);
     setSvcName("");
     setSvcEmail("");
     setSvcPhone("");
@@ -120,6 +126,7 @@ export default function ListingOfferModal({
     setSvcHourlyRate("");
     setSvcLocation("");
     setSvcCountry(LISTING_COUNTRIES[2]);
+    setSvcAvailable(true);
     setSvcNotes("");
     setSvcImageUrl("");
     setCaptchaToken(null);
@@ -145,13 +152,14 @@ export default function ListingOfferModal({
           description: productDesc,
           longDescription: productLong,
           price: Number.isFinite(price) ? price : 0,
-          currency,
+          currency: productCurrency,
           category: productCategory,
           artisan: productArtisan,
           country: productCountry,
           images: normalizeProductImageUrls(productImages),
           contactEmail: productEmail.trim() || undefined,
           contactPhone: productPhone,
+          inStock: productInStock,
           captchaToken: captchaToken || undefined,
         }),
       });
@@ -189,9 +197,10 @@ export default function ListingOfferModal({
           serviceCategory: svcCategory,
           serviceDescription: svcDesc,
           hourlyRate: Number.isFinite(hourly) ? hourly : 0,
-          currency,
+          currency: serviceCurrency,
           location: svcLocation,
           country: svcCountry,
+          available: svcAvailable,
           notes: svcNotes || undefined,
           imageUrl: svcImageUrl.trim() || undefined,
           captchaToken: captchaToken || undefined,
@@ -441,7 +450,7 @@ export default function ListingOfferModal({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2 sm:col-span-1">
                       <label className={labelClass}>
-                        {t("listing.priceEur")} ({currency}) *
+                        {t("listing.priceEur")} ({productCurrency}) *
                       </label>
                       <input
                         type="text"
@@ -621,6 +630,35 @@ export default function ListingOfferModal({
                       autoComplete="tel"
                     />
                   </div>
+                  <div>
+                    <label className={labelClass}>Stock status *</label>
+                    <div className="mt-1 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setProductInStock(true)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                          productInStock
+                            ? "border-green/50 bg-green/10 text-green-dark"
+                            : "border-charcoal/15 bg-white text-charcoal/65 hover:bg-charcoal/5"
+                        }`}
+                        aria-pressed={productInStock}
+                      >
+                        In stock
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setProductInStock(false)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                          !productInStock
+                            ? "border-amber-400/60 bg-amber-50 text-amber-800"
+                            : "border-charcoal/15 bg-white text-charcoal/65 hover:bg-charcoal/5"
+                        }`}
+                        aria-pressed={!productInStock}
+                      >
+                        Out of stock
+                      </button>
+                    </div>
+                  </div>
                   <button
                     type="submit"
                     disabled={
@@ -782,7 +820,7 @@ export default function ListingOfferModal({
                   </div>
                   <div>
                     <label className={labelClass}>
-                      {t("listing.hourlyRate")} ({currency}) *
+                      {t("listing.hourlyRate")} ({serviceCurrency}) *
                     </label>
                     <input
                       type="text"
@@ -838,6 +876,35 @@ export default function ListingOfferModal({
                   <div>
                     <label className={labelClass}>{t("listing.notes")}</label>
                     <textarea className={`${inputClass} min-h-[56px]`} value={svcNotes} onChange={(e) => setSvcNotes(e.target.value)} maxLength={2000} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Service availability *</label>
+                    <div className="mt-1 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSvcAvailable(true)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                          svcAvailable
+                            ? "border-green/50 bg-green/10 text-green-dark"
+                            : "border-charcoal/15 bg-white text-charcoal/65 hover:bg-charcoal/5"
+                        }`}
+                        aria-pressed={svcAvailable}
+                      >
+                        Available now
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSvcAvailable(false)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                          !svcAvailable
+                            ? "border-amber-400/60 bg-amber-50 text-amber-800"
+                            : "border-charcoal/15 bg-white text-charcoal/65 hover:bg-charcoal/5"
+                        }`}
+                        aria-pressed={!svcAvailable}
+                      >
+                        Not available now
+                      </button>
+                    </div>
                   </div>
                   <button
                     type="submit"

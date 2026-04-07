@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import { type Product, mapSupabaseProduct } from "@/lib/products";
 import { useLocale } from "@/lib/locale-context";
 import { translateShopCategory } from "@/lib/translations";
-import { trackViewContent } from "@/components/Analytics";
+import { trackMarketplaceEvent, trackViewContent } from "@/components/Analytics";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -42,6 +42,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         setProduct(mapped);
         setGalleryIndex(0);
         trackViewContent({ id: mapped.id, name: mapped.name, price: mapped.price, category: mapped.category });
+        trackMarketplaceEvent({
+          eventType: "product_view",
+          listingId: mapped.id,
+          sellerSlug: mapped.businessSlug || undefined,
+          sellerName: mapped.businessName || mapped.artisan || undefined,
+          pagePath: `/shop/${mapped.id}`,
+        });
 
         const relRes = await fetch(`/api/products?category=${encodeURIComponent(mapped.category)}`);
         if (relRes.ok) {
@@ -122,6 +129,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         ? [product.image]
         : [];
   const mainImage = galleryImages[galleryIndex] || product?.image || "";
+  const sellerProfileName = product?.sellerName || product?.businessName || product?.artisan || "";
+  const hasSellerProfile =
+    product != null &&
+    Boolean(
+      (product.sellerBiography && product.sellerBiography.trim()) ||
+        (product.sellerLogoUrl && product.sellerLogoUrl.trim())
+    );
 
   if (notFound || !product) {
     return (
@@ -221,6 +235,35 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   {product.businessName}
                 </Link>
               </p>
+
+              {hasSellerProfile && (
+                <div className="mt-4 rounded-xl border border-charcoal/10 bg-light/60 p-4">
+                  <div className="flex items-start gap-3">
+                    {product.sellerLogoUrl ? (
+                      <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border border-charcoal/10 bg-white">
+                        <Image
+                          src={product.sellerLogoUrl}
+                          alt={`${sellerProfileName} logo`}
+                          fill
+                          className="object-cover"
+                          sizes="56px"
+                          unoptimized
+                        />
+                      </div>
+                    ) : null}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-charcoal">
+                        {sellerProfileName}
+                      </p>
+                      {product.sellerBiography ? (
+                        <p className="mt-1 text-sm leading-relaxed text-charcoal/70 whitespace-pre-line">
+                          {product.sellerBiography}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <p className="mt-6 text-3xl font-bold text-green">
                 {formatProductRegionalPrice(product.price, product.currency)}

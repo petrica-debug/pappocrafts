@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { getServiceProvider, serviceProviders, mapSupabaseServiceRow, type ServiceProvider } from "@/lib/services";
 import { useLocale } from "@/lib/locale-context";
 import { translateServiceCategory } from "@/lib/translations";
+import { trackMarketplaceEvent } from "@/components/Analytics";
 
 export default function ServiceProviderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -30,7 +31,14 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
         if (r.ok) {
           const d = await r.json();
           if (!cancelled && d?.id) {
-            setProvider(mapSupabaseServiceRow(d));
+            const mapped = mapSupabaseServiceRow(d);
+            setProvider(mapped);
+            trackMarketplaceEvent({
+              eventType: "service_view",
+              listingId: mapped.id,
+              sellerName: mapped.sellerName || mapped.name || undefined,
+              pagePath: `/services/${mapped.id}`,
+            });
             setLoading(false);
             return;
           }
@@ -61,6 +69,13 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
   if (!provider) notFound();
 
   const svc = provider!;
+  const sellerProfileName = svc.sellerName || svc.name || "";
+  const hasSellerProfile =
+    svc != null &&
+    Boolean(
+      (svc.sellerBiography && svc.sellerBiography.trim()) ||
+        (svc.sellerLogoUrl && svc.sellerLogoUrl.trim())
+    );
 
   const related = serviceProviders
     .filter((p) => p.category === svc.category && p.id !== svc.id)
@@ -169,6 +184,33 @@ export default function ServiceProviderPage({ params }: { params: Promise<{ id: 
                 )}
                 <p className="text-charcoal/70 leading-relaxed">{provider.longDescription}</p>
               </div>
+
+              {hasSellerProfile && (
+                <div className="mt-6 rounded-xl border border-charcoal/10 bg-light/60 p-4">
+                  <div className="flex items-start gap-3">
+                    {svc.sellerLogoUrl ? (
+                      <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border border-charcoal/10 bg-white">
+                        <Image
+                          src={svc.sellerLogoUrl}
+                          alt={`${sellerProfileName} logo`}
+                          fill
+                          className="object-cover"
+                          sizes="56px"
+                          unoptimized
+                        />
+                      </div>
+                    ) : null}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-charcoal">{sellerProfileName}</p>
+                      {svc.sellerBiography ? (
+                        <p className="mt-1 text-sm leading-relaxed text-charcoal/70 whitespace-pre-line">
+                          {svc.sellerBiography}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="rounded-xl bg-green/5 border border-green/10 p-4 text-center">
