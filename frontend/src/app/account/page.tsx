@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -22,6 +22,8 @@ const SELLER_COUNTRIES = ["North Macedonia", "Serbia", "Albania"] as const;
 function SellerDashboard() {
   const { currency, t } = useLocale();
   const token = typeof window !== "undefined" ? localStorage.getItem("admin-token") : "";
+  const productGalleryInputRef = useRef<HTMLInputElement>(null);
+  const productCameraInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState<{
     business_name: string;
     business_slug: string;
@@ -30,6 +32,8 @@ function SellerDashboard() {
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [productUploadTargetIndex, setProductUploadTargetIndex] = useState<number | null>(null);
+  const [productUploadingIndex, setProductUploadingIndex] = useState<number | null>(null);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -96,6 +100,50 @@ function SellerDashboard() {
     load();
   }
 
+  async function uploadSellerListingImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/public/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = (await res.json().catch(() => ({}))) as { error?: string; url?: string };
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || "Image upload failed.");
+    }
+    return data.url;
+  }
+
+  function triggerProductImagePicker(index: number, source: "gallery" | "camera") {
+    if (productUploadingIndex !== null) return;
+    setErr("");
+    setProductUploadTargetIndex(index);
+    const input = source === "camera" ? productCameraInputRef.current : productGalleryInputRef.current;
+    if (!input) return;
+    input.value = "";
+    input.click();
+  }
+
+  async function handleProductImageChosen(file: File | null) {
+    const slotIndex = productUploadTargetIndex;
+    if (!file || slotIndex === null) return;
+    setErr("");
+    setProductUploadingIndex(slotIndex);
+    try {
+      const uploadedUrl = await uploadSellerListingImage(file);
+      setForm((prev) => {
+        const next = [...prev.images];
+        next[slotIndex] = uploadedUrl;
+        return { ...prev, images: next };
+      });
+    } catch (uploadError) {
+      setErr(uploadError instanceof Error ? uploadError.message : "Image upload failed.");
+    } finally {
+      setProductUploadingIndex(null);
+      setProductUploadTargetIndex(null);
+    }
+  }
+
   return (
     <div className="space-y-8">
       {profile && (
@@ -141,7 +189,7 @@ function SellerDashboard() {
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold text-charcoal/40 uppercase tracking-wider mb-4">Add product</h2>
+        <h2 className="text-sm font-semibold text-charcoal/40 uppercase tracking-wider mb-4">Add product/service</h2>
         <form onSubmit={submit} className="space-y-4 max-w-lg">
           <div>
             <label className="text-xs text-charcoal/50">Product name</label>
@@ -211,24 +259,65 @@ function SellerDashboard() {
           </div>
           <div className="space-y-2">
             <p className="text-xs text-charcoal/50">{t("listing.productPhotosHelp")}</p>
+            <input
+              ref={productGalleryInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleProductImageChosen(e.target.files?.[0] ?? null)}
+              className="hidden"
+            />
+            <input
+              ref={productCameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={(e) => handleProductImageChosen(e.target.files?.[0] ?? null)}
+              className="hidden"
+            />
             {form.images.map((url, i) => (
               <div key={i}>
                 <label className="text-xs text-charcoal/50">
                   {t("listing.photoNumber").replace("{n}", String(i + 1))}
                 </label>
-                <input
-                  value={url}
-                  onChange={(e) =>
-                    setForm((f) => {
-                      const next = [...f.images];
-                      next[i] = e.target.value;
-                      return { ...f, images: next };
-                    })
-                  }
-                  placeholder="https://…"
-                  type="url"
-                  className="mt-1 w-full rounded-xl border border-charcoal/15 px-4 py-2.5 text-sm"
-                />
+                <div className="mt-1 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => triggerProductImagePicker(i, "gallery")}
+                    disabled={productUploadingIndex !== null}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-green/35 bg-green/10 px-2.5 py-1 text-[11px] font-semibold text-green-dark shadow-sm shadow-green/10 hover:bg-green/15 hover:border-green/50 disabled:opacity-60"
+                  >
+                    Gallery
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => triggerProductImagePicker(i, "camera")}
+                    disabled={productUploadingIndex !== null}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-blue/35 bg-blue/10 px-2.5 py-1 text-[11px] font-semibold text-blue-dark shadow-sm shadow-blue/10 hover:bg-blue/15 hover:border-blue/50 disabled:opacity-60 sm:hidden"
+                  >
+                    Camera
+                  </button>
+                  {productUploadingIndex === i && (
+                    <span className="text-[11px] text-charcoal/45">Uploading…</span>
+                  )}
+                </div>
+                {url ? (
+                  <div className="mt-1 flex items-center gap-2 text-[11px] text-charcoal/60">
+                    <span>Photo uploaded</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setForm((f) => {
+                          const next = [...f.images];
+                          next[i] = "";
+                          return { ...f, images: next };
+                        })
+                      }
+                      className="font-medium text-charcoal/70 underline underline-offset-2 hover:text-charcoal"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
