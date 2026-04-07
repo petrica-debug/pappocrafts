@@ -77,6 +77,7 @@ export const serviceCategories = [
   { name: "Photography & Videography", icon: "📷", description: "Events, portraits, video" },
   { name: "Fitness & Personal Training", icon: "💪", description: "Training, coaching" },
   { name: "Tutoring & Lessons", icon: "📚", description: "Languages, music, crafts" },
+  { name: "Music", icon: "🎵", description: "Performers, arrangers, music production" },
   { name: "Transport & Moving", icon: "🚚", description: "Moving, driving" },
   { name: "IT & Digital", icon: "💻", description: "PC, web, phones" },
   { name: "Events & Catering", icon: "🎉", description: "Catering, music, planning" },
