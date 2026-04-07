@@ -72,8 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     const id = `pub-product-${crypto.randomUUID()}`;
-    const baseSlug = slugifyBusinessName(artisan);
-    const business_slug = `${baseSlug}-${id.slice(-10)}`;
+    const business_slug = slugifyBusinessName(artisan);
 
     let db;
     try {

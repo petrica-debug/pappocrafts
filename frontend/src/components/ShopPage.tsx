@@ -14,6 +14,10 @@ import { hasFeaturedMarker } from "@/lib/listing-featured";
 
 const PRODUCTS_PER_PAGE = 12;
 
+function normalizeBrandLabel(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 function ShopContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -90,6 +94,12 @@ function ShopContent() {
     return activeArtisan;
   }, [activeBusinessSlug, activeArtisan, products]);
 
+  const activeBusinessName = useMemo(() => {
+    if (!activeBusinessSlug) return "";
+    const p = products.find((x) => x.businessSlug === activeBusinessSlug);
+    return p?.businessName || "";
+  }, [activeBusinessSlug, products]);
+
   const setBusinessFilter = (slug: string) => {
     setActiveBusinessSlug(slug);
     setActiveArtisan("");
@@ -120,7 +130,13 @@ function ShopContent() {
   const filtered = useMemo(() => {
     let result = products;
     if (activeBusinessSlug) {
-      result = result.filter((p) => p.businessSlug === activeBusinessSlug);
+      const slug = activeBusinessSlug.trim();
+      const targetBusiness = normalizeBrandLabel(activeBusinessName);
+      result = result.filter((p) => {
+        if (p.businessSlug === slug) return true;
+        if (!targetBusiness) return false;
+        return normalizeBrandLabel(p.businessName) === targetBusiness;
+      });
     } else if (activeArtisan) {
       result = result.filter((p) => p.artisan === activeArtisan);
     }
@@ -145,7 +161,7 @@ function ShopContent() {
       );
     }
     return result;
-  }, [activeCategory, activeArtisan, activeBusinessSlug, search, products, countryFilter, inStockOnly]);
+  }, [activeCategory, activeArtisan, activeBusinessSlug, activeBusinessName, search, products, countryFilter, inStockOnly]);
 
   const sortedProducts = useMemo(() => {
     const copy = [...filtered];
