@@ -12,6 +12,11 @@ function writeIntroCookie() {
   document.cookie = `${INTRO_COOKIE}=1;path=/;max-age=${INTRO_COOKIE_MAX_AGE};SameSite=Lax`;
 }
 
+function hasDismissedIntroCookie() {
+  if (typeof document === "undefined") return false;
+  return document.cookie.split("; ").some((row) => row.startsWith(`${INTRO_COOKIE}=`));
+}
+
 export default function IntroEntryLayer({ initiallyOpen }: { initiallyOpen: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(initiallyOpen);
@@ -22,7 +27,7 @@ export default function IntroEntryLayer({ initiallyOpen }: { initiallyOpen: bool
     pathname.startsWith("/login") ||
     pathname.startsWith("/account");
 
-  if (!open || isHiddenRoute) return null;
+  if (!open || isHiddenRoute || hasDismissedIntroCookie()) return null;
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-charcoal/55 p-4 backdrop-blur-sm">
