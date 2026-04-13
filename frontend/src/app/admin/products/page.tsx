@@ -9,7 +9,6 @@ import {
   MAX_PRODUCT_IMAGES,
   productImageDbPayload,
 } from "@/lib/product-images";
-import { DEFAULT_LISTING_PHONE } from "@/lib/listing-phone";
 
 interface DBProduct {
   id: string;
@@ -38,7 +37,7 @@ type EditableProduct = Omit<DBProduct, "created_at" | "updated_at"> & {
 const emptyProduct: EditableProduct = {
   id: "", name: "", description: "", long_description: "", price: 0, currency: "EUR",
   category: categories[1], artisan: "", country: "",
-  phone: DEFAULT_LISTING_PHONE,
+  phone: "",
   image: "",
   images: [],
   imageSlots: Array(MAX_PRODUCT_IMAGES).fill(""),
@@ -421,7 +420,7 @@ export default function AdminProducts() {
                         long_description: product.long_description, price: Number(product.price),
                         currency: product.currency, category: product.category, artisan: product.artisan,
                         country: product.country,
-                        phone: (product as DBProduct).phone || DEFAULT_LISTING_PHONE,
+                        phone: (product as DBProduct).phone || "",
                         image: product.image,
                         images: product.images ?? [],
                         imageSlots: imageSlotsForForm(galleryFromProductRow(product)),
