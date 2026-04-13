@@ -10,7 +10,6 @@ import { serviceCategories } from "@/lib/services";
 import { MAX_PRODUCT_IMAGES, normalizeProductImageUrls } from "@/lib/product-images";
 import { useLocale } from "@/lib/locale-context";
 import type { CurrencyCode } from "@/lib/locale-context";
-import { DEFAULT_LISTING_PHONE } from "@/lib/listing-phone";
 import { currencyForListingCountry } from "@/lib/country-currency";
 import { isListingCurrency } from "@/lib/eur-fallback-rates";
 
@@ -143,7 +142,7 @@ function SellerDashboard() {
     images: Array(MAX_PRODUCT_IMAGES).fill("") as string[],
     country: "North Macedonia" as (typeof SELLER_COUNTRIES)[number],
     artisan: "",
-    phone: DEFAULT_LISTING_PHONE,
+    phone: "",
     currency: currencyForListingCountry("North Macedonia"),
     inStock: true,
   });
@@ -158,7 +157,7 @@ function SellerDashboard() {
     currency: currencyForListingCountry("North Macedonia"),
     location: "",
     country: "North Macedonia" as (typeof SELLER_COUNTRIES)[number],
-    phone: DEFAULT_LISTING_PHONE,
+    phone: "",
     image: "",
     responseTime: "Within 24 hours",
     available: true,
@@ -217,7 +216,7 @@ function SellerDashboard() {
       images: Array(MAX_PRODUCT_IMAGES).fill(""),
       country: "North Macedonia",
       artisan: "",
-      phone: DEFAULT_LISTING_PHONE,
+      phone: "",
       currency: currencyForListingCountry("North Macedonia"),
       inStock: true,
     });
@@ -247,7 +246,7 @@ function SellerDashboard() {
     const rowPhone =
       (typeof row.phone === "string" && row.phone.trim()) ||
       (typeof row.submitter_phone === "string" && row.submitter_phone.trim()) ||
-      DEFAULT_LISTING_PHONE;
+      "";
 
     setErr("");
     setMsg("");
@@ -286,7 +285,7 @@ function SellerDashboard() {
       currency: currencyForListingCountry("North Macedonia"),
       location: "",
       country: "North Macedonia",
-      phone: DEFAULT_LISTING_PHONE,
+      phone: "",
       image: "",
       responseTime: "Within 24 hours",
       available: true,
@@ -323,7 +322,7 @@ function SellerDashboard() {
       })(),
       location: row.location || "",
       country: rowCountry,
-      phone: row.phone || DEFAULT_LISTING_PHONE,
+      phone: row.phone || "",
       image: row.image || "",
       responseTime: row.response_time || "Within 24 hours",
       available: row.available !== false,
