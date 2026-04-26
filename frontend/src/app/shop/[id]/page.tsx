@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ProductImageOverlays from "@/components/ProductImageOverlays";
 import { type Product, mapSupabaseProduct } from "@/lib/products";
 import { useLocale } from "@/lib/locale-context";
 import { translateShopCategory } from "@/lib/translations";
@@ -19,7 +20,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  const [revealedPhone, setRevealedPhone] = useState<string | null>(null);
+  const [revealedEmail, setRevealedEmail] = useState<string | null>(null);
   const [revealCount, setRevealCount] = useState<number | null>(null);
   const [revealLoading, setRevealLoading] = useState(false);
   const [revealError, setRevealError] = useState("");
@@ -76,7 +77,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   }, [id]);
 
   async function handleRevealContact() {
-    if (!product || revealLoading || revealedPhone) return;
+    if (!product || revealLoading || revealedEmail) return;
     setRevealError("");
     setRevealLoading(true);
     try {
@@ -86,8 +87,14 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         body: JSON.stringify({ kind: "product", id: product.id }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && typeof data.phone === "string" && data.phone.trim()) {
-        setRevealedPhone(data.phone.trim());
+      const email =
+        typeof data.email === "string"
+          ? data.email.trim()
+          : typeof data.contact === "string"
+            ? data.contact.trim()
+            : "";
+      if (res.ok && email) {
+        setRevealedEmail(email);
         setRevealCount(typeof data.contactRevealCount === "number" ? data.contactRevealCount : null);
         return;
       }
@@ -174,15 +181,18 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             <div className="space-y-3">
               <div className="relative aspect-square overflow-hidden rounded-2xl bg-light">
                 {mainImage ? (
-                  <Image
-                    src={mainImage}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority
-                    unoptimized
-                  />
+                  <>
+                    <Image
+                      src={mainImage}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      priority
+                      unoptimized
+                    />
+                    <ProductImageOverlays womenLed={product.womenEntrepreneurship} watermarkSize="md" />
+                  </>
                 ) : null}
               </div>
               {galleryImages.length > 1 && (
@@ -197,6 +207,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       }`}
                     >
                       <Image src={src} alt="" fill className="object-cover" sizes="64px" unoptimized />
+                      <ProductImageOverlays womenLed={product.womenEntrepreneurship} />
                     </button>
                   ))}
                 </div>
@@ -214,6 +225,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 {!product.inStock && (
                   <span className="rounded-full bg-charcoal/10 px-3 py-1 text-xs font-medium text-charcoal/50">
                     Out of stock
+                  </span>
+                )}
+                {product.womenEntrepreneurship && (
+                  <span className="rounded-full bg-green/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-green">
+                    Women Entrepreneurship
                   </span>
                 )}
               </div>
@@ -272,7 +288,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <p className="mt-6 text-charcoal/70 leading-relaxed">{product.longDescription}</p>
 
               <div className="mt-8 flex flex-col gap-3">
-                {!revealedPhone ? (
+                {!revealedEmail ? (
                   <button
                     type="button"
                     onClick={handleRevealContact}
@@ -284,9 +300,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 ) : (
                   <div className="rounded-2xl border border-green/20 bg-green/5 px-5 py-4">
                     <p className="text-sm text-charcoal/60">
-                      <span className="text-charcoal/50">{t("product.contactPhone")}: </span>
-                      <a href={`tel:${revealedPhone.replace(/\s/g, "")}`} className="font-semibold text-green hover:underline">
-                        {revealedPhone}
+                      <span className="text-charcoal/50">Contact seller by email: </span>
+                      <a href={`mailto:${encodeURIComponent(revealedEmail)}`} className="font-semibold text-green hover:underline">
+                        {revealedEmail}
                       </a>
                     </p>
                     {revealCount != null && (
@@ -343,6 +359,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         unoptimized
                       />
+                    <ProductImageOverlays womenLed={p.womenEntrepreneurship} />
                     </div>
                     <div className="p-4">
                       <h3 className="font-semibold text-charcoal group-hover:text-green transition-colors">{p.name}</h3>

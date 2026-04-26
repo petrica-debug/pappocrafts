@@ -16,6 +16,12 @@ export interface Product {
   country: string;
   /** Listing contact phone (E.164 or local format). */
   phone: string;
+  /** Temporary direct-order email for the seller. */
+  contactEmail: string;
+  /** Donor reporting marker from the entrepreneur profile. */
+  sellerGender?: "M" | "F";
+  /** True when the product belongs to a female entrepreneur. */
+  womenEntrepreneurship: boolean;
   /** Primary image (first in `images`). */
   image: string;
   /** Gallery URLs in order (max 5). */
@@ -87,6 +93,8 @@ export function mapSupabaseProduct(row: any): Product {
   const businessSlug = typeof row.business_slug === "string" ? row.business_slug.trim() : "";
   const images = galleryFromProductRow(row);
   const image = images[0] || String(row.image || "").trim() || "";
+  const sellerGender =
+    row.seller_gender === "M" || row.seller_gender === "F" ? row.seller_gender : undefined;
   return {
     id: row.id,
     name: row.name || "",
@@ -100,6 +108,12 @@ export function mapSupabaseProduct(row: any): Product {
     businessSlug,
     country: row.country || "",
     phone: typeof row.phone === "string" && row.phone.trim() ? row.phone.trim() : "",
+    contactEmail:
+      typeof row.contact_email === "string" && row.contact_email.trim()
+        ? row.contact_email.trim()
+        : "",
+    sellerGender,
+    womenEntrepreneurship: sellerGender === "F",
     image,
     images: images.length ? images : image ? [image] : [],
     sellerName:

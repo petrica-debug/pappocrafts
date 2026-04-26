@@ -21,6 +21,8 @@ interface DBProduct {
   artisan: string;
   country: string;
   phone: string;
+  contact_email?: string;
+  seller_gender?: "M" | "F" | null;
   image: string;
   images?: string[] | null;
   tags: string[];
@@ -38,6 +40,8 @@ const emptyProduct: EditableProduct = {
   id: "", name: "", description: "", long_description: "", price: 0, currency: "EUR",
   category: categories[1], artisan: "", country: "",
   phone: "",
+  contact_email: "",
+  seller_gender: null,
   image: "",
   images: [],
   imageSlots: Array(MAX_PRODUCT_IMAGES).fill(""),
@@ -85,7 +89,7 @@ export default function AdminProducts() {
   }
 
   async function saveProduct() {
-    if (!editing || !editing.name.trim() || !editing.phone.trim()) return;
+    if (!editing || !editing.name.trim()) return;
     setSaving(true);
     try {
       const method = isNew ? "POST" : "PATCH";
@@ -101,6 +105,8 @@ export default function AdminProducts() {
         artisan: editing.artisan,
         country: editing.country,
         phone: editing.phone.trim(),
+        contact_email: editing.contact_email?.trim() || "",
+        seller_gender: editing.seller_gender || null,
         image,
         images,
         tags: editing.tags,
@@ -251,7 +257,34 @@ export default function AdminProducts() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-white/40 mb-1.5">Phone *</label>
+                <label className="block text-xs font-medium text-white/40 mb-1.5">Direct order email</label>
+                <input
+                  type="email"
+                  value={editing.contact_email || ""}
+                  onChange={(e) => setEditing({ ...editing, contact_email: e.target.value })}
+                  placeholder="seller@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#4A9B3F]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-white/40 mb-1.5">Gender (donor reporting)</label>
+                <select
+                  value={editing.seller_gender || ""}
+                  onChange={(e) =>
+                    setEditing({
+                      ...editing,
+                      seller_gender: e.target.value === "M" || e.target.value === "F" ? e.target.value : null,
+                    })
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-white/5 text-white text-sm px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4A9B3F]/50"
+                >
+                  <option value="" className="bg-[#1A1D27]">Not set</option>
+                  <option value="M" className="bg-[#1A1D27]">Male (M)</option>
+                  <option value="F" className="bg-[#1A1D27]">Female (F)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-white/40 mb-1.5">Phone (legacy / optional)</label>
                 <input
                   value={editing.phone}
                   onChange={(e) => setEditing({ ...editing, phone: e.target.value })}
@@ -396,6 +429,13 @@ export default function AdminProducts() {
                 <div className="absolute top-2 right-2">
                   <span className="text-[10px] font-bold text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full">{product.category}</span>
                 </div>
+                {product.seller_gender === "F" && (
+                  <div className="absolute left-2 top-2">
+                    <span className="text-[10px] font-bold text-white bg-[#4A9B3F] px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      Women-led
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
@@ -421,6 +461,8 @@ export default function AdminProducts() {
                         currency: product.currency, category: product.category, artisan: product.artisan,
                         country: product.country,
                         phone: (product as DBProduct).phone || "",
+                        contact_email: (product as DBProduct).contact_email || "",
+                        seller_gender: (product as DBProduct).seller_gender || null,
                         image: product.image,
                         images: product.images ?? [],
                         imageSlots: imageSlotsForForm(galleryFromProductRow(product)),

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateSession } from "@/lib/admin-store";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isValidListingPhone, normalizeListingPhone } from "@/lib/listing-phone";
 import { productImageDbPayload } from "@/lib/product-images";
 
 async function getSession(request: NextRequest) {
@@ -35,10 +34,6 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
-    if (!isValidListingPhone(phone)) {
-      return NextResponse.json({ error: "phone is required (min 6 characters)." }, { status: 400 });
-    }
     const db = createAdminClient();
     const { image, images } = productImageDbPayload(
       body.images !== undefined ? body.images : body.image ? [body.image] : []
@@ -53,7 +48,7 @@ export async function POST(request: NextRequest) {
       category: body.category || "",
       artisan: body.artisan || "",
       country: body.country || "",
-      phone,
+      phone: String(body.phone ?? body.contactPhone ?? "").trim(),
       image,
       images,
       tags: body.tags || [],
@@ -107,14 +102,14 @@ export async function PATCH(request: NextRequest) {
     if (body.businessSlug !== undefined) updates.business_slug = body.businessSlug;
     if (body.business_slug !== undefined) updates.business_slug = body.business_slug;
     if (body.phone !== undefined || body.contactPhone !== undefined) {
-      const phone = normalizeListingPhone(body.phone ?? body.contactPhone);
-      if (!isValidListingPhone(phone)) {
-        return NextResponse.json({ error: "phone is required (min 6 characters)." }, { status: 400 });
-      }
-      updates.phone = phone;
+      updates.phone = String(body.phone ?? body.contactPhone ?? "").trim();
     }
     if (body.approval_status !== undefined) updates.approval_status = body.approval_status;
     if (body.approvalStatus !== undefined) updates.approval_status = body.approvalStatus;
+    if (body.contactEmail !== undefined) updates.contact_email = body.contactEmail;
+    if (body.contact_email !== undefined) updates.contact_email = body.contact_email;
+    if (body.sellerGender !== undefined) updates.seller_gender = body.sellerGender;
+    if (body.seller_gender !== undefined) updates.seller_gender = body.seller_gender;
     if (updates.approval_status !== undefined) {
       updates.reviewed_at = new Date().toISOString();
     }
