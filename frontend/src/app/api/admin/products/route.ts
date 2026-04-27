@@ -3,11 +3,26 @@ import { validateSession } from "@/lib/admin-store";
 import { createAdminClient, isSupabaseMissingColumnError } from "@/lib/supabase/admin";
 import { productImageDbPayload } from "@/lib/product-images";
 
+type ProductWritePayload = Record<string, unknown>;
+type SupabaseWriteError = { message?: string; code?: string } | null;
+
 function normalizeProductSellerGender(value: unknown): "M" | "F" | null {
   const gender = String(value ?? "").trim().toUpperCase();
   if (gender === "M" || gender === "MALE") return "M";
   if (gender === "F" || gender === "FEMALE") return "F";
   return null;
+}
+
+function removeMissingRolloutColumn(payload: ProductWritePayload, error: SupabaseWriteError): boolean {
+  if (isSupabaseMissingColumnError(error, "contact_email") && "contact_email" in payload) {
+    delete payload.contact_email;
+    return true;
+  }
+  if (isSupabaseMissingColumnError(error, "seller_gender") && "seller_gender" in payload) {
+    delete payload.seller_gender;
+    return true;
+  }
+  return false;
 }
 
 async function getSession(request: NextRequest) {
@@ -45,7 +60,7 @@ export async function POST(request: NextRequest) {
     const { image, images } = productImageDbPayload(
       body.images !== undefined ? body.images : body.image ? [body.image] : []
     );
-    const { data, error } = await db.from("products").insert({
+    const row: ProductWritePayload = {
       id: body.id || `product-${Date.now()}`,
       name: body.name,
       description: body.description || "",
@@ -68,7 +83,16 @@ export async function POST(request: NextRequest) {
       approval_status: "approved",
       reviewed_at: new Date().toISOString(),
       submitted_at: new Date().toISOString(),
-    }).select().single();
+    };
+
+    let data = null;
+    let error: SupabaseWriteError = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const result = await db.from("products").insert(row).select().single();
+      data = result.data;
+      error = result.error;
+      if (!error || !removeMissingRolloutColumn(row, error)) break;
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json(data, { status: 201 });
@@ -85,7 +109,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     if (!body.id) return NextResponse.json({ error: "Product ID required" }, { status: 400 });
 
-    const updates: Record<string, unknown> = {};
+    const updates: ProductWritePayload = {};
     if (body.name !== undefined) updates.name = body.name;
     if (body.description !== undefined) updates.description = body.description;
     if (body.longDescription !== undefined) updates.long_description = body.longDescription;
@@ -131,7 +155,14 @@ export async function PATCH(request: NextRequest) {
     }
 
     const db = createAdminClient();
-    const { data, error } = await db.from("products").update(updates).eq("id", body.id).select().single();
+    let data = null;
+    let error: SupabaseWriteError = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const result = await db.from("products").update(updates).eq("id", body.id).select().single();
+      data = result.data;
+      error = result.error;
+      if (!error || !removeMissingRolloutColumn(updates, error)) break;
+    }
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json(data);
   } catch {
