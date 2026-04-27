@@ -18,11 +18,20 @@ function removeMissingRolloutColumn(payload: ProductWritePayload, error: Supabas
     delete payload.contact_email;
     return true;
   }
-  if (isSupabaseMissingColumnError(error, "seller_gender") && "seller_gender" in payload) {
-    delete payload.seller_gender;
-    return true;
-  }
   return false;
+}
+
+function productWriteErrorResponse(error: SupabaseWriteError) {
+  if (isSupabaseMissingColumnError(error, "seller_gender")) {
+    return NextResponse.json(
+      {
+        error:
+          "The products.seller_gender column is not available in Supabase yet. Please reload the Supabase schema cache after applying the migration, then try saving again.",
+      },
+      { status: 500 }
+    );
+  }
+  return NextResponse.json({ error: error?.message || "Product save failed." }, { status: 500 });
 }
 
 async function getSession(request: NextRequest) {
@@ -94,7 +103,7 @@ export async function POST(request: NextRequest) {
       if (!error || !removeMissingRolloutColumn(row, error)) break;
     }
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return productWriteErrorResponse(error);
     return NextResponse.json(data, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -163,7 +172,7 @@ export async function PATCH(request: NextRequest) {
       error = result.error;
       if (!error || !removeMissingRolloutColumn(updates, error)) break;
     }
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return productWriteErrorResponse(error);
     return NextResponse.json(data);
   } catch {
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
