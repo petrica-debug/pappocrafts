@@ -299,7 +299,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
               {product.sizes.length > 0 && (
                 <div className="mt-6 rounded-2xl border border-charcoal/10 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-charcoal/45">Available sizes</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-charcoal/45">{t("product.availableSizes")}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {PRODUCT_SIZE_OPTIONS.map((size) => {
                       const available = product.sizes.includes(size);
@@ -318,7 +318,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       );
                     })}
                   </div>
-                  <p className="mt-2 text-xs text-charcoal/45">Unavailable sizes are crossed out.</p>
+                  <p className="mt-2 text-xs text-charcoal/45">{t("product.unavailableSizesNote")}</p>
                 </div>
               )}
 
