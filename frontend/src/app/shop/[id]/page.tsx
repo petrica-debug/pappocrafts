@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductImageOverlays from "@/components/ProductImageOverlays";
 import { type Product, mapSupabaseProduct } from "@/lib/products";
+import { PRODUCT_SIZE_OPTIONS } from "@/lib/product-sizes";
 import { useLocale } from "@/lib/locale-context";
 import { translateShopCategory } from "@/lib/translations";
 import { trackMarketplaceEvent, trackViewContent } from "@/components/Analytics";
@@ -300,15 +301,22 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <div className="mt-6 rounded-2xl border border-charcoal/10 bg-white p-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-charcoal/45">Available sizes</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {product.sizes.map((size) => (
-                      <span
-                        key={size}
-                        className="rounded-full border border-green/30 bg-green/10 px-3 py-1 text-sm font-semibold text-green"
-                        title={`${size} available`}
-                      >
-                        {size}
-                      </span>
-                    ))}
+                    {PRODUCT_SIZE_OPTIONS.map((size) => {
+                      const available = product.sizes.includes(size);
+                      return (
+                        <span
+                          key={size}
+                          className={`rounded-full border px-3 py-1 text-sm font-semibold ${
+                            available
+                              ? "border-green/30 bg-green/10 text-green"
+                              : "border-charcoal/10 bg-charcoal/5 text-charcoal/35 line-through"
+                          }`}
+                          title={available ? `${size} available` : `${size} unavailable`}
+                        >
+                          {size}
+                        </span>
+                      );
+                    })}
                   </div>
                   <p className="mt-2 text-xs text-charcoal/45">Unavailable sizes are crossed out.</p>
                 </div>
