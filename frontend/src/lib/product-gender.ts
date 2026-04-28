@@ -1,3 +1,5 @@
+import { isProductSizeTag } from "@/lib/product-sizes";
+
 export type ProductSellerGender = "M" | "F";
 
 const PRODUCT_GENDER_TAG_PREFIX = "__seller_gender:";
@@ -22,7 +24,7 @@ export function isProductGenderTag(tag: unknown): boolean {
 
 export function visibleProductTags(tags: unknown): string[] {
   return Array.isArray(tags)
-    ? tags.filter((tag): tag is string => typeof tag === "string" && !isProductGenderTag(tag))
+    ? tags.filter((tag): tag is string => typeof tag === "string" && !isProductGenderTag(tag) && !isProductSizeTag(tag))
     : [];
 }
 

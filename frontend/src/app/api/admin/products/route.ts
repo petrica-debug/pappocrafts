@@ -3,6 +3,7 @@ import { validateSession } from "@/lib/admin-store";
 import { createAdminClient, isSupabaseMissingColumnError } from "@/lib/supabase/admin";
 import { productImageDbPayload } from "@/lib/product-images";
 import { normalizeProductSellerGender, productTagsWithGender } from "@/lib/product-gender";
+import { normalizeProductSizes, productSizesDbPayload, productTagsWithSizes } from "@/lib/product-sizes";
 
 type ProductWritePayload = Record<string, unknown>;
 type SupabaseWriteError = { message?: string; code?: string } | null;
@@ -24,6 +25,10 @@ function removeMissingRolloutColumn(payload: ProductWritePayload, error: Supabas
   }
   if (isSupabaseMissingColumnError(error, "seller_gender") && "seller_gender" in payload) {
     delete payload.seller_gender;
+    return true;
+  }
+  if (isSupabaseMissingColumnError(error, "available_sizes") && "available_sizes" in payload) {
+    delete payload.available_sizes;
     return true;
   }
   return false;
@@ -163,7 +168,8 @@ export async function POST(request: NextRequest) {
       phone: String(body.phone ?? body.contactPhone ?? "").trim(),
       image,
       images,
-      tags: productTagsWithGender(body.tags, sellerGender),
+      tags: productTagsWithSizes(productTagsWithGender(body.tags, sellerGender), body.availableSizes ?? body.available_sizes),
+      available_sizes: normalizeProductSizes(body.availableSizes ?? body.available_sizes),
       in_stock: body.inStock ?? body.in_stock ?? true,
       business_name: body.businessName ?? body.business_name ?? body.artisan ?? "",
       business_slug: body.businessSlug ?? body.business_slug ?? "",
@@ -227,6 +233,11 @@ export async function PATCH(request: NextRequest) {
         ? normalizeProductSellerGender(body.sellerGender ?? body.seller_gender)
         : undefined;
     if (body.tags !== undefined) updates.tags = productTagsWithGender(body.tags, sellerGender);
+    if (body.availableSizes !== undefined || body.available_sizes !== undefined) {
+      const rawSizes = body.availableSizes ?? body.available_sizes;
+      updates.available_sizes = normalizeProductSizes(rawSizes);
+      updates.tags = productTagsWithSizes(updates.tags ?? body.tags, rawSizes);
+    }
     if (body.inStock !== undefined) updates.in_stock = body.inStock;
     if (body.in_stock !== undefined) updates.in_stock = body.in_stock;
     if (body.businessName !== undefined) updates.business_name = body.businessName;
@@ -249,15 +260,19 @@ export async function PATCH(request: NextRequest) {
     if (sellerFieldProvided) {
       applySellerProfile(updates, seller ?? null, sellerGender ?? null);
     }
+    if (sellerGender !== undefined && updates.tags === undefined) {
+      const { data: existing } = await db
+        .from("products")
+        .select("tags")
+        .eq("id", body.id)
+        .maybeSingle();
+      updates.tags = existing?.tags;
+    }
     if (sellerGender !== undefined) {
       updates.seller_gender = sellerGender;
-      if (updates.tags === undefined) {
-        const { data: existing } = await db
-          .from("products")
-          .select("tags")
-          .eq("id", body.id)
-          .maybeSingle();
-        updates.tags = productTagsWithGender(existing?.tags, sellerGender);
+      updates.tags = productTagsWithGender(updates.tags, sellerGender);
+      if (body.availableSizes !== undefined || body.available_sizes !== undefined) {
+        updates.tags = productTagsWithSizes(updates.tags, body.availableSizes ?? body.available_sizes);
       }
     }
     if (updates.approval_status !== undefined) {

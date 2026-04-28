@@ -1,5 +1,6 @@
 import { galleryFromProductRow } from "@/lib/product-images";
 import { productGenderFromRow, visibleProductTags } from "@/lib/product-gender";
+import { productSizesFromRow, type ProductSize } from "@/lib/product-sizes";
 
 export interface Product {
   id: string;
@@ -31,6 +32,8 @@ export interface Product {
   sellerName?: string;
   sellerBiography?: string;
   sellerLogoUrl?: string;
+  /** Optional clothing/textile size availability. */
+  sizes: ProductSize[];
   tags: string[];
   inStock: boolean;
 }
@@ -128,6 +131,7 @@ export function mapSupabaseProduct(row: any): Product {
       (typeof row.seller_logo_url === "string" && row.seller_logo_url.trim())
         ? row.seller_logo_url.trim()
         : undefined,
+    sizes: productSizesFromRow(row),
     tags: visibleProductTags(row.tags),
     inStock: row.in_stock !== false,
   };

@@ -35,7 +35,7 @@ export default function IntroEntryLayer({ initiallyOpen }: { initiallyOpen: bool
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-charcoal/70">
           Before you enter the marketplace, discover the story behind PappoShop and how we support
-          artisans from vulnerable communities.
+          entrepreneurs from vulnerable communities.
         </p>
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">
           <Link

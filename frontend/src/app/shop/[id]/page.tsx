@@ -296,6 +296,24 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 {formatProductRegionalPrice(product.price, product.currency)}
               </p>
 
+              {product.sizes.length > 0 && (
+                <div className="mt-6 rounded-2xl border border-charcoal/10 bg-white p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-charcoal/45">Available sizes</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {product.sizes.map((size) => (
+                      <span
+                        key={size}
+                        className="rounded-full border border-green/30 bg-green/10 px-3 py-1 text-sm font-semibold text-green"
+                        title={`${size} available`}
+                      >
+                        {size}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-charcoal/45">Unavailable sizes are crossed out.</p>
+                </div>
+              )}
+
               <p className="mt-6 text-charcoal/70 leading-relaxed">{product.longDescription}</p>
 
               <div className="mt-8 flex flex-col gap-3">

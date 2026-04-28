@@ -10,6 +10,7 @@ import {
   productImageDbPayload,
 } from "@/lib/product-images";
 import { productGenderFromRow, visibleProductTags } from "@/lib/product-gender";
+import { PRODUCT_SIZE_OPTIONS, normalizeProductSizes } from "@/lib/product-sizes";
 
 interface DBProduct {
   id: string;
@@ -29,6 +30,8 @@ interface DBProduct {
   seller_gender?: "M" | "F" | null;
   image: string;
   images?: string[] | null;
+  available_sizes?: string[] | null;
+  sizes?: string[] | null;
   tags: string[];
   in_stock: boolean;
   created_at: string;
@@ -59,6 +62,7 @@ const emptyProduct: EditableProduct = {
   seller_gender: null,
   image: "",
   images: [],
+  available_sizes: [],
   imageSlots: Array(MAX_PRODUCT_IMAGES).fill(""),
   tags: [], in_stock: true,
 };
@@ -137,6 +141,7 @@ export default function AdminProducts() {
         seller_gender: editing.seller_gender || null,
         image,
         images,
+        available_sizes: normalizeProductSizes(editing.available_sizes),
         tags: editing.tags,
         in_stock: editing.in_stock,
       };
@@ -361,6 +366,35 @@ export default function AdminProducts() {
                 />
               </div>
               <div>
+                <label className="block text-xs font-medium text-white/40 mb-2">Available clothing/textile sizes</label>
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                  {PRODUCT_SIZE_OPTIONS.map((size) => {
+                    const selected = normalizeProductSizes(editing.available_sizes).includes(size);
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => {
+                          const current = normalizeProductSizes(editing.available_sizes);
+                          const next = selected ? current.filter((s) => s !== size) : [...current, size];
+                          setEditing({ ...editing, available_sizes: next });
+                        }}
+                        className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
+                          selected
+                            ? "border-[#4A9B3F] bg-[#4A9B3F] text-white"
+                            : "border-white/10 bg-white/5 text-white/45 hover:border-white/25"
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-1 text-[10px] text-white/30">
+                  Leave all sizes unselected for products without size options. Selected sizes are shown as available; unselected sizes are marked unavailable.
+                </p>
+              </div>
+              <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-medium text-white/40">Product photos (up to 5)</label>
                   <div className="flex rounded-lg bg-white/5 p-0.5">
@@ -536,6 +570,7 @@ export default function AdminProducts() {
                         seller_gender: productGenderFromRow(product),
                         image: product.image,
                         images: product.images ?? [],
+                        available_sizes: normalizeProductSizes(product.available_sizes ?? product.sizes),
                         imageSlots: imageSlotsForForm(galleryFromProductRow(product)),
                         tags: visibleProductTags(product.tags), in_stock: product.in_stock,
                       });
